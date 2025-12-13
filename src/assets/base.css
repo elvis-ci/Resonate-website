@@ -1,0 +1,133 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #ec8200;
+  --color-primary-hover: #de6b00;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #202942;
+  --color-secondary-foreground: #ffffff;
+
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+
+  --color-card-bg: #ffffff;
+
+  --color-border: #e6eef4;
+
+  --color-text: #0f172ac4;
+  --color-muted: #535f71;
+
+  --color-success: #34d399;
+  --color-warning: #f41f1f;
+  --color-danger: #f87171;
+
+  --color-link: var(--color-primary);
+  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* Respect user's OS preference for dark mode */
+/* @media (prefers-color-scheme: dark) {
+  @theme {
+    --color-primary: #34d399;
+    --color-secondary: #c084fc; 
+
+    --color-bg: #0b1220;
+    --color-surface: #071022;
+    --color-card-bg: #081229;
+    --color-border: #172033;
+
+    --color-text: #e6eef4;
+    --color-muted: #9aa6b2;
+
+    --color-success: #34d399;
+    --color-warning: #f59e0b;
+    --color-danger: #f87171;
+
+    --color-link: var(--color-primary);
+    --shadow-elev: 0 10px 30px rgba(2, 6, 23, 0.6);
+  }
+} */
+
+html[data-theme-light] {
+  --color-primary: #0ea5a4; /* teal-500 */
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #7c3aed; /* purple-600 */
+  --color-secondary-foreground: #ffffff;
+
+  --color-bg: #ffffff;
+  --color-surface: #f8fafc;
+  --color-card-bg: #ffffff;
+  --color-border: #e6eef4;
+
+  --color-text: #0f172ac4; /* slate-900 */
+  --color-muted: #535f71; /* slate-500 */
+
+  --color-success: #34d399;
+  --color-warning: #f41f1f;
+  --color-danger: #f87171;
+
+  --color-link: var(--color-primary);
+  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* Allow forcing theme via an attribute on <html> */
+html[data-theme='dark'] {
+  --color-primary: #ec8200;
+  --color-secondary: #202942;
+
+  --color-bg: #0b1220;
+  --color-surface: #071022;
+  --color-card-bg: #081229;
+  --color-border: #172033;
+
+  --color-text: #e6eef4;
+  --color-muted: #9aa6b2;
+
+  --color-success: #34d399;
+  --color-warning: #f41f1f;
+  --color-danger: #f87171;
+
+  --shadow-elev: 0 10px 30px rgba(2, 6, 23, 0.6);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-elev);
+}
+
+nav li a{
+  @apply font-semibold
+}
+/* Top-level links */
+nav > ul > li > a.router-link-active {
+  @apply text-primary font-bold;
+}
+
+nav > ul > li > ul > li > a.router-link-active {
+  @apply text-primary font-bold;
+}
+
+nav > ul > li > ul > li > a {
+  @apply text-text font-normal;
+}
+
+/* Hover styles for submenu links ONLY if parent is NOT active */
+nav > ul > li:not(.router-link-active) > ul > li > a:hover {
+  @apply text-primary;
+}
+
+/* Hover top-level link (if not active) */
+.group:hover > a:not(.router-link-active) {
+  @apply text-primary ;
+}
+
+nav > ul > li :focus-within > a:not(.router-link-exact-active),
+nav > ul > li:focus-within {
+  @apply text-primary ;
+}
