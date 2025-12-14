@@ -68,7 +68,7 @@ const scrollToTop = () => {
               <h1 class="heading mt-4">Boost Productivity in Comfort & Privacy</h1>
               <p class="text-gray-100 mt-4 max-w-2xl mx-auto">
                 Discover a coworking space designed to keep you focused, creative, and connected.
-                Enjoy flexible offices, accessible facilities, and a vibrant community—all at an
+                Enjoy flexible offices, accessible facilities, and a vibrant community all at an
                 affordable price.
               </p>
               <div class="mt-8">
