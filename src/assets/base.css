@@ -126,8 +126,8 @@ h6,
   @apply bg-white text-white shadow-md;
 }
 
-#topnav.nav-sticky a,
-#topnav.nav-sticky nav li a {
+#topnav.nav-sticky a:not(.router-link-active),
+#topnav.nav-sticky nav li a:not(.router-link-active) {
   @apply text-text;
 }
 
