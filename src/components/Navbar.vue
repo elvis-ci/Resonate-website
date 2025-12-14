@@ -48,7 +48,11 @@ window.onscroll = function () {
 
 // Mobile menu state
 const isMobileOpen = ref(false)
+const mobileSubmenu = ref({})
 const toggleMobile = () => (isMobileOpen.value = !isMobileOpen.value)
+const toggleSubmenu = (path) => {
+  mobileSubmenu.value[path] = !mobileSubmenu.value[path]
+}
 const closeMobile = () => (isMobileOpen.value = false)
 
 // Close mobile menu on Escape key
@@ -68,9 +72,25 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
         <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
       </div>
 
+      <!-- dynamically changing brand logo -->
+      <!-- <div>
+        <router-link class="logo" to="/">
+          <img
+            :src="(isDark || navLight) ? 'images/logo-light.png' : 'images/logo-dark.png'"
+            height="24"
+            alt="Logo"
+          />
+        </router-link>
+      </div> -->
+
       <!-- Desktop Navigation -->
       <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-        <li v-for="route in navRoutes" :key="route.path" class="relative group">
+        <li
+          v-for="route in navRoutes"
+          :key="route.path"
+          class="relative group py-4"
+          :class="{ 'has-children': route.children.length }"
+        >
           <RouterLink :to="route.path" class="">
             {{ route.title }}
           </RouterLink>
@@ -78,7 +98,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
           <!-- Dropdown for children -->
           <ul
             v-if="route.children.length"
-            class="absolute left-0 mt-2 w-40 bg-white border rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10"
+            class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
           >
             <li v-for="child in route.children" :key="child.path">
               <RouterLink :to="child.path" class="block px-4 py-2 text-text">
@@ -112,33 +132,62 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 
     <!-- Mobile Menu -->
     <transition name="slide-down">
-      <div v-if="isMobileOpen" class="lg:hidden bg-white border-t">
+      <nav v-if="isMobileOpen" class="lg:hidden absolute w-full bg-bg border-t">
         <ul class="px-4 py-2 space-y-1">
           <li v-for="route in navRoutes" :key="`m-${route.path}`">
-            <RouterLink :to="route.path" @click="closeMobile" class="block px-3 py-2 rounded group">
-              {{ route.title }}
-            </RouterLink>
-
-            <!-- Mobile children -->
-            <ul v-if="route.children.length" class="pl-4 group-hover">
-              <li v-for="child in route.children" :key="`m-${child.path}`">
-                <RouterLink
-                  :to="child.path"
-                  @click="closeMobile"
-                  class="block px-3 py-2 rounded hover:bg-gray-100"
+            <div class="flex">
+              <RouterLink
+                :to="route.path"
+                @click="closeMobile"
+                class="block w-full px-3 py-2 group router-link-active:text-primary"
+              >
+                {{ route.title }}
+              </RouterLink>
+              <button
+                v-if="route.children.length"
+                @click.prevent="toggleSubmenu(route.path)"
+                class="w-10"
+                :class="{ 'has-submenu': route.children.length }"
+                aria-label="toggle submenu"
+              >
+                <span
+                  class="inline-block transition-transform duration-200 text-lg"
+                  :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
                 >
-                  {{ child.title }}
-                </RouterLink>
-              </li>
-            </ul>
+                  ▴
+                </span>
+              </button>
+            </div>
+            <!-- Mobile children -->
+            <transition name="slide-down">
+              <ul v-if="mobileSubmenu[route.path]" class="submenu pl-4 group-hover">
+                <li v-for="child in route.children" :key="`m-${child.path}`">
+                  <RouterLink
+                    :to="child.path"
+                    @click="closeMobile"
+                    class="block px-3 py-2 router-link-active:text-primary"
+                  >
+                    {{ child.title }}
+                  </RouterLink>
+                </li>
+              </ul>
+            </transition>
           </li>
         </ul>
-      </div>
+      </nav>
     </transition>
   </header>
 </template>
 
 <style>
+header {
+  font-family: 'Nunito', sans-serif;
+  letter-spacing: 1px;
+  line-height: 24px;
+  text-transform: uppercase;
+  font-size: medium;
+}
+
 .skip-links {
   list-style: none;
 }
@@ -168,5 +217,48 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 .slide-down-leave-from {
   max-height: 1000px;
   opacity: 1;
+}
+
+li .submenu:before {
+  content: '';
+  position: absolute;
+  top: 0px;
+  left: 45px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  height: 15px;
+  width: 15px;
+  background: white;
+  border: 0.5px solid #040505;
+  border-color: transparent transparent #000000 #000000;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: rotate(135deg);
+  transform: rotate(135deg);
+  -webkit-box-shadow: -2px 2px 2px -1px rgba(60, 72, 88, 0.15);
+  box-shadow: -2px 2px 2px -1px rgba(60, 72, 88, 0.15);
+}
+
+.has-children > a {
+  position: relative;
+  padding-right: 1rem; /* space for caret */
+}
+
+.has-children > a::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%) rotate(-135deg);
+  border: solid currentColor;
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transition: transform 0.2s;
+}
+
+.has-children:hover > a::after,
+.has-children:focus-within > a::after {
+  transform: translateY(-50%) rotate(45deg);
 }
 </style>

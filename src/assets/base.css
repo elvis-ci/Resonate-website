@@ -101,11 +101,15 @@ body {
   box-shadow: var(--shadow-elev);
 }
 
+main {
+  @apply max-w-7xl
+}
+
 nav li a{
-  @apply font-semibold
+  @apply font-semibold text-text/80
 }
 /* Top-level links */
-nav > ul > li > a.router-link-active {
+nav > ul > li > a.router-link-active, nav > ul > li > div > a.router-link-active{
   @apply text-primary font-bold;
 }
 
