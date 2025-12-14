@@ -123,7 +123,7 @@ h6,
 }
 
 #topnav.nav-sticky {
-  @apply bg-white shadow-md;
+  @apply bg-white text-white shadow-md;
 }
 
 #topnav.nav-sticky a,
@@ -136,7 +136,7 @@ section div.container {
 }
 
 nav li a {
-  @apply font-semibold text-text/80;
+  @apply font-semibold text-white;
 }
 /* Top-level links */
 nav > ul > li > a.router-link-active,
