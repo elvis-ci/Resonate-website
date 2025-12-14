@@ -64,7 +64,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 </script>
 
 <template>
-  <header id="topnav" class="bg-white shadow">
+  <header id="topnav" class="fixed top-0 z-10 w-full bg-transparent shadow">
     <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
       <!-- Logo -->
@@ -179,7 +179,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
   </header>
 </template>
 
-<style>
+<style scoped>
 header {
   font-family: 'Nunito', sans-serif;
   letter-spacing: 1px;
@@ -261,4 +261,6 @@ li .submenu:before {
 .has-children:focus-within > a::after {
   transform: translateY(-50%) rotate(45deg);
 }
+
+/* Navbar transition on scroll */
 </style>
