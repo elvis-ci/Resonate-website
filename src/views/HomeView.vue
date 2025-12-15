@@ -2,6 +2,15 @@
 import { ref } from 'vue'
 
 import ArrowUpIcon from 'vue-material-design-icons/ArrowUp.vue'
+import WifiIcon from 'vue-material-design-icons/Wifi.vue'
+import PrinterIcon from 'vue-material-design-icons/Printer.vue'
+import SilverwareForkKnifeIcon from 'vue-material-design-icons/SilverwareForkKnife.vue'
+import ClockOutlineIcon from 'vue-material-design-icons/ClockOutline.vue'
+import EmailOutlineIcon from 'vue-material-design-icons/EmailOutline.vue'
+import CalendarMonthOutlineIcon from 'vue-material-design-icons/CalendarMonthOutline.vue'
+import AccountGroupOutlineIcon from 'vue-material-design-icons/AccountGroupOutline.vue'
+import CoffeeOutlineIcon from 'vue-material-design-icons/CoffeeOutline.vue'
+
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
 
@@ -39,22 +48,93 @@ const testimonialData = ref([
   },
 ])
 
+const services = [
+  {
+    name: 'Fast Internet',
+    icon: WifiIcon,
+  },
+  {
+    name: 'Printer & Fax',
+    icon: PrinterIcon,
+  },
+  {
+    name: 'Modern Kitchen',
+    icon: SilverwareForkKnifeIcon,
+  },
+  {
+    name: '24 Hour Access',
+    icon: ClockOutlineIcon,
+  },
+  {
+    name: 'Mail Service',
+    icon: EmailOutlineIcon,
+  },
+  {
+    name: 'Event Space',
+    icon: CalendarMonthOutlineIcon,
+  },
+  {
+    name: 'Conference Rooms',
+    icon: AccountGroupOutlineIcon,
+  },
+  {
+    name: 'Tea & Coffee',
+    icon: CoffeeOutlineIcon,
+  },
+]
+const plans = [
+  {
+    name: 'Member',
+    price: 19,
+    period: 'mo',
+    description: 'Perfect for flexible access to a professional coworking environment.',
+    cta: 'Buy Now',
+    featured: false,
+    icon: '/images/icon/lightbulb.svg',
+  },
+  {
+    name: 'Desk',
+    price: 39,
+    period: 'mo',
+    description: 'A dedicated desk in a shared space designed for daily productivity.',
+    cta: 'Get Started',
+    featured: true,
+    icon: '/images/icon/table.svg',
+  },
+  {
+    name: 'Dedicated',
+    price: 49,
+    period: 'mo',
+    description: 'Your own reserved workspace with added privacy and consistency.',
+    cta: 'Get Started',
+    featured: false,
+    icon: '/images/icon/star.svg',
+  },
+  {
+    name: 'Office',
+    price: 59,
+    period: 'mo',
+    description: 'A private office ideal for teams and focused work sessions.',
+    cta: 'Try It Now',
+    featured: false,
+    icon: '/images/icon/start-up.svg',
+  },
+]
 const scrollToTop = () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
 <template>
-  <main>
+  <main class="my-0 py-0">
     <!-- Hero Start -->
-    <section class="relative w-full h-screen text-white">
+    <section class="relative my-0 py-0 w-full h-screen text-white">
       <div
         class="flex items-center justify-center h-full"
         :style="{
           'background-image': 'url(/images/coworking/bg01.jpg)',
           'background-size': 'cover',
           'background-position': 'center',
-          'min-height': '600px',
         }"
       >
         <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
@@ -82,7 +162,7 @@ const scrollToTop = () => {
     <!-- Hero End -->
 
     <!-- Partners -->
-    <section class="py-12 border-t border-b border-gray-200">
+    <section class="bg-gray-50">
       <div class="container">
         <h5 class="text-lg sm:text-xl font-semibold text-text">
           Trusted client by over 10,000+ of the world's
@@ -99,8 +179,9 @@ const scrollToTop = () => {
       </div>
     </section>
 
+    
     <!-- Testimonials -->
-    <section class="bg-gray-50 py-16 sm:py-20 md:py-24">
+    <section class="bg-gray-50">
       <div class="container">
         <div class="text-center mb-12">
           <h4 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Trusted Co-workers</h4>
@@ -114,7 +195,7 @@ const scrollToTop = () => {
     </section>
 
     <!-- Blog -->
-    <section class="py-16 sm:py-20 md:py-24">
+    <section class="">
       <div class="container">
         <div class="text-center mb-12">
           <h4 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Latest News & Events</h4>
@@ -134,6 +215,4 @@ const scrollToTop = () => {
   </main>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
