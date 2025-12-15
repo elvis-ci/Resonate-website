@@ -179,6 +179,40 @@ const scrollToTop = () => {
       </div>
     </section>
 
+    <!-- about -->
+    <section class="">
+      <div class="container mx-auto px-4">
+        <div class="flex flex-wrap items-center">
+          <!-- Image column -->
+          <div class="w-full md:w-6/12 lg:w-5/12">
+            <img src="/images/coworking/about.jpg" class="w-full rounded" alt="" />
+          </div>
+
+          <!-- Text column -->
+          <div class="w-full md:w-6/12 lg:w-7/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
+            <div class="lg:ml-4">
+              <h4 class="text-xl font-semibold mb-4 text-text">About Our Community</h4>
+
+              <p class="text-gray-500">
+                Start working with
+                <span class="text-primary font-bold">Resonate</span>, a coworking community designed
+                to help ideas grow and people thrive. Whether you need a quiet space to focus or a
+                collaborative environment to connect, Resonate offers flexible, accessible
+                workspaces that support productivity—without the premium price tag.
+              </p>
+
+              <a
+                href="javascript:void(0)"
+                class="inline-block mt-3 px-6 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary/90 transition"
+              >
+                Join now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     
     <!-- Testimonials -->
     <section class="bg-gray-50">
