@@ -213,6 +213,35 @@ const scrollToTop = () => {
       </div>
     </section>
 
+    <!-- services -->
+    <section class="bg-gray-50 text-text">
+      <div class="container mx-auto px-4">
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <h4 class="text-2xl font-semibold mb-4">Your Comfort Is Our Priority</h4>
+          <p class="text-gray-500">
+            Build your best workday at
+            <span class="text-primary font-bold">Resonate</span> — a coworking space thoughtfully
+            designed for comfort, focus, and connection.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div
+            v-for="(service, index) in services"
+            :key="index"
+            class="text-center bg-white rounded-lg py-6 shadow-sm hover:shadow-md transition"
+          >
+            <div class="flex justify-center">
+              <component :is="service.icon" class="text-primary" :size="40" />
+            </div>
+            <h5 class="mt-3 font-medium">
+              {{ service.name }}
+            </h5>
+          </div>
+        </div>
+      </div>
+    </section>
+
     
     <!-- Testimonials -->
     <section class="bg-gray-50">
