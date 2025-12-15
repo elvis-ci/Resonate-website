@@ -10,6 +10,10 @@ import EmailOutlineIcon from 'vue-material-design-icons/EmailOutline.vue'
 import CalendarMonthOutlineIcon from 'vue-material-design-icons/CalendarMonthOutline.vue'
 import AccountGroupOutlineIcon from 'vue-material-design-icons/AccountGroupOutline.vue'
 import CoffeeOutlineIcon from 'vue-material-design-icons/CoffeeOutline.vue'
+import UserIcon from 'vue-material-design-icons/Account.vue'
+import MailIcon from 'vue-material-design-icons/Email.vue'
+import PhoneIcon from 'vue-material-design-icons/Phone.vue'
+import VideoIcon from 'vue-material-design-icons/Play.vue'
 
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation, Pagination, Autoplay } from 'swiper/modules'
@@ -20,7 +24,7 @@ import 'swiper/css/pagination'
 
 import Testimonial from '@/components/testimonial.vue'
 import News from '@/components/news.vue'
-
+const showModal = ref(false)
 const testimonialData = ref([
   {
     id: 1,
@@ -184,7 +188,7 @@ const scrollToTop = () => {
       <div class="container mx-auto px-4">
         <div class="flex flex-wrap items-center">
           <!-- Image column -->
-          <div class="w-full md:w-6/12 lg:w-5/12">
+          <div class="w-full md:w-6/12 lg:w-0/12">
             <img src="/images/coworking/about.jpg" class="w-full rounded" alt="" />
           </div>
 
@@ -321,14 +325,135 @@ const scrollToTop = () => {
       </div>
     </section>
 
+    <!-- Start Form -->
+    <section
+      class="relative "
+      style="background: url('images/coworking/bg04.jpg') center center / cover no-repeat"
+    >
+      <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+
+      <div class="relative container mx-auto px-4">
+        <div class="grid lg:grid-cols-12 md:grid-cols-12 gap-8 items-center">
+          <div class="lg:col-span-8 md:col-span-7 text-white">
+            <h4 class="text-3xl font-semibold mb-4">
+              We are Built for Business – Explore Us Today!
+            </h4>
+            <p class="text-gray-200 mb-6">
+              Start working with
+              <span class="text-primary font-bold">Resonate</span> that can provide everything you
+              need to generate awareness, drive traffic, connect.
+            </p>
+
+            <div class="flex items-center gap-4">
+              <button
+                class="bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition"
+              >
+                Install Now
+              </button>
+
+              <button
+                @click="showModal = true"
+                class="bg-white text-primary flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 transition"
+              >
+                <VideoIcon class="w-6 h-6" />
+              </button>
+              <span class="uppercase text-sm font-bold">Watch Now</span>
+            </div>
+
+            <!-- Modal -->
+            <div
+              v-if="showModal"
+              class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+            >
+              <div class="bg-white rounded-lg overflow-hidden w-full max-w-3xl">
+                <div class="relative pb-[56.25%]">
+                  <iframe
+                    class="absolute top-0 left-0 w-full h-full"
+                    src="https://www.youtube.com/embed/jNTZpfXYJa4"
+                    frameborder="0"
+                    allowfullscreen
+                  ></iframe>
+                </div>
+                <button
+                  @click="showModal = false"
+                  class="absolute top-2 right-2 text-gray-700 hover:text-black font-bold text-xl"
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-4 md:col-span-5 mt-8 lg:mt-0">
+            <div class="bg-white rounded-lg shadow p-6">
+              <h5 class="text-center text-lg font-semibold mb-6">Become A Member</h5>
+
+              <form class="space-y-4">
+                <div class="relative">
+                  <label class="block mb-2 text-sm font-medium"
+                    >Your Name <span class="text-red-500">*</span></label
+                  >
+                  <UserIcon
+                    class="absolute top-1/2 left-3 w-0 h-0 text-gray-400 transform -translate-y-1/2 pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    class="w-full border border-gray-300 rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <div class="relative">
+                  <label class="block mb-2 text-sm font-medium"
+                    >Your Email <span class="text-red-500">*</span></label
+                  >
+                  <MailIcon
+                    class="absolute top-1/2 left-3 w-0 h-0 text-gray-400 transform -translate-y-1/2 pointer-events-none"
+                  />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    class="w-full border border-gray-300 rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <div class="relative">
+                  <label class="block mb-2 text-sm font-medium"
+                    >Your Phone <span class="text-red-500">*</span></label
+                  >
+                  <PhoneIcon
+                    class="absolute top-1/2 left-3 w-0 h-0 text-gray-400 transform -translate-y-1/2 pointer-events-none"
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone no."
+                    class="w-full border border-gray-300 rounded pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-primary text-white py-2 rounded hover:bg-primary-hover transition"
+                >
+                  Get Started
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- Back to top -->
-    <button
+    <!-- <button
       class="primary fixed bottom-8 right-8 rounded-full p-3 shadow-lg z-10"
       @click="scrollToTop"
       aria-label="Back to top"
     >
       <ArrowUpIcon class="w-6 h-6" />
-    </button>
+    </button> -->
   </main>
 </template>
 
