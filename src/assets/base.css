@@ -61,7 +61,7 @@ html[data-theme-light] {
   --color-card-bg: #ffffff;
   --color-border: #e6eef4;
 
-  --color-text: #0f172ac4; /* slate-900 */
+  --color-text: #0f172a8d; /* slate-900 */
   --color-muted: #535f71; /* slate-500 */
 
   --color-success: #34d399;
@@ -93,6 +93,8 @@ html[data-theme='dark'] {
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-family: 'Nunito', sans-serif;
 }
 h1,
@@ -132,7 +134,7 @@ h6,
 }
 
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24;
 }
 
 nav li a {
@@ -206,4 +208,54 @@ button.secondary {
 .title-heading .heading {
   font-size: 45px !important;
   letter-spacing: 1px;
+}
+
+/* Ribbon wrapper */
+.ribbon {
+  position: absolute;
+  top: -5px;
+  right: -7px;
+  width: 85px;
+  height: 75px;
+  overflow: hidden;
+}
+
+.ribbon span {
+  position: absolute;
+  display: block;
+  width: 100px;
+  padding: 5px 0;
+  background-color: #f59e0b; /* ribbon color */
+  color: #fff;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  top: 10px;
+  right: -24px;
+  transform: rotate(45deg);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+}
+
+/* Folded corners */
+.ribbon span:before,
+.ribbon span:after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  border: 4px solid transparent;
+  z-index: -1;
+  
+}
+
+.ribbon span:before {
+  left: 0;
+  border-left-color: #d55b0e;
+  border-top-color: #d55b0e;
+}
+
+.ribbon span:after {
+  right: 0;
+  border-right-color: #d55b0e;
+  border-top-color: #d55b0e;
 }
