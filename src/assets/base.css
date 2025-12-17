@@ -1,5 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap');
 @import 'tailwindcss';
+
+@font-face {
+  font-family: "Nunito";
+  src: url("/fonts/Nunito-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @theme {
   --color-primary: #bd6902;
@@ -50,53 +57,23 @@
   }
 } */
 
-html[data-theme-light] {
-  --color-primary: #0ea5a4; /* teal-500 */
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #7c3aed; /* purple-600 */
-  --color-secondary-foreground: #ffffff;
-
-  --color-bg: #ffffff;
-  --color-surface: #f8fafc;
-  --color-card-bg: #ffffff;
-  --color-border: #e6eef4;
-
-  --color-text: #0f172a8d; /* slate-900 */
-  --color-muted: #535f71; /* slate-500 */
-
-  --color-success: #34d399;
-  --color-warning: #f41f1f;
-  --color-danger: #f87171;
-
-  --color-link: var(--color-primary);
-  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
-
-/* Allow forcing theme via an attribute on <html> */
-html[data-theme='dark'] {
-  --color-primary: #bd6902;
-  --color-secondary: #202942;
-
-  --color-bg: #0b1220;
-  --color-surface: #071022;
-  --color-card-bg: #081229;
-  --color-border: #172033;
-
-  --color-text: #e6eef4;
-  --color-muted: #9aa6b2;
-
-  --color-success: #34d399;
-  --color-warning: #f41f1f;
-  --color-danger: #f87171;
-
-  --shadow-elev: 0 10px 30px rgba(2, 6, 23, 0.6);
-}
-
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Nunito', sans-serif;
+  font-family:
+    "Nunito",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
+
+  font-size-adjust: 0.5;
 }
+
+main {
+  min-height: calc(100vh - 128px); /* Adjust based on header/footer height */
+}
+
 h1,
 h2,
 h3,
@@ -110,16 +87,10 @@ h6,
 .h5,
 .h6 {
   font-family: 'Nunito', sans-serif;
-
   line-height: 1.5;
   font-weight: 600;
 }
 
-.card {
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-elev);
-}
 #topnav {
   @apply transition-all duration-300 ease-in-out;
 }
@@ -151,7 +122,7 @@ nav > ul > li > ul > li > a.router-link-active {
 }
 
 nav > ul > li > ul > li > a {
-  @apply text-text font-normal;
+  @apply text-text/80;
 }
 
 /* Hover styles for submenu links ONLY if parent is NOT active */
@@ -174,10 +145,6 @@ nav > ul > li:focus-within {
   @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-text py-4 sm:py-5 md:py-6 lg:py-8 px-2 sm:px-4;
 } */
 
-h2 {
-  @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold py-3 sm:py-4 md:py-5 lg:py-6 px-2 sm:px-4;
-}
-
 p {
   @apply text-base sm:text-lg md:text-lg lg:text-lg leading-relaxed py-2 sm:py-3 md:py-3 lg:py-3 px-2 sm:px-4;
 }
@@ -190,19 +157,6 @@ button.primary {
 /* Secondary Button */
 button.secondary {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-secondary text-secondary-foreground rounded-md hover:opacity-90 transition-opacity duration-200 active:scale-95;
-}
-
-:deep(.swiper-button-next),
-:deep(.swiper-button-prev) {
-  @apply text-white bg-black/30 rounded-full w-12 h-12 flex items-center justify-center hover:bg-black/50 transition-colors;
-}
-
-:deep(.swiper-pagination-bullet) {
-  @apply bg-white/70 hover:bg-white;
-}
-
-:deep(.swiper-pagination-bullet-active) {
-  @apply bg-white;
 }
 
 .title-heading .heading {
@@ -234,18 +188,17 @@ button.secondary {
   top: 10px;
   right: -24px;
   transform: rotate(45deg);
-  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* Folded corners */
 .ribbon span:before,
 .ribbon span:after {
-  content: "";
+  content: '';
   position: absolute;
   top: 100%;
   border: 4px solid transparent;
   z-index: -1;
-  
 }
 
 .ribbon span:before {
