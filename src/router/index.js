@@ -1,5 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
+
 import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import WorkspacesView from '../views/WorkspacesView.vue'
+import BookingsView from '../views/BookingsView.vue'
+import CommunityView from '../views/CommunityView.vue'
+import ContactView from '../views/ContactView.vue'
+import NotFoundView from '../views/NotFoundView.vue'
 
 const routes = [
   {
@@ -11,20 +18,27 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: () => import('../views/AboutView.vue'),
+    component: AboutView,
     meta: { title: 'About' },
   },
   {
     path: '/workspaces',
     name: 'workspaces',
-    component: () => import('../views/WorkspacesView.vue'),
+    component: WorkspacesView,
     meta: { title: 'Workspaces' },
+  },
+  {
+    path: '/bookings',
+    name: 'bookings',
+    component: BookingsView,
+    meta: { title: 'Bookings' },
   },
   {
     path: '/community',
     name: 'community',
-    component: () => import('../views/CommunityView.vue'),
+    component: CommunityView,
     meta: { title: 'Community' },
+    redirect: '/community/events',
     children: [
       {
         path: 'blog',
@@ -55,8 +69,16 @@ const routes = [
   {
     path: '/contact',
     name: 'contact',
-    component: () => import('../views/ContactView.vue'),
+    component: ContactView,
     meta: { title: 'Contact' },
+  },
+
+  /* ✅ MUST BE LAST */
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'PageError',
+    component: NotFoundView,
+    meta: { title: 'Page not found' },
   },
 ]
 
@@ -65,11 +87,13 @@ const router = createRouter({
   routes,
 })
 
-// set document.title from route meta.title
+// Set document title from route meta
 router.beforeEach((to, from, next) => {
   const base = 'Resonate'
-  const t = to.meta && to.meta.title ? `${to.meta.title} - ${base}` : base
-  if (typeof document !== 'undefined') document.title = t
+  const title = to.meta?.title ? `${to.meta.title} - ${base}` : base
+  if (typeof document !== 'undefined') {
+    document.title = title
+  }
   next()
 })
 
