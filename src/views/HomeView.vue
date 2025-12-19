@@ -1,5 +1,5 @@
 <script setup>
-import {ref} from 'vue'
+import { ref, defineAsyncComponent } from 'vue'
 import WifiIcon from 'vue-material-design-icons/Wifi.vue'
 import PrinterIcon from 'vue-material-design-icons/Printer.vue'
 import SilverwareForkKnifeIcon from 'vue-material-design-icons/SilverwareForkKnife.vue'
@@ -8,9 +8,12 @@ import EmailOutlineIcon from 'vue-material-design-icons/EmailOutline.vue'
 import CalendarMonthOutlineIcon from 'vue-material-design-icons/CalendarMonthOutline.vue'
 import AccountGroupOutlineIcon from 'vue-material-design-icons/AccountGroupOutline.vue'
 import CoffeeOutlineIcon from 'vue-material-design-icons/CoffeeOutline.vue'
+import PlayIcon from 'vue-material-design-icons/Play.vue'
 
 import Testimonial from '@/components/testimonial.vue'
-import News from '@/components/news.vue'
+const News = defineAsyncComponent(() => import('@/components/news.vue'))
+const Plans = defineAsyncComponent(() => import('@/components/plans.vue'))
+
 const showModal = ref(false)
 
 const services = [
@@ -50,7 +53,7 @@ const services = [
 </script>
 
 <template>
-  <main class="my-0 py-0">
+  <main id="maincontent" class="my-0 py-0">
     <!-- Hero Start -->
     <section class="relative my-0 py-0 w-full h-screen text-white">
       <div
@@ -88,15 +91,16 @@ const services = [
     <!-- Partners -->
     <section class="bg-gray-50">
       <div class="container">
-        <h5 class="text-lg sm:text-xl font-semibold text-text">
-          Trusted client by over 10,000+ of the world's
-        </h5>
+        <h2 class="text-lg sm:text-xl font-semibold text-text text-center">
+          Trusted by over 100+ companies worldwide
+        </h2>
         <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 mt-8">
           <div v-for="logo in 6" :key="logo" class="flex justify-center">
             <img
-              :src="`images/client/${logo}.svg`"
+              src="/images/coworking/about.webp"
               class="h-12 w-12 sm:h-16 sm:w-16 object-contain"
               alt=""
+              loading="lazy"
             />
           </div>
         </div>
@@ -106,16 +110,23 @@ const services = [
     <!-- about -->
     <section class="">
       <div class="container mx-auto px-4">
-        <div class="flex flex-wrap items-center">
+        <div class="flex flex-wrap items-center justify-between">
           <!-- Image column -->
-          <div class="w-full md:w-6/12 lg:w-0/12">
-            <img src="/images/coworking/about.webp" class="w-full rounded" alt="" />
+          <div class="w-full md:w-6/12 lg:w-6/12">
+            <img
+              src="/images/coworking/about.webp"
+              class="w-[90%] rounded"
+              alt=""
+              loading="lazy"
+              width="500"
+              height="500"
+            />
           </div>
 
           <!-- Text column -->
-          <div class="w-full md:w-6/12 lg:w-7/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
+          <div class="w-full md:w-6/12 lg:w-6/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
             <div class="lg:ml-4">
-              <h4 class="text-xl font-semibold mb-4 text-text">About Our Community</h4>
+              <h2 class="text-2xl font-semibold mb-4 text-text">About Our Community</h2>
 
               <p class="text-gray-500">
                 Start working with
@@ -141,7 +152,7 @@ const services = [
     <section class="bg-gray-50 text-text">
       <div class="container mx-auto px-4">
         <div class="text-center max-w-2xl mx-auto mb-12">
-          <h4 class="text-2xl font-semibold mb-4">Your Comfort Is Our Priority</h4>
+          <h2 class="text-2xl font-semibold mb-4">Your Comfort Is Our Priority</h2>
           <p class="text-gray-500">
             Build your best workday at
             <span class="text-primary font-bold">Resonate</span> — a coworking space thoughtfully
@@ -158,74 +169,29 @@ const services = [
             <div class="flex justify-center">
               <component :is="service.icon" class="text-primary" :size="40" />
             </div>
-            <h5 class="mt-3 font-medium">
+            <h3 class="mt-3 font-medium">
               {{ service.name }}
-            </h5>
+            </h3>
           </div>
         </div>
       </div>
     </section>
 
     <!-- pricing -->
-    <section class="">
-      <div class="container mx-auto px-4">
-        <div class="text-center max-w-2xl mx-auto mb-12">
-          <h4 class="text-2xl font-semibold mb-4">Choose the Right Plan for You</h4>
-          <p class="text-gray-500">
-            Flexible and affordable pricing at
-            <span class="text-primary font-bold">Resonate</span>, designed to support how you work.
-          </p>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
-          <div
-            v-for="(plan, index) in plans"
-            :key="index"
-            class="relative flex flex-col h-full box-border rounded-lg shadow-sm text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
-            :class="
-              plan.featured
-                ? 'bg-white border-primary  hover:shadow-lg'
-                : 'bg-gray-50 border-gray-200 hover:shadow-lg'
-            "
-          >
-            <div v-if="plan.featured" class="ribbon">
-              <span aria-label="Best plan">Best</span>
-            </div>
-
-            <img :src="plan.icon" alt="" class="mx-auto mb-4 h-12" />
-
-            <h6 class="uppercase tracking-wide font-medium mb-4">
-              {{ plan.name }}
-            </h6>
-
-            <div class="flex justify-center items-end mb-4">
-              <span class="text-xl mt-1">$</span>
-              <span class="text-5xl font-bold mx-1">
-                {{ plan.price }}
-              </span>
-              <span class="text-xl mb-1"> /{{ plan.period }} </span>
-            </div>
-
-            <p class="text-gray-500 text-sm mb-8 flex-grow">
-              {{ plan.description }}
-            </p>
-
-            <a
-              href="javascript:void(0)"
-              class="inline-block px-6 py-2 text-sm font-medium rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors mt-auto"
-            >
-              {{ plan.cta }}
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
+    <Suspense>
+      <template #default>
+        <Plans />
+      </template>
+      <template #fallback>
+        <div class="h-96"></div>
+      </template>
+    </Suspense>
 
     <!-- Testimonials -->
     <section class="bg-gray-50">
       <div class="container">
         <div class="text-center mb-12">
-          <h4 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Trusted Co-workers</h4>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Trusted Co-workers</h2>
           <p class="text-gray-600 mt-4">
             Start working with
             <span class="text-primary font-bold">Resonate</span>
@@ -239,9 +205,16 @@ const services = [
     <section class="">
       <div class="container">
         <div class="text-center mb-12">
-          <h4 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Latest News & Events</h4>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Latest News & Events</h2>
         </div>
-        <News />
+        <Suspense>
+          <template #default>
+            <News />
+          </template>
+          <template #fallback>
+            <div class="h-96"></div>
+          </template>
+        </Suspense>
       </div>
     </section>
 
@@ -250,14 +223,14 @@ const services = [
       class="relative pb-28 text-center"
       style="background: url('/images/coworking/bg01.webp') center center / cover no-repeat"
     >
-        <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
+      <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
 
       <div class="relative container mx-auto px-4">
         <div class="items-center">
-          <div class=" text-white">
-            <h4 class="text-3xl font-semibold mb-4">
+          <div class="text-white">
+            <h2 class="text-3xl font-semibold mb-4">
               We are Built for Business – Explore Us Today!
-            </h4>
+            </h2>
             <p class="text-gray-200 mb-6">
               Start working with
               <span class="text-primary font-bold">Resonate</span> that can provide everything you
@@ -275,7 +248,7 @@ const services = [
                 @click="showModal = true"
                 class="bg-white text-primary flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 transition"
               >
-                <VideoIcon class="w-6 h-6" />
+                <PlayIcon class="w-6 h-6" />
               </button>
               <span class="uppercase text-sm font-bold">Watch Now</span>
             </div>
@@ -302,7 +275,6 @@ const services = [
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </section>
@@ -317,4 +289,9 @@ const services = [
   </main>
 </template>
 
-<style scoped></style>
+<style scoped>
+    p{
+    padding-inline: 0px;
+  }
+
+</style>

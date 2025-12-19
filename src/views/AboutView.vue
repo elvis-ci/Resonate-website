@@ -112,7 +112,7 @@ const scrollToTop = () => {
     </div>
 
     <!-- Our Story Section -->
-    <section class="py-12 sm:py-16 md:py-20 bg-gray-50">
+    <section id="our-story" class="py-12 sm:py-16 md:py-20 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4">
         <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
           <!-- Image Column -->
@@ -176,50 +176,37 @@ const scrollToTop = () => {
           </p>
         </div>
 
-        <!-- Features Section -->
-        <section class="py-12 sm:py-16 md:py-20">
-          <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12">
-              <h2 class="text-3xl sm:text-4xl font-bold text-text mb-4">Why Choose Resonate</h2>
-              <p class="text-gray-600 text-base leading-relaxed max-w-2xl mx-auto">
-                We've designed every aspect of our coworking space to support accessibility,
-                comfort, and productivity for everyone.
-              </p>
+        <!-- Features Grid -->
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="(feature, index) in features"
+            :key="index"
+            class="flex items-center gap-4 p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition"
+          >
+            <!-- Icon -->
+            <div
+              class="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 shrink-0"
+              aria-hidden="true"
+            >
+              <component :is="feature.icon" class="text-primary" :size="28" />
             </div>
 
-            <!-- Media-style feature grid -->
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
-                v-for="(feature, index) in features"
-                :key="index"
-                class="flex items-center gap-4 p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition"
-              >
-                <!-- Icon -->
-                <div
-                  class="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 shrink-0"
-                  aria-hidden="true"
-                >
-                  <component :is="feature.icon" class="text-primary" :size="28" />
-                </div>
-
-                <!-- Text -->
-                <div>
-                  <h3 class="text-base font-semibold text-text leading-tight">
-                    {{ feature.title }}
-                  </h3>
-                  <!-- <p class="text-sm text-gray-600 mt-1">
+            <!-- Text -->
+            <div>
+              <h3 class="text-base font-semibold text-text leading-tight">
+                {{ feature.title }}
+              </h3>
+              <!-- <p class="text-sm text-gray-600 mt-1">
                     {{ feature.description }}
                   </p> -->
-                </div>
-              </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </section>
 
     <!-- Team Section -->
-    <section class="py-12 sm:py-16 md:py-20 bg-gray-50">
+    <section id="team" class="py-12 sm:py-16 md:py-20 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-12">
           <h2 class="text-3xl sm:text-4xl font-bold text-text mb-4">Meet Our Team</h2>
@@ -245,7 +232,7 @@ const scrollToTop = () => {
     </section>
 
     <!-- Mission & Vision Section -->
-    <section class="py-12 sm:py-16 md:py-20">
+    <section id="mission-vision" class="py-12 sm:py-16 md:py-20">
       <div class="max-w-7xl mx-auto px-4">
         <div class="grid md:grid-cols-2 gap-12 items-center">
           <div class="order-2 md:order-1">
@@ -308,6 +295,7 @@ const scrollToTop = () => {
           <button
             @click="showVideoModal = false"
             class="text-gray-500 hover:text-gray-700 font-bold"
+            aria-label="Close video modal"
           >
             ✕
           </button>
