@@ -10,9 +10,10 @@
           :src="testimonial.profile"
           class="w-16 h-16 rounded-full object-cover mr-4"
           :alt="testimonial.name"
+          loading="lazy"
         />
         <div>
-          <h6 class="text-lg font-semibold text-text">{{ testimonial.name }}</h6>
+          <h3 class="text-lg font-semibold text-text">{{ testimonial.name }}</h3>
           <p class="text-sm text-gray-500">{{ testimonial.designation }}</p>
         </div>
       </div>
@@ -27,7 +28,7 @@ import { ref } from 'vue'
 const testimonialData = ref([
   {
     id: 1,
-    profile: 'images/client/01.jpg',
+    profile: 'images/coworking/about.webp',
     message:
       "Resonate has completely changed how I work. The environment is calm, well-designed, and genuinely inclusive. I don't feel like accessibility was added as an afterthought — it's clearly built into every part of the space.",
     name: 'Thomas Israel',
@@ -35,7 +36,7 @@ const testimonialData = ref([
   },
   {
     id: 2,
-    profile: 'images/client/02.jpg',
+    profile: 'images/coworking/about.webp',
     message:
       'As a wheelchair user, ease of access matters a lot to me. From wide doorways and step-free entrances to adjustable desks and clearly marked pathways, everything here just works. The availability of assistive technologies made it easy for me to settle in and stay productive.',
     name: 'Barbara McIntosh',
@@ -43,7 +44,7 @@ const testimonialData = ref([
   },
   {
     id: 3,
-    profile: 'images/client/03.jpg',
+    profile: 'images/coworking/about.webp',
     message:
       "What stood out to me at Resonate was the attention to detail. Quiet rooms, good lighting, accessible restrooms, and staff who actually understand inclusive design. It's one of the few coworking spaces where I can focus without unnecessary barriers.",
     name: 'Carl Oliver',

@@ -43,7 +43,7 @@ const plans = ref([
 
 <template>
   <section>
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto px-4 text-text">
       <div class="text-center max-w-2xl mx-auto mb-12">
         <h2 class="text-2xl font-semibold mb-4">Choose the Right Plan for You</h2>
         <p class="text-gray-500">
@@ -94,7 +94,7 @@ const plans = ref([
 
           <a
             href="javascript:void(0)"
-            class="inline-block px-6 py-2 text-sm font-medium rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors mt-auto"
+            class="inline-block px-6 py-2 text-sm font-semibold rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors mt-auto"
           >
             {{ plan.cta }}
           </a>
