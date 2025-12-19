@@ -9,10 +9,9 @@ const navRoutes = [
     path: '/about',
     title: 'About',
     children: [
-      { path: '/about-#our-story', title: 'Our Story' },
-      { path: '/about-#mission-vision', title: 'Mission & Vision' },
-      { path: '/about-#team', title: 'Team' },
-      { path: '/about-#testimonials', title: 'Testimonials' },
+      { path: '/about#our-story', title: 'Our Story' },
+      { path: '/about#mission-vision', title: 'Mission & Vision' },
+      { path: '/about#team', title: 'Team' },
     ],
   },
   { path: '/workspaces', title: 'Workspaces', children: [] },
@@ -28,23 +27,6 @@ const navRoutes = [
   },
   { path: '/contact', title: 'Contact', children: [] },
 ]
-function onwindowScroll() {
-  if (document.body.scrollTop > 50 || document.documentElement.scrollTop > 50) {
-    document.getElementById('topnav').classList.add('nav-sticky')
-  } else {
-    document.getElementById('topnav').classList.remove('nav-sticky')
-  }
-
-  if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
-    document.getElementById('back-to-top').style.display = 'inline'
-  } else {
-    document.getElementById('back-to-top').style.display = 'none'
-  }
-}
-
-window.onscroll = function () {
-  onwindowScroll()
-}
 
 // Mobile menu state
 const isMobileOpen = ref(false)
@@ -55,127 +37,172 @@ const toggleSubmenu = (path) => {
 }
 const closeMobile = () => (isMobileOpen.value = false)
 
-// Close mobile menu on Escape key
-const onKey = (e) => {
-  if (e.key === 'Escape' && isMobileOpen.value) closeMobile()
-}
-onMounted(() => document.addEventListener('keydown', onKey))
-onUnmounted(() => document.removeEventListener('keydown', onKey))
+// Nav scroll state
+const lastScrollY = ref(0)
+const isNavVisible = ref(true)
+
+onMounted(() => {
+  // Scroll event listener
+  const handleScroll = () => {
+    const currentScroll =
+      window.pageYOffset || document.documentElement.scrollTop
+
+    // Sticky class
+    const topnav = document.getElementById('topnav')
+    if (topnav) {
+      if (currentScroll > 50) topnav.classList.add('nav-sticky')
+      else topnav.classList.remove('nav-sticky')
+    }
+
+    // Back-to-top button
+    const backToTop = document.getElementById('back-to-top')
+    if (backToTop) backToTop.style.display = currentScroll > 100 ? 'inline' : 'none'
+
+    // Scroll direction → hide/show nav
+    if (currentScroll > lastScrollY.value && currentScroll > 50) {
+      isNavVisible.value = false
+    } else {
+      isNavVisible.value = true
+    }
+
+    lastScrollY.value = currentScroll
+  }
+
+  window.addEventListener('scroll', handleScroll)
+
+  // Key listener for Escape to close mobile menu
+  const handleKey = (e) => {
+    if (e.key === 'Escape' && isMobileOpen.value) closeMobile()
+  }
+  document.addEventListener('keydown', handleKey)
+
+  onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+    document.removeEventListener('keydown', handleKey)
+  })
+})
 </script>
 
 <template>
-  <header id="topnav" class="fixed top-0 z-10 w-full bg-transparent shadow">
-    <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-      <!-- Logo -->
-      <div class="flex-shrink-0">
-        <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
-      </div>
+  <header
+    id="topnav"
+    class="fixed top-0 z-1000 w-full bg-transparent transition-nav"
+    :class="{ 'nav-hidden': !isNavVisible }"
+  >
+    <div class="communitynav">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+        <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
 
-      <!-- dynamically changing brand logo -->
-      <!-- <div>
-        <router-link class="logo" to="/">
-          <img
-            :src="(isDark || navLight) ? 'images/logo-light.png' : 'images/logo-dark.png'"
-            height="24"
-            alt="Logo"
-          />
-        </router-link>
-      </div> -->
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
+        </div>
 
-      <!-- Desktop Navigation -->
-      <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-        <li
-          v-for="route in navRoutes"
-          :key="route.path"
-          class="relative group py-4"
-          :class="{ 'has-children': route.children.length }"
-        >
-          <RouterLink :to="route.path" class="">
-            {{ route.title }}
-          </RouterLink>
-
-          <!-- Dropdown for children -->
-          <ul
-            v-if="route.children.length"
-            class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
+        <!-- Desktop Navigation -->
+        <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
+          <li
+            v-for="route in navRoutes"
+            :key="route.path"
+            class="relative group py-4"
+            :class="{ 'has-children': route.children.length }"
           >
-            <li v-for="child in route.children" :key="child.path">
-              <RouterLink :to="child.path" class="block px-4 py-2 text-text">
-                {{ child.title }}
-              </RouterLink>
-            </li>
-          </ul>
-        </li>
-      </ul>
+            <RouterLink :to="route.path">{{ route.title }}</RouterLink>
 
-      <!-- Mobile Toggle -->
-      <div class="lg:hidden">
-        <button
-          type="button"
-          @click="toggleMobile"
-          class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
-        >
-          <span class="sr-only">Open menu</span>
-          <!-- Hamburger icon -->
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
-      </div>
-    </nav>
-
-    <!-- Mobile Menu -->
-    <transition name="slide-down">
-      <nav v-if="isMobileOpen" class="lg:hidden absolute w-full bg-bg border-t">
-        <ul class="px-4 py-2 space-y-1">
-          <li v-for="route in navRoutes" :key="`m-${route.path}`">
-            <div class="flex">
-              <RouterLink
-                :to="route.path"
-                @click="closeMobile"
-                class="block w-full px-3 py-2 group router-link-active:text-primary"
-              >
-                {{ route.title }}
-              </RouterLink>
-              <button
-                v-if="route.children.length"
-                @click.prevent="toggleSubmenu(route.path)"
-                class="w-10"
-                :class="{ 'has-submenu': route.children.length }"
-                aria-label="toggle submenu"
-              >
-                <span
-                  class="inline-block transition-transform duration-200 text-lg"
-                  :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
-                >
-                  ▴
-                </span>
-              </button>
-            </div>
-            <!-- Mobile children -->
-            <transition name="slide-down">
-              <ul v-if="mobileSubmenu[route.path]" class="submenu pl-4 group-hover">
-                <li v-for="child in route.children" :key="`m-${child.path}`">
-                  <RouterLink
-                    :to="child.path"
-                    @click="closeMobile"
-                    class="block px-3 py-2 router-link-active:text-primary"
-                  >
-                    {{ child.title }}
-                  </RouterLink>
-                </li>
-              </ul>
-            </transition>
+            <!-- Dropdown for children -->
+            <ul
+              v-if="route.children.length"
+              class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
+            >
+              <li v-for="child in route.children" :key="child.path">
+                <RouterLink :to="child.path" class="block px-4 py-2 text-text">
+                  {{ child.title }}
+                </RouterLink>
+              </li>
+            </ul>
           </li>
         </ul>
+
+        <!-- Book Now Button (Desktop) -->
+        <div class="hidden lg:block">
+          <RouterLink
+            to="/bookings"
+            class="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
+          >
+            Book Now
+          </RouterLink>
+        </div>
+
+        <!-- Mobile Toggle -->
+        <div class="lg:hidden">
+          <button
+            type="button"
+            @click="toggleMobile"
+            class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+          >
+            <span class="sr-only">Open menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
       </nav>
-    </transition>
+
+      <!-- Mobile Menu -->
+      <transition name="slide-down">
+        <nav v-if="isMobileOpen" class="lg:hidden absolute w-full bg-bg border-t">
+          <ul class="px-4 py-2 space-y-1">
+            <li v-for="route in navRoutes" :key="`m-${route.path}`">
+              <div class="flex">
+                <RouterLink
+                  :to="route.path"
+                  @click="closeMobile"
+                  class="block w-full px-3 py-2 group router-link-active:text-primary"
+                >
+                  {{ route.title }}
+                </RouterLink>
+                <button
+                  v-if="route.children.length"
+                  @click.prevent="toggleSubmenu(route.path)"
+                  class="w-10"
+                  aria-label="toggle submenu"
+                >
+                  <span
+                    class="inline-block transition-transform duration-200 text-lg"
+                    :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
+                  >▴</span>
+                </button>
+              </div>
+
+              <!-- Mobile children -->
+              <transition name="slide-down">
+                <ul v-if="mobileSubmenu[route.path]" class="submenu pl-4 group-hover">
+                  <li v-for="child in route.children" :key="`m-${child.path}`">
+                    <RouterLink
+                      :to="child.path"
+                      @click="closeMobile"
+                      class="block px-3 py-2 router-link-active:text-primary"
+                    >
+                      {{ child.title }}
+                    </RouterLink>
+                  </li>
+                </ul>
+              </transition>
+            </li>
+          </ul>
+
+          <!-- Book Now Button (Mobile) -->
+          <div class="px-4 py-4 border-t">
+            <RouterLink
+              to="/bookings"
+              @click="closeMobile"
+              class="block w-full bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-center"
+            >
+              Book Now
+            </RouterLink>
+          </div>
+        </nav>
+      </transition>
+    </div>
   </header>
 </template>
 
@@ -183,7 +210,6 @@ onUnmounted(() => document.removeEventListener('keydown', onKey))
 header {
   font-family: 'Nunito', sans-serif;
   letter-spacing: 1px;
-  line-height: 24px;
   text-transform: uppercase;
   font-size: medium;
 }
@@ -191,15 +217,58 @@ header {
 .skip-links {
   list-style: none;
 }
+
 .skip-link {
   position: absolute;
+  top: 0;
+  left: 0;
   opacity: 0;
 }
-.skip-link:focus {
+
+.skip-link:focus,
+.skip-link:hover {
   opacity: 1;
   background-color: white;
   padding: 0.5em;
   border: 1px solid black;
+}
+
+/* Transparent state (top of page) - white text */
+#topnav nav > ul > li > a,
+#topnav nav > ul > li > div > a {
+  color: white;
+}
+
+#topnav nav > ul > li > a:hover,
+#topnav nav > ul > li > a:focus-within,
+#topnav nav > ul > li > div > a:hover,
+#topnav nav > ul > li > div > a:focus-within {
+  color: var(--color-primary);
+}
+
+#topnav nav > ul > li > a.router-link-active,
+#topnav nav > ul > li > div > a.router-link-active {
+  color: var(--color-primary-hover);
+  font-weight: bolder;
+}
+
+/* Hamburger icon - white */
+#topnav button svg {
+  color: white;
+}
+
+/* Sticky state */
+#topnav.nav-sticky nav > ul > li > a:hover,
+#topnav.nav-sticky nav > ul > li > a:focus-within,
+#topnav.nav-sticky nav > ul > li > div > a:hover,
+#topnav.nav-sticky nav > ul > li > div > a:focus-within {
+  color: var(--color-primary);
+}
+
+#topnav.nav-sticky nav > ul > li > a.router-link-active,
+#topnav.nav-sticky nav > ul > li > div > a.router-link-active {
+  color: var(--color-primary);
+  font-weight: bold;
 }
 
 /* Smooth slide-down for mobile menu */
@@ -219,29 +288,17 @@ header {
   opacity: 1;
 }
 
-li .submenu:before {
-  content: '';
-  position: absolute;
-  top: 0px;
-  left: 45px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  height: 15px;
-  width: 15px;
-  background: white;
-  border: 0.5px solid #040505;
-  border-color: transparent transparent #000000 #000000;
-  -webkit-transform-origin: 0 0;
-  transform-origin: 0 0;
-  -webkit-transform: rotate(135deg);
-  transform: rotate(135deg);
-  -webkit-box-shadow: -2px 2px 2px -1px rgba(60, 72, 88, 0.15);
-  box-shadow: -2px 2px 2px -1px rgba(60, 72, 88, 0.15);
+/* Dropdown styling */
+.submenu {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  z-index: 1000;
 }
 
 .has-children > a {
   position: relative;
-  padding-right: 1rem; /* space for caret */
+  padding-right: 1rem;
 }
 
 .has-children > a::after {
@@ -262,5 +319,46 @@ li .submenu:before {
   transform: translateY(-50%) rotate(45deg);
 }
 
-/* Navbar transition on scroll */
+.submenu a {
+  color: var(--color-text);
+}
+.submenu a:hover,
+.submenu a:focus {
+  color: var(--color-primary);
+}
+.submenu a.router-link-active {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+.communitynav {
+  position: relative;
+  background: transparent;
+  overflow: visible;
+}
+
+/* Decorative clipped background */
+.communitynav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.5);
+  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+  z-index: 0;
+}
+
+/* Keep nav content above clip */
+.communitynav > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Slide nav on scroll */
+.transition-nav {
+  transition: transform 0.35s ease-in-out;
+}
+
+.nav-hidden {
+  transform: translateY(-100%);
+}
 </style>
