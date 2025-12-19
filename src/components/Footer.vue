@@ -40,16 +40,32 @@ const subscribe = (e) => {
             drive traffic, connect.
           </p>
           <div class="flex space-x-3 mt-4">
-            <a href="#" class="text-gray-400 hover:text-primary transition duration-300">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition duration-300"
+              aria-label="Visit Resonate on Facebook"
+            >
               <FacebookIcon class="w-5 h-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-primary transition duration-300">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition duration-300"
+              aria-label="Visit Resonate on Instagram"
+            >
               <InstagramIcon class="w-5 h-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-primary transition duration-300">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition duration-300"
+              aria-label="Visit Resonate on Twitter"
+            >
               <TwitterIcon class="w-5 h-5" />
             </a>
-            <a href="#" class="text-gray-400 hover:text-primary transition duration-300">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition duration-300"
+              aria-label="Visit Resonate on LinkedIn"
+            >
               <LinkedinIcon class="w-5 h-5" />
             </a>
           </div>
@@ -57,7 +73,7 @@ const subscribe = (e) => {
 
         <!-- Company Links -->
         <div>
-          <h5 class="text-white font-semibold mb-4">Company</h5>
+          <h3 class="text-white font-semibold mb-4">Company</h3>
           <ul class="space-y-2">
             <li>
               <router-link to="/" class="text-gray-300 hover:text-primary transition"
@@ -89,7 +105,7 @@ const subscribe = (e) => {
 
         <!-- Useful Links -->
         <div>
-          <h5 class="text-white font-semibold mb-4">Resources</h5>
+          <h3 class="text-white font-semibold mb-4">Resources</h3>
           <ul class="space-y-2">
             <li>
               <router-link to="/community/blog" class="text-gray-300 hover:text-primary transition"
@@ -115,7 +131,7 @@ const subscribe = (e) => {
 
         <!-- Newsletter -->
         <div>
-          <h5 class="text-white font-semibold mb-4">Newsletter</h5>
+          <h3 class="text-white font-semibold mb-4">Newsletter</h3>
           <p class="text-gray-300 text-sm mb-4">Stay updated with our latest news and events.</p>
           <form @submit="subscribe" class="space-y-3">
             <div class="relative">
