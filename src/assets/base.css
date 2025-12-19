@@ -1,19 +1,11 @@
 @import 'tailwindcss';
 
-@font-face {
-  font-family: "Nunito";
-  src: url("/fonts/Nunito-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
-  --color-primary: #bd6902;
-  --color-primary-hover: #de6b00;
+  --color-primary: #a05a00;
+  --color-primary-hover: #e67e00;
   --color-primary-foreground: #ffffff;
 
-  --color-secondary: #202942;
+  --color-secondary: #1a1f2e;
   --color-secondary-foreground: #ffffff;
 
   --color-bg: #ffffff;
@@ -23,18 +15,17 @@
 
   --color-border: #e6eef4;
 
-  --color-text: #0f172ac4;
-  --color-muted: #535f71;
+  --color-text: #334155;
+  --color-muted: #64748b;
 
-  --color-success: #34d399;
-  --color-warning: #f41f1f;
-  --color-danger: #f87171;
+  --color-success: #059669;
+  --color-warning: #dc2626;
+  --color-danger: #dc2626;
 
   --color-link: var(--color-primary);
   --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
 }
 
-/* Respect user's OS preference for dark mode */
 /* @media (prefers-color-scheme: dark) {
   @theme {
     --color-primary: #34d399;
@@ -56,13 +47,20 @@
     --shadow-elev: 0 10px 30px rgba(2, 6, 23, 0.6);
   }
 } */
+@font-face {
+  font-family: 'Nunito';
+  src: url('/fonts/Nunito-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 body {
   font-family:
-    "Nunito",
+    'Nunito',
     system-ui,
     -apple-system,
-    "Segoe UI",
+    'Segoe UI',
     Roboto,
     Arial,
     sans-serif;
@@ -71,37 +69,23 @@ body {
 }
 
 main {
-  min-height: calc(100vh - 128px); /* Adjust based on header/footer height */
+  min-height: calc(100vh - 128px);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6 {
-  font-family: 'Nunito', sans-serif;
-  line-height: 1.5;
-  font-weight: 600;
+h2 {
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold;
 }
-
 #topnav {
   @apply transition-all duration-300 ease-in-out;
 }
 
-#topnav.nav-sticky {
+/* #topnav.nav-sticky {
   @apply bg-white shadow-md;
-}
+} */
+
 
 #topnav.nav-sticky a:not(.router-link-active),
 #topnav.nav-sticky nav li a:not(.router-link-active) {
-  @apply text-text;
 }
 
 section div.container {
@@ -111,6 +95,7 @@ section div.container {
 nav li a {
   @apply font-semibold text-text/80;
 }
+
 /* Top-level links */
 nav > ul > li > a.router-link-active,
 nav > ul > li > div > a.router-link-active {
@@ -146,7 +131,7 @@ nav > ul > li:focus-within {
 } */
 
 p {
-  @apply text-base sm:text-lg md:text-lg lg:text-lg leading-relaxed py-2 sm:py-3 md:py-3 lg:py-3 px-2 sm:px-4;
+  @apply text-2xl sm:text-lg md:text-lg lg:text-lg leading-relaxed py-2 sm:py-3 md:py-3 lg:py-3 px-2 ;
 }
 
 /* Primary Button */
@@ -179,7 +164,7 @@ button.secondary {
   display: block;
   width: 100px;
   padding: 5px 0;
-  background-color: #f59e0b; /* ribbon color */
+  background-color: #c26d00;
   color: #fff;
   text-align: center;
   font-size: 0.75rem;
@@ -203,12 +188,12 @@ button.secondary {
 
 .ribbon span:before {
   left: 0;
-  border-left-color: #d55b0e;
-  border-top-color: #d55b0e;
+  border-left-color: #9d5700;
+  border-top-color: #9d5700;
 }
 
 .ribbon span:after {
   right: 0;
-  border-right-color: #d55b0e;
-  border-top-color: #d55b0e;
+  border-right-color: #9d5700;
+  border-top-color: #9d5700;
 }
