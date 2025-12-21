@@ -44,8 +44,7 @@ const isNavVisible = ref(true)
 onMounted(() => {
   // Scroll event listener
   const handleScroll = () => {
-    const currentScroll =
-      window.pageYOffset || document.documentElement.scrollTop
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop
 
     // Sticky class
     const topnav = document.getElementById('topnav')
@@ -89,8 +88,8 @@ onMounted(() => {
     class="fixed top-0 z-1000 w-full backdrop-blur-xs transition-nav"
     :class="{ 'nav-hidden': !isNavVisible }"
   >
-    <div class="communitynav ">
-      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 ">
+    <div class="communitynav">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
 
         <!-- Logo -->
@@ -141,7 +140,12 @@ onMounted(() => {
           >
             <span class="sr-only">Open menu</span>
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
         </div>
@@ -169,7 +173,8 @@ onMounted(() => {
                   <span
                     class="inline-block transition-transform duration-200 text-lg"
                     :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
-                  >▴</span>
+                    >▴</span
+                  >
                 </button>
               </div>
 
@@ -243,7 +248,7 @@ header {
 #topnav nav > ul > li > a:focus-within,
 #topnav nav > ul > li > div > a:hover,
 #topnav nav > ul > li > div > a:focus-within {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 #topnav nav > ul > li > a.router-link-active,
@@ -262,13 +267,21 @@ header {
 #topnav.nav-sticky nav > ul > li > a:focus-within,
 #topnav.nav-sticky nav > ul > li > div > a:hover,
 #topnav.nav-sticky nav > ul > li > div > a:focus-within {
-  color: var(--color-primary);
+  color: var(--color-primary-hover);
 }
 
 #topnav.nav-sticky nav > ul > li > a.router-link-active,
 #topnav.nav-sticky nav > ul > li > div > a.router-link-active {
-  color: var(--color-primary);
-  font-weight: bold;
+  color: var(--color-primary-hover);
+  /* text-shadow:
+    -2px -2px 0 black,
+    2px -2px 0 black,
+    -2px 2px 0 black,
+    2px 2px 0 black,
+    0 -2px 0 black,
+    0 2px 0 black,
+    -2px 0 0 black,
+    2px 0 0 black; */
 }
 
 /* Smooth slide-down for mobile menu */
