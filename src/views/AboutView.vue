@@ -148,7 +148,7 @@ const features = [
           <div>
             <h2 class="mb-4">Our Story</h2>
             <p class="mb-4">
-              <span class="text-primary-text">Resonate</span> was born from a vision to create a
+              <span class="text-primary-text font-bold">Resonate</span> was born from a vision to create a
               coworking space that truly understands the needs of modern professionals. We believe
               that productivity isn't just about having a desk—it's about creating an environment
               where people can thrive.
@@ -201,7 +201,7 @@ const features = [
     <section class="bg-alt-bbg">
       <div class="container px-4">
         <div class="text-center mb-12">
-          <h2 class="mb-4">Why Choose Resonate</h2>
+          <h2 class="mb-4">Why Choose <span class="text-primary-text font-bold">Resonate</span></h2>
           <p class="max-w-2xl mx-auto">
             We've designed every aspect of our coworking space to support your success and
             well-being
