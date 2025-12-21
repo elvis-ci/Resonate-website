@@ -95,11 +95,11 @@ nav li a {
 /* Top-level links */
 nav > ul > li > a.router-link-active,
 nav > ul > li > div > a.router-link-active {
-  @apply text-primary font-bold;
+  @apply text-primary-hover font-bold;
 }
 
 nav > ul > li > ul > li > a.router-link-active {
-  @apply text-primary font-bold;
+  @apply text-primary-hover font-bold;
 }
 
 nav > ul > li > ul > li > a {
@@ -118,7 +118,7 @@ nav > ul > li:not(.router-link-active) > ul > li > a:hover {
 
 nav > ul > li :focus-within > a:not(.router-link-exact-active),
 nav > ul > li:focus-within {
-  @apply text-primary;
+  @apply text-primary-hover;
 }
 /* nav end */
 
