@@ -43,10 +43,10 @@ const plans = ref([
 
 <template>
   <section>
-    <div class="container mx-auto px-4 text-text">
+    <div class="container ">
       <div class="text-center max-w-2xl mx-auto mb-12">
-        <h2 class="text-2xl font-semibold mb-4">Choose the Right Plan for You</h2>
-        <p class="text-gray-500">
+        <h2 class="">Choose the Right Plan for You</h2>
+        <p class="">
           Flexible and affordable pricing at
           <span class="text-primary font-bold">Resonate</span>, designed to support how you work.
         </p>
@@ -59,42 +59,43 @@ const plans = ref([
           class="relative flex flex-col h-full box-border rounded-lg shadow-sm text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
           :class="
             plan.featured
-              ? 'bg-white border-primary  hover:shadow-lg'
-              : 'bg-gray-50 border-gray-200 hover:shadow-lg'
+              ? 'bg-card-bg border-primary  hover:shadow-lg'
+              : 'bg-card-bg2 border-card-border hover:shadow-lg'
           "
         >
           <div v-if="plan.featured" class="ribbon">
-            <span aria-label="Best plan">Best</span>
+            <span aria-label="Best plan" class="text-secondary text-lg tracking-wide bg-primary">Best</span>
           </div>
 
           <img
             :src="plan.icon"
-            :alt="`${plan.name} plan icon`"
             class="mx-auto mb-4 h-12"
             loading="lazy"
             width="48"
             height="48"
+            role="presentation"
+            alt=""
           />
 
-          <h3 class="text-lg uppercase tracking-wide font-bold text-text mb-4">
+          <h3 class="my-3 uppercase tracking-wide">
             {{ plan.name }}
           </h3>
 
           <div class="flex justify-center items-end mb-4">
             <span class="text-xl mt-1">$</span>
-            <span class="text-5xl font-bold mx-1">
+            <span class="text-5xl font-bold mx-1 text-heading">
               {{ plan.price }}
             </span>
             <span class="text-xl mb-1"> /{{ plan.period }} </span>
           </div>
 
-          <p class="text-gray-600 text-sm leading-relaxed mb-8 flex-grow">
+          <p class="mb-8 flex-grow">
             {{ plan.description }}
           </p>
 
           <a
             href="javascript:void(0)"
-            class="inline-block px-6 py-2 text-sm font-semibold rounded-md border border-primary text-primary hover:bg-primary hover:text-white transition-colors mt-auto"
+            class="secondary"
           >
             {{ plan.cta }}
           </a>

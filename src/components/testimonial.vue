@@ -3,7 +3,7 @@
     <div
       v-for="testimonial in testimonialData"
       :key="testimonial.id"
-      class="bg-white rounded-lg shadow-md p-6 sm:p-8"
+      class="bg-secondary rounded-lg shadow-md p-6 sm:p-8"
     >
       <div class="flex items-center mb-6">
         <img
@@ -13,11 +13,11 @@
           loading="lazy"
         />
         <div>
-          <h3 class="text-lg font-semibold text-text">{{ testimonial.name }}</h3>
-          <p class="text-sm text-gray-500">{{ testimonial.designation }}</p>
+          <h3 class="">{{ testimonial.name }}</h3>
+          <p class="">{{ testimonial.designation }}</p>
         </div>
       </div>
-      <p class="text-gray-600 italic">"{{ testimonial.message }}"</p>
+      <p class=" italic">"{{ testimonial.message }}"</p>
     </div>
   </div>
 </template>

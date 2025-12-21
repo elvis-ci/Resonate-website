@@ -86,11 +86,11 @@ onMounted(() => {
 <template>
   <header
     id="topnav"
-    class="fixed top-0 z-1000 w-full bg-transparent transition-nav"
+    class="fixed top-0 z-1000 w-full backdrop-blur-xs transition-nav"
     :class="{ 'nav-hidden': !isNavVisible }"
   >
-    <div class="communitynav">
-      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <div class="communitynav ">
+      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 ">
         <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
 
         <!-- Logo -->

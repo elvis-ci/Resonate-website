@@ -35,7 +35,7 @@ const subscribe = (e) => {
       <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
         <!-- About / Social -->
         <div>
-          <p class="mb-4">
+          <p class="white mb-4">
             Start working with Resonate that can provide everything you need to generate awareness,
             drive traffic, connect.
           </p>
@@ -73,7 +73,7 @@ const subscribe = (e) => {
 
         <!-- Company Links -->
         <div>
-          <h3 class="text-white font-semibold mb-4">Company</h3>
+          <h3 class="white mb-4">Company</h3>
           <ul class="space-y-2">
             <li>
               <router-link to="/" class="text-gray-300 hover:text-primary transition"
@@ -105,7 +105,7 @@ const subscribe = (e) => {
 
         <!-- Useful Links -->
         <div>
-          <h3 class="text-white font-semibold mb-4">Resources</h3>
+          <h3 class="white mb-4">Resources</h3>
           <ul class="space-y-2">
             <li>
               <router-link to="/community/blog" class="text-gray-300 hover:text-primary transition"
@@ -131,10 +131,10 @@ const subscribe = (e) => {
 
         <!-- Newsletter -->
         <div>
-          <h3 class="text-white font-semibold mb-4">Newsletter</h3>
-          <p class="text-gray-300 text-sm mb-4">Stay updated with our latest news and events.</p>
+          <h3 class="white mb-4">Newsletter</h3>
+          <p class="white mb-4">Stay updated with our latest news and events.</p>
           <form @submit="subscribe" class="space-y-3">
-            <div class="relative">
+            <div class="relative flex items-center">
               <MailIcon
                 class="absolute top-1/2 left-3 w-5 h-5 text-gray-400 transform -translate-y-1/2 pointer-events-none"
               />
@@ -143,7 +143,7 @@ const subscribe = (e) => {
                 type="email"
                 placeholder="Your email"
                 required
-                class="w-full pl-10 pr-3 py-2 rounded border border-gray-700 bg-gray-800 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
+                class="w-full pl-10 pr-3 py-2 rounded border border-gray-700 bg-gray-800 text-gray-200 placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
             <button

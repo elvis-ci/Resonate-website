@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineAsyncComponent } from 'vue'
+import { ref, defineAsyncComponent, onMounted } from 'vue'
 import WifiIcon from 'vue-material-design-icons/Wifi.vue'
 import PrinterIcon from 'vue-material-design-icons/Printer.vue'
 import SilverwareForkKnifeIcon from 'vue-material-design-icons/SilverwareForkKnife.vue'
@@ -9,6 +9,7 @@ import CalendarMonthOutlineIcon from 'vue-material-design-icons/CalendarMonthOut
 import AccountGroupOutlineIcon from 'vue-material-design-icons/AccountGroupOutline.vue'
 import CoffeeOutlineIcon from 'vue-material-design-icons/CoffeeOutline.vue'
 import PlayIcon from 'vue-material-design-icons/Play.vue'
+import videoModal from '@/components/videoModal.vue'
 
 import Testimonial from '@/components/testimonial.vue'
 const News = defineAsyncComponent(() => import('@/components/news.vue'))
@@ -50,14 +51,22 @@ const services = [
     icon: CoffeeOutlineIcon,
   },
 ]
+
+onMounted(() => {
+  function closeModalOnEscape(event) {
+    if (event.key === 'Escape' && showModal.value) {
+      showModal.value = false
+    }
+  }
+})
 </script>
 
 <template>
-  <main id="maincontent" class="my-0 py-0">
+  <main id="maincontent">
     <!-- Hero Start -->
-    <section class="relative my-0 py-0 w-full h-screen text-white">
+    <section class="hero">
       <div
-        class="flex items-center justify-center h-full"
+        class="relative flex items-center justify-center h-full"
         :style="{
           'background-image': 'url(/images/coworking/bg01.webp)',
           'background-size': 'cover',
@@ -65,22 +74,20 @@ const services = [
         }"
       >
         <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
-        <div class="relative container py-20 h-full">
-          <div class="text-center flex h-full items-center justify-center">
-            <div class="mb-6 title-heading">
-              <p class="text-white text-lg sm:text-xl">
-                Your private, accessible, and inspiring workspace starts at
-                <span class="text-green-500 font-bold">$19/day</span>
-              </p>
-              <h1 class="heading mt-4">Boost Productivity in Comfort & Privacy</h1>
-              <p class="text-gray-100 mt-4 max-w-2xl mx-auto">
-                Discover a coworking space designed to keep you focused, creative, and connected.
-                Enjoy flexible offices, accessible facilities, and a vibrant community all at an
-                affordable price.
-              </p>
-              <div class="mt-8">
-                <button class="primary">Reserve Your Space</button>
-              </div>
+        <div class="relative container h-full text-center flex items-center justify-center">
+          <div class="text-white">
+            <p class="white mb-4">
+              Your private, accessible, and inspiring workspace starts at
+              <span class="text-green-500 font-bold">$19/day</span>
+            </p>
+            <h1 class="main-heading">Boost Productivity in Comfort & Privacy</h1>
+            <p class="white mt-4 max-w-2xl mx-auto">
+              Discover a coworking space designed to keep you focused, creative, and connected.
+              Enjoy flexible offices, accessible facilities, and a vibrant community all at an
+              affordable price.
+            </p>
+            <div class="mt-8">
+              <button class="primary">Reserve Your Space</button>
             </div>
           </div>
         </div>
@@ -89,11 +96,9 @@ const services = [
     <!-- Hero End -->
 
     <!-- Partners -->
-    <section class="bg-gray-50">
+    <section class="bg-gray-50 text-text">
       <div class="container">
-        <h2 class="text-lg sm:text-xl font-semibold text-text text-center">
-          Trusted by over 100+ companies worldwide
-        </h2>
+        <h2 class="text-center">Trusted by over 100+ companies worldwide</h2>
         <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 mt-8">
           <div v-for="logo in 6" :key="logo" class="flex justify-center">
             <img
@@ -108,8 +113,8 @@ const services = [
     </section>
 
     <!-- about -->
-    <section class="">
-      <div class="container mx-auto px-4">
+    <section>
+      <div class="container mx-auto">
         <div class="flex flex-wrap items-center justify-between">
           <!-- Image column -->
           <div class="w-full md:w-6/12 lg:w-6/12">
@@ -126,9 +131,9 @@ const services = [
           <!-- Text column -->
           <div class="w-full md:w-6/12 lg:w-6/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
             <div class="lg:ml-4">
-              <h2 class="text-2xl font-semibold mb-4 text-text">About Our Community</h2>
+              <h2 class="">The Resonate Community</h2>
 
-              <p class="text-gray-500">
+              <p class="">
                 Start working with
                 <span class="text-primary font-bold">Resonate</span>, a coworking community designed
                 to help ideas grow and people thrive. Whether you need a quiet space to focus or a
@@ -136,12 +141,7 @@ const services = [
                 workspaces that support productivity—without the premium price tag.
               </p>
 
-              <a
-                href="javascript:void(0)"
-                class="inline-block mt-3 px-6 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary/90 transition"
-              >
-                Join now
-              </a>
+              <a href="javascript:void(0)" class="primary"> Join Now </a>
             </div>
           </div>
         </div>
@@ -149,11 +149,11 @@ const services = [
     </section>
 
     <!-- services -->
-    <section class="bg-gray-50 text-text">
-      <div class="container mx-auto px-4">
+    <section class="bg-gray-50">
+      <div class="container px-4">
         <div class="text-center max-w-2xl mx-auto mb-12">
-          <h2 class="text-2xl font-semibold mb-4">Your Comfort Is Our Priority</h2>
-          <p class="text-gray-500">
+          <h2 class="">Your Comfort Is Our Priority</h2>
+          <p class="">
             Build your best workday at
             <span class="text-primary font-bold">Resonate</span> — a coworking space thoughtfully
             designed for comfort, focus, and connection.
@@ -169,7 +169,7 @@ const services = [
             <div class="flex justify-center">
               <component :is="service.icon" class="text-primary" :size="40" />
             </div>
-            <h3 class="mt-3 font-medium">
+            <h3 class="my-3">
               {{ service.name }}
             </h3>
           </div>
@@ -183,7 +183,9 @@ const services = [
         <Plans />
       </template>
       <template #fallback>
-        <div class="h-96"></div>
+        <div class="h-96 flex items-center justify-center text-gray-400 text-sm">
+          <p>Loading plans…</p>
+        </div>
       </template>
     </Suspense>
 
@@ -191,8 +193,8 @@ const services = [
     <section class="bg-gray-50">
       <div class="container">
         <div class="text-center mb-12">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Trusted Co-workers</h2>
-          <p class="text-gray-600 mt-4">
+          <h2 class="">Trusted Co-workers</h2>
+          <p class="">
             Start working with
             <span class="text-primary font-bold">Resonate</span>
           </p>
@@ -205,7 +207,7 @@ const services = [
     <section class="">
       <div class="container">
         <div class="text-center mb-12">
-          <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-text">Latest News & Events</h2>
+          <h2 class="">Latest News & Events</h2>
         </div>
         <Suspense>
           <template #default>
@@ -228,23 +230,22 @@ const services = [
       <div class="relative container mx-auto px-4">
         <div class="items-center">
           <div class="text-white">
-            <h2 class="text-3xl font-semibold mb-4">
-              We are Built for Business – Explore Us Today!
-            </h2>
-            <p class="text-gray-200 mb-6">
+            <h2 class="white">We are Built for Business – Explore Us Today!</h2>
+            <p class="white mb-6">
               Start working with
-              <span class="text-primary font-bold">Resonate</span> that can provide everything you
+              <span class="text-secondary font-bold">Resonate</span> that can provide everything you
               need to generate awareness, drive traffic, connect.
             </p>
 
             <div class="flex justify-center items-center gap-4">
-              <button
-                class="bg-primary text-white px-6 py-2 rounded hover:bg-primary-hover transition"
+              <!-- <button
+                class="primary transition"
               >
                 Install Now
-              </button>
+              </button> -->
 
               <button
+              aria-label="Play Video of Resonate Coworking Space"
                 @click="showModal = true"
                 class="bg-white text-primary flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 transition"
               >
@@ -255,43 +256,20 @@ const services = [
 
             <div
               v-if="showModal"
+              @keyup="closeModalOnEscape"
               class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
             >
-              <div class="bg-white rounded-lg overflow-hidden w-full max-w-3xl">
-                <div class="relative pb-[56.25%]">
-                  <iframe
-                    class="absolute top-0 left-0 w-full h-full"
-                    src="https://www.youtube.com/embed/jNTZpfXYJa4"
-                    frameborder="0"
-                    allowfullscreen
-                  ></iframe>
-                </div>
-                <button
-                  @click="showModal = false"
-                  class="absolute top-2 right-2 text-gray-700 hover:text-black font-bold text-xl"
-                >
-                  &times;
-                </button>
-              </div>
+              <videoModal @close="showModal = !showModal" />
             </div>
           </div>
         </div>
       </div>
     </section>
-    <!-- Back to top -->
-    <!-- <button
-      class="primary fixed bottom-8 right-8 rounded-full p-3 shadow-lg z-10"
-      @click="scrollToTop"
-      aria-label="Back to top"
-    >
-      <ArrowUpIcon class="w-6 h-6" />
-    </button> -->
   </main>
 </template>
 
 <style scoped>
-    p{
-    padding-inline: 0px;
-  }
-
+p {
+  padding-inline: 0px;
+}
 </style>

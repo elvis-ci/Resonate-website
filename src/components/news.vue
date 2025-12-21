@@ -8,15 +8,16 @@
       <img
         :src="article.image"
         class="w-full h-48 object-cover"
+        role="presentation"
         alt=""
         loading="lazy"
         width="400"
         height="200"
       />
       <div class="p-6 sm:p-8">
-        <p class="text-sm text-primary font-semibold mb-2">{{ article.category }}</p>
-        <h3 class="text-lg sm:text-xl font-bold text-text mb-3">{{ article.title }}</h3>
-        <p class="text-gray-600 mb-4">
+        <span class="text-lg text-primary font-semibold">{{ article.category }}</span>
+        <h3 class="my-3">{{ article.title }}</h3>
+        <p class="mb-4">
           {{ article.excerpt }}
         </p>
         <RouterLink
@@ -65,8 +66,8 @@ const newsArticles = ref([
 ])
 </script>
 
-<style scoped> 
-  p{
-    padding-inline: 0px;
-  }
+<style scoped>
+p {
+  padding-inline: 0px;
+}
 </style>
