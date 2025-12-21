@@ -3,7 +3,7 @@
     <div class="flex flex-wrap gap-6 justify-center">
       <div v-for="member in teamData" :key="member.name" class="w-full md:w-1/2 lg:w-1/4">
         <div
-          class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 text-center"
+          class="bg-card-bg rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 text-center"
         >
           <div class="relative overflow-hidden h-64">
             <img

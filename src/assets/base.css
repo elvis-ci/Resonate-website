@@ -1,12 +1,16 @@
 @import 'tailwindcss';
 
-@theme {
+:root{
+  @theme {
+  --color-bg: #ffff;
+  --color-alt-bg: #f9fafb;
+
   --color-primary: #a05a00;
   --color-primary-hover: #e67e00;
 
   --color-secondary: #ffff;
   --color-secondary-hover: #1a1f2e;
-  
+
   --color-alternate: #1a1f2e;
   --color-alternate-hover: #1a1f2e;
 
@@ -15,41 +19,61 @@
   --color-card-border: #e6eef4;
 
   --color-border: #e6eef4;
+  --color-ribbon-bg: #1a1f2e;
+  --color-ribbon-under: #e67e00;
 
   --color-text: #334155;
   --color-heading: #334155;
-  --color-body: #4B5563;
+  --color-body: #4b5563;
   --color-muted: #64748b;
+  --color-primary-text: #a05a00;
 
   --color-success: #059669;
   --color-warning: #dc2626;
   --color-danger: #dc2626;
 
   --color-link: var(--color-primary);
-  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
+  /* --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
+  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06); */
 }
 
-/* @media (prefers-color-scheme: dark) {
-  @theme {
-    --color-primary: #34d399;
-    --color-secondary: #c084fc; 
+}
+/* @theme {
+  --color-bg: #0f172a;
+  --color-alt-bg: #111827;
 
-    --color-bg: #0b1220;
-    --color-surface: #071022;
-    --color-card-bg: #081229;
-    --color-border: #172033;
+  --color-card-bg: #111827;
+  --color-card-bg2: #1f2933;
 
-    --color-text: #e6eef4;
-    --color-muted: #9aa6b2;
+  --color-primary: #a05a00;
+  --color-primary-hover: #e67e00;
 
-    --color-success: #34d399;
-    --color-warning: #f59e0b;
-    --color-danger: #f87171;
+  --color-secondary: #e5e7eb;
+  --color-secondary-hover: #f9fafb;
 
-    --color-link: var(--color-primary);
-    --shadow-elev: 0 10px 30px rgba(2, 6, 23, 0.6);
-  }
+  --color-alternate: #020617;
+  --color-alternate-hover: #020617;
+
+  --color-border: #1e293b;
+  --color-card-border: #1e293b;
+  --color-ribbon-bg:   #a05a00;
+  --color-ribbon-under: gray;
+
+
+  --color-text: #e5e7eb;
+  --color-heading: #f9fafb;
+  --color-body: #cbd5e1;
+  --color-muted: #94a3b8;
+  --color-primary-text: #e67e00;
+
+  --color-success: #10b981;
+  --color-warning: #f87171;
+  --color-danger: #ef4444;
+
+  --color-link: var(--color-primary);
+
 } */
+
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
@@ -69,6 +93,8 @@ body {
     sans-serif;
 
   font-size-adjust: 0.5;
+
+  background-color: var(--color-bg);
 }
 
 main {
@@ -150,7 +176,7 @@ h2.white {
   @apply text-2xl sm:text-3xl md:text-4xl font-bold mb-4 text-white;
 }
 
-h3{
+h3 {
   @apply text-xl font-semibold text-heading;
 }
 h3.white {
@@ -170,7 +196,7 @@ p.white {
 
 /* Buttons */
 /* Primary Button */
-button.primary{
+button.primary {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-primary text-secondary rounded-lg hover:bg-primary-hover focus:bg-primary-hover transition-colors duration-200 active:scale-95;
 }
 a.primary {
@@ -178,12 +204,12 @@ a.primary {
 }
 
 /* Secondary Button */
-button.secondary{
+button.secondary {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-secondary border border-primary text-primary 
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 a.secondary {
-  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-secondary border border-primary text-primary 
+  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-primary/10 border border-primary text-primary 
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 /* Buttons end */
@@ -204,12 +230,12 @@ a.secondary {
   display: block;
   width: 100px;
   padding: 5px 0;
-  background-color: #1a1f2e;
+  background-color: var(--color-ribbon-bg);
   color: #fff;
   text-align: center;
   letter-spacing: 1px;
   font-size: 13px;
-  font-weight:bolder;
+  font-weight: bolder;
   text-transform: uppercase;
   top: 9px;
   right: -24px;
@@ -229,12 +255,12 @@ a.secondary {
 
 .ribbon span:before {
   left: 0;
-  border-left-color: #f6a139;
-  border-top-color: #f6a139;
+  border-left-color: var(--color-ribbon-under);
+  border-top-color: var(--color-ribbon-under);
 }
 
 .ribbon span:after {
   right: 0;
-  border-right-color: #f6a139;
-  border-top-color: #f6a139;
+  border-right-color: var(--color-ribbon-under);
+  border-top-color: var(--color-ribbon-under);
 }

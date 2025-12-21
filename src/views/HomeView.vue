@@ -96,7 +96,7 @@ onMounted(() => {
     <!-- Hero End -->
 
     <!-- Partners -->
-    <section class="bg-gray-50 text-text">
+    <section class="bg-alt-bg text-text">
       <div class="container">
         <h2 class="text-center">Trusted by over 100+ companies worldwide</h2>
         <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 mt-8">
@@ -135,7 +135,7 @@ onMounted(() => {
 
               <p class="">
                 Start working with
-                <span class="text-primary font-bold">Resonate</span>, a coworking community designed
+                <span class="text-primary-text font-bold">Resonate</span>, a coworking community designed
                 to help ideas grow and people thrive. Whether you need a quiet space to focus or a
                 collaborative environment to connect, Resonate offers flexible, accessible
                 workspaces that support productivity—without the premium price tag.
@@ -149,13 +149,13 @@ onMounted(() => {
     </section>
 
     <!-- services -->
-    <section class="bg-gray-50">
+    <section class="bg-alt-bg">
       <div class="container px-4">
         <div class="text-center max-w-2xl mx-auto mb-12">
           <h2 class="">Your Comfort Is Our Priority</h2>
           <p class="">
             Build your best workday at
-            <span class="text-primary font-bold">Resonate</span> — a coworking space thoughtfully
+            <span class="text-primary-text font-bold">Resonate</span> — a coworking space thoughtfully
             designed for comfort, focus, and connection.
           </p>
         </div>
@@ -164,7 +164,7 @@ onMounted(() => {
           <div
             v-for="(service, index) in services"
             :key="index"
-            class="text-center bg-white rounded-lg py-6 shadow-sm hover:shadow-md transition"
+            class="text-center bg-card-bg rounded-lg py-6 shadow-lg shadow-elev hover:shadow-xl transition"
           >
             <div class="flex justify-center">
               <component :is="service.icon" class="text-primary" :size="40" />
@@ -183,20 +183,20 @@ onMounted(() => {
         <Plans />
       </template>
       <template #fallback>
-        <div class="h-96 flex items-center justify-center text-gray-400 text-sm">
+        <div class="h-96 flex items-center justify-center">
           <p>Loading plans…</p>
         </div>
       </template>
     </Suspense>
 
     <!-- Testimonials -->
-    <section class="bg-gray-50">
+    <section class="bg-alt-bg">
       <div class="container">
         <div class="text-center mb-12">
           <h2 class="">Trusted Co-workers</h2>
           <p class="">
             Start working with
-            <span class="text-primary font-bold">Resonate</span>
+            <span class="text-primary-text font-bold">Resonate</span>
           </p>
         </div>
         <Testimonial />

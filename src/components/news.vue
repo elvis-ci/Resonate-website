@@ -3,7 +3,7 @@
     <div
       v-for="article in newsArticles"
       :key="article.id"
-      class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+      class="bg-card-bg2 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
     >
       <img
         :src="article.image"
@@ -22,7 +22,7 @@
         </p>
         <RouterLink
           :to="article.link"
-          class="text-primary font-semibold hover:text-primary-hover transition-colors"
+          class="text-primary-text font-semibold hover:text-primary-hover transition-colors"
         >
           Read More →
         </RouterLink>

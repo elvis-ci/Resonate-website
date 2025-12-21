@@ -48,7 +48,7 @@ const plans = ref([
         <h2 class="">Choose the Right Plan for You</h2>
         <p class="">
           Flexible and affordable pricing at
-          <span class="text-primary font-bold">Resonate</span>, designed to support how you work.
+          <span class="text-primary-text font-bold">Resonate</span>, designed to support how you work.
         </p>
       </div>
 
@@ -59,8 +59,8 @@ const plans = ref([
           class="relative flex flex-col h-full box-border rounded-lg shadow-sm text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
           :class="
             plan.featured
-              ? 'bg-card-bg border-primary  hover:shadow-lg'
-              : 'bg-card-bg2 border-card-border hover:shadow-lg'
+              ? 'bg-card-bg border-primary  hover:shadow-xl'
+              : 'bg-card-bg2 border-card-border hover:shadow-xl'
           "
         >
           <div v-if="plan.featured" class="ribbon">

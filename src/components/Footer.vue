@@ -36,7 +36,7 @@ const subscribe = (e) => {
         <!-- About / Social -->
         <div>
           <p class="white mb-4">
-            Start working with Resonate that can provide everything you need to generate awareness,
+            Start working with <span class="text-primary-text font-bold">Resonate</span> that can provide everything you need to generate awareness,
             drive traffic, connect.
           </p>
           <div class="flex space-x-3 mt-4">

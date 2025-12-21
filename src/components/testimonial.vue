@@ -3,7 +3,7 @@
     <div
       v-for="testimonial in testimonialData"
       :key="testimonial.id"
-      class="bg-secondary rounded-lg shadow-md p-6 sm:p-8"
+      class="bg-card-bg rounded-lg shadow-md p-6 sm:p-8"
     >
       <div class="flex items-center mb-6">
         <img
