@@ -33,19 +33,15 @@ const routes = [
     component: BookingsView,
     meta: { title: 'Bookings' },
   },
+
+  /* ------------------ COMMUNITY ------------------ */
   {
     path: '/community',
     name: 'community',
     component: CommunityView,
     meta: { title: 'Community' },
-    redirect: '/community/events',
+    redirect: { name: 'community-events' },
     children: [
-      {
-        path: 'blog',
-        name: 'community-blog',
-        component: () => import('../views/community/Blog.vue'),
-        meta: { title: 'Community — Blog' },
-      },
       {
         path: 'events',
         name: 'community-events',
@@ -53,19 +49,33 @@ const routes = [
         meta: { title: 'Community — Events' },
       },
       {
-        path: 'workshops',
-        name: 'community-workshops',
-        component: () => import('../views/community/Workshops.vue'),
-        meta: { title: 'Community — Workshops' },
+        path: 'opportunities',
+        name: 'community-opportunities',
+        component: () => import('../views/community/Opportunities.vue'),
+        meta: { title: 'Community — Opportunities' },
       },
       {
-        path: 'networking',
-        name: 'community-networking',
-        component: () => import('../views/community/Networking.vue'),
-        meta: { title: 'Community — Networking' },
+        path: 'resources',
+        name: 'community-resources',
+        component: () => import('../views/community/Resources.vue'),
+        meta: { title: 'Community — Resources' },
+      },
+      {
+        path: 'mentorship',
+        name: 'community-mentorship',
+        component: () => import('../views/community/Mentorship.vue'),
+        meta: { title: 'Community — Mentorship' },
+      },
+      {
+        path: 'stories',
+        name: 'community-stories',
+        component: () => import('../views/community/Stories.vue'),
+        meta: { title: 'Community — Stories' },
       },
     ],
   },
+  /* ------------------------------------------------ */
+
   {
     path: '/contact',
     name: 'contact',
@@ -91,9 +101,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const base = 'Resonate'
   const title = to.meta?.title ? `${to.meta.title} - ${base}` : base
+
   if (typeof document !== 'undefined') {
     document.title = title
   }
+
   next()
 })
 

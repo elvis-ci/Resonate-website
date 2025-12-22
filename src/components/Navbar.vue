@@ -8,21 +8,18 @@ const navRoutes = [
   {
     path: '/about',
     title: 'About',
-    children: [
-      { path: '/about#our-story', title: 'Our Story' },
-      { path: '/about#mission-vision', title: 'Mission & Vision' },
-      { path: '/about#team', title: 'Team' },
-    ],
+    children: [],
   },
   { path: '/workspaces', title: 'Workspaces', children: [] },
   {
     path: '/community',
     title: 'Community',
     children: [
-      { path: '/community/blog', title: 'Blog' },
       { path: '/community/events', title: 'Events' },
-      { path: '/community/workshops', title: 'Workshops' },
-      { path: '/community/networking', title: 'Networking' },
+      { path: '/community/opportunities', title: 'Opportunities' },
+      { path: '/community/resources', title: 'Resources' },
+      { path: '/community/mentorship', title: 'Mentorship' },
+      { path: '/community/stories', title: 'Stories' },
     ],
   },
   { path: '/contact', title: 'Contact', children: [] },
