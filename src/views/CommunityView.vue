@@ -18,12 +18,13 @@ const endtime = 'Dec 31, 2021 16:37:25'
 
 const modules = []
 
-const communityTabs = [
-  { name: 'Events', route: 'community-events' },
-  { name: 'Blog', route: 'community-blog' },
-  { name: 'Workshops', route: 'community-workshops' },
-  { name: 'Networking', route: 'community-networking' },
-]
+// const communityTabs = [
+//   { name: 'Events', route: 'community-events' },
+//   { name: 'Opportunities', route: 'community-opportunities' },
+//   { name: 'Resources', route: 'community-resources' },
+//   { name: 'Mentorship', route: 'community-mentorship' },
+//   { name: 'Stories', route: 'community-stories' },
+// ]
 
 const activeTab = computed(() => {
   return route.name
@@ -70,7 +71,7 @@ onUnmounted(() => {
   <main id="maincontent">
     <div class="relative overflow-x-hidden">
       <!-- COMMUNITY NAVIGATION -->
-      <section
+      <!-- <section
         class="communitynav top-16 py-2 px-8 rounded-b-full w-fit left-1/2 -translate-x-1/2 absolute z-200 bg-white"
       >
         <div class="flex justify-center gap-4 flex-wrap">
@@ -88,18 +89,7 @@ onUnmounted(() => {
             {{ tab.name }}
           </button>
         </div>
-        <!-- <div class="hidden md:block relative w-full bg-red-900 -mt-12">
-        <svg
-          class="w-full absolute bg-red-500 -top-20 h-12"
-          preserveAspectRatio="none"
-          viewBox="0 0 1440 100"
-          fill="#111827"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d="M0,0 C360,100 1080,100 1440,0 L1440,100 L0,100 Z" fill="#ffff" />
-        </svg>
-      </div> -->
-      </section>
+      </section> -->
 
       <!-- ROUTER VIEW FOR CHILD ROUTES -->
       <router-view />

@@ -143,14 +143,14 @@ const events = ref([
     >
       <div class="absolute inset-0 bg-black/60"></div>
 
-      <div class="relative z-10 container mx-auto max-w-7xl px-4 text-center">
-        <p class="text-3xl font-bold mb-4 text-white">Upcoming Event</p>
+      <div class="relative z-10 container px-4 text-center">
+        <p class="font-bold mb-4 white">Upcoming Event</p>
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
           Digital Conference 202021
         </h1>
         <p class=" text-green-400 mb-2">11th October, 2020</p>
 
-        <p class="text-gray-200 max-w-2xl mx-auto mb-8">
+        <p class="white max-w-2xl mx-auto mb-8">
           Launch your campaign and benefit from our expertise on designing and managing
           conversion-centered pages.
         </p>
@@ -169,7 +169,7 @@ const events = ref([
 
         <button
           @click="navigateTo('community-events')"
-          class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg inline-block font-semibold"
+          class="primary tracking-wider font-bold"
         >
           Register Now
         </button>
@@ -177,17 +177,17 @@ const events = ref([
     </section>
 
     <!-- EVENTS SECTIONS -->
-    <section class="py-16 bg-gray-50">
+    <section class=" bg-alt-bg">
       <div class="container mx-auto max-w-7xl px-4">
         <div
           v-for="event in events"
           :key="event.id"
-          class="mb-16 bg-white rounded-lg shadow-lg overflow-hidden"
+          class="mb-16 rounded-lg shadow-lg overflow-hidden"
         >
           <!-- EVENT HEADER WITH IMAGE -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
             <!-- IMAGE -->
-            <div class="flex items-center justify-center">
+            <div class="flex items-start justify-center">
               <img
                 :src="event.image"
                 :alt="event.title"
@@ -197,29 +197,29 @@ const events = ref([
 
             <!-- EVENT DETAILS -->
             <div class="flex flex-col justify-center">
-              <h2 class="text-3xl font-bold text-gray-800 mb-4">{{ event.title }}</h2>
-              <p class="text-gray-600 text-lg mb-6">{{ event.description }}</p>
+              <h2 class="text-heading mb-4">{{ event.title }}</h2>
+              <p class="mb-6">{{ event.description }}</p>
 
               <!-- DATE & TIME -->
               <div class="mb-4">
-                <p class="font-semibold text-gray-700 mb-2">
-                  <span class="text-indigo-600">📅 Date:</span> {{ event.date }}
+                <p class="mb-2">
+                  <span class="text-primary-text">📅 Date:</span> {{ event.date }}
                 </p>
-                <p class="font-semibold text-gray-700">
-                  <span class="text-indigo-600">⏰ Time:</span> {{ event.time }}
+                <p class="">
+                  <span class="text-primary-text">⏰ Time:</span> {{ event.time }}
                 </p>
               </div>
 
               <!-- VENUE -->
               <div class="mb-6">
-                <p class="font-semibold text-gray-700">
-                  <span class="text-indigo-600">📍 Venue:</span> {{ event.venue }}
+                <p class="">
+                  <span class="text-primary-text">📍 Venue:</span> {{ event.venue }}
                 </p>
               </div>
 
               <!-- REGISTER BUTTON -->
               <button
-                class="w-full bg-[#a05a00] text-white py-3 px-6 rounded-lg font-semibold hover:bg-[#e67e00] transition"
+                class="w-full primary"
               >
                 Register Now
               </button>
@@ -230,24 +230,24 @@ const events = ref([
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 px-8 pb-8 border-t pt-8">
             <!-- SPONSORS -->
             <div>
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Sponsors</h3>
+              <h3 class="mb-4">Sponsors</h3>
               <div class="flex flex-wrap gap-3">
                 <span
                   v-for="(sponsor, idx) in event.sponsors"
                   :key="idx"
-                  class="bg-primary/15 text-primary px-4 py-2 rounded-full font-semibold"
+                  class="bg-primary/15 text-primary-text px-4 py-2 rounded-full font-semibold"
                 >
                   {{ sponsor }}
                 </span>
               </div>
             </div>
             <div>
-              <h3 class="text-xl font-bold text-gray-800 mb-4">Guest Speakers</h3>
-              <div class="space-y-3">
+              <h3 class="mb-4">Guest Speakers</h3>
+              <div class="space-y-1 flex flex-wrap gap-2">
                 <div
                   v-for="speaker in event.speakers"
                   :key="speaker.name"
-                  class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition"
+                  class="w-fit flex items-center min-w-fit gap-3 p-2 bg-card-bg2 rounded-lg hover:bg-card-bg2/70 transition"
                 >
                   <img
                     :src="speaker.image"
@@ -256,13 +256,13 @@ const events = ref([
                   />
                   <div class="flex-1">
                     <div class="flex items-center gap-2">
-                      <p class="font-semibold text-gray-800">{{ speaker.name }}</p>
+                      <p class="font-semibold text-body">{{ speaker.name }}</p>
                       <a
                         v-if="speaker.linkedin"
                         :href="speaker.linkedin"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="text-[#a05a00] hover:text-[#e67e00] transition"
+                        class="text-primary-text hover:text-primary transition"
                         title="Visit LinkedIn profile"
                       >
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -272,7 +272,7 @@ const events = ref([
                         </svg>
                       </a>
                     </div>
-                    <p class="text-sm text-gray-600">{{ speaker.designation }}</p>
+                    <span class="text-body text-sm">{{ speaker.designation }}</span>
                   </div>
                 </div>
               </div>
@@ -283,7 +283,7 @@ const events = ref([
     </section>
 
     <!-- CTA SECTION -->
-    <section class="py-16 bg-[#a05a00] text-white">
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-b from-alt-bg to-primary/30">
       <div class="container mx-auto max-w-7xl px-4 text-center">
         <h2 class="text-3xl font-bold mb-4">Don't Miss Out!</h2>
         <p class="text-lg mb-8 text-gray-100">
