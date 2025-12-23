@@ -2,12 +2,14 @@
   <main id="maincontent" class="workspaces">
     <!-- Hero Section -->
     <section class="sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center">
-      <div class="max-w-7xl mx-auto px-4">
+      <div class="max-w-7xl mx-auto px-4 sm:py-12">
         <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
         <p class="mb-8 max-w-4xl mx-auto">
           Explore our flexible workspace solutions designed for every professional. From solo work
           to large team gatherings, we have the perfect space for you.
         </p>
+        <p>Find the perfect workspace in your location.</p>
+        <a class="primary" href="/bookings">Go to Booking</a>
       </div>
     </section>
     <!-- Wave Divider -->
