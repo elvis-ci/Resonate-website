@@ -10,7 +10,17 @@ const navRoutes = [
     title: 'About',
     children: [],
   },
-  { path: '/workspaces', title: 'Workspaces', children: [] },
+  {
+    path: '/workspaces',
+    title: 'Workspaces',
+    children: [
+      { path: '/workspaces/single-workspace', title: 'Single Workspace' },
+      { path: '/workspaces/private-rooms', title: 'Private Rooms' },
+      { path: '/workspaces/team-sprint-rooms', title: 'Team Sprint Rooms' },
+      { path: '/workspaces/conference-rooms', title: 'Conference Rooms' },
+      { path: '/workspaces/seminar-halls', title: 'Seminar Halls' },
+    ],
+  },
   {
     path: '/community',
     title: 'Community',
@@ -352,8 +362,8 @@ header {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(17, 24, 39, 0.5);
-  clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%);
+  background: var(--color-alternate);
+  /* clip-path: polygon(0 0, 100% 0, 95% 100%, 5% 100%); */
   z-index: 0;
 }
 
