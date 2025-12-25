@@ -26,6 +26,15 @@ const routes = [
     name: 'workspaces',
     component: WorkspacesView,
     meta: { title: 'Workspaces' },
+    redirect: { name: 'workspaces-categories' },
+    children: [
+      {
+        path: 'categories',
+        name: 'workspaces-categories',
+        component: () => import('../views/workspaces/Categories.vue'),
+        meta: { title: 'Workspaces — Categories' },
+      },
+    ],
   },
   {
     path: '/bookings',
