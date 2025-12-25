@@ -7,6 +7,8 @@ import BookingsView from '../views/BookingsView.vue'
 import CommunityView from '../views/CommunityView.vue'
 import ContactView from '../views/ContactView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
+import Events from '../views/community/Events.vue'
+import Categories from '../views/workspaces/Categories.vue'
 
 const routes = [
   {
@@ -25,14 +27,44 @@ const routes = [
     path: '/workspaces',
     name: 'workspaces',
     component: WorkspacesView,
+    redirect: { name: 'categories-workspace' },
     meta: { title: 'Workspaces' },
-    redirect: { name: 'workspaces-categories' },
     children: [
       {
-        path: 'categories',
-        name: 'workspaces-categories',
-        component: () => import('../views/workspaces/Categories.vue'),
-        meta: { title: 'Workspaces — Categories' },
+        path: 'categories-workspace',
+        name: 'categories-workspace',
+        component: Categories,
+        meta: { title: 'Workspace — Categories' },
+      },
+      {
+        path: 'single-workspace',
+        name: 'single-workspace',
+        component: () => import('../views/workspaces/Single.vue'),
+        meta: { title: 'Workspace — Single Space' },
+      },
+      {
+        path: 'private-rooms',
+        name: 'private-rooms',
+        component: () => import('../views/workspaces/Private.vue'),
+        meta: { title: 'Workspace — Private Rooms' },
+      },
+      {
+        path: 'team-sprint-rooms',
+        name: 'team-sprint-rooms',
+        component: () => import('../views/workspaces/Team.vue'),
+        meta: { title: 'Workspace — Team Sprint Rooms' },
+      },
+      {
+        path: 'conference-rooms',
+        name: 'conference-rooms',
+        component: () => import('../views/workspaces/Conference.vue'),
+        meta: { title: 'Workspace — Conference Rooms' },
+      },
+      {
+        path: 'seminar-halls',
+        name: 'seminar-halls',
+        component: () => import('../views/workspaces/Seminar.vue'),
+        meta: { title: 'Workspace — Seminar Halls' },
       },
     ],
   },
@@ -54,7 +86,7 @@ const routes = [
       {
         path: 'events',
         name: 'community-events',
-        component: () => import('../views/community/Events.vue'),
+        component: Events,
         meta: { title: 'Community — Events' },
       },
       {
