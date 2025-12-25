@@ -1,0 +1,141 @@
+<script setup>
+import { RouterLink } from 'vue-router'
+
+const workspaces = [
+  {
+    title: 'Single Workspace',
+    description:
+      'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
+    image: '/images/coworking/about.webp',
+    alt: 'Single Workspace',
+    features: [
+      'Dedicated desk with storage',
+      'High-speed WiFi and power outlets',
+      'Access to meeting rooms',
+      'Coffee and refresh station',
+    ],
+    route: '/workspaces/single-workspace',
+  },
+  {
+    title: 'Private Rooms',
+    description:
+      'Ideal for small teams, startups, or client meetings. Our private rooms offer complete privacy, professional ambiance, and full control of your workspace.',
+    image: '/images/coworking/about.webp',
+    alt: 'Private Room',
+    features: [
+      '1-3 person capacity',
+      'Soundproof walls for confidentiality',
+      'Video conferencing setup',
+      'Flexible lease terms',
+    ],
+    altBg: true,
+    route: '/workspaces/private-rooms',
+  },
+  {
+    title: 'Team Sprint Rooms',
+    description:
+      'Perfect for collaborative work sessions and intensive team projects. These spacious rooms accommodate 4-8 people and feature all the tools needed for productive collaboration.',
+    image: '/images/coworking/about.webp',
+    alt: 'Team Sprint Room',
+    features: [
+      'Capacity for 4-8 people',
+      'Large collaboration tables and whiteboards',
+      'Projector and presentation equipment',
+      'Comfortable seating and standing options',
+    ],
+    route: '/workspaces/team-sprint-rooms',
+  },
+  {
+    title: 'Conference Rooms',
+    description:
+      'Impress your clients and stakeholders with our state-of-the-art conference rooms. Designed for professional meetings and presentations with capacity up to 16 people.',
+    image: '/images/coworking/about.webp',
+    alt: 'Conference Room',
+    features: [
+      'Seating for up to 16 people',
+      'Advanced AV system with 4K projection',
+      'High-quality video conferencing technology',
+      'Catering and beverage service available',
+    ],
+    altBg: true,
+    route: '/workspaces/conference-rooms',
+  },
+  {
+    title: 'Seminar Halls',
+    description:
+      'Host large events, workshops, and seminars with our spacious, fully-equipped seminar halls. Perfect for training sessions, conferences, and community gatherings.',
+    image: '/images/coworking/about.webp',
+    alt: 'Seminar Hall',
+    features: [
+      'Flexible seating arrangements (theater, classroom, banquet)',
+      'Professional stage with lighting and sound system',
+      'Breakout rooms for workshops and sessions',
+      'Full catering and event coordination services',
+    ],
+    route: '/workspaces/seminar-halls',
+  },
+]
+</script>
+
+<template>
+  <main id="maincontent">
+    <!-- Hero Section -->
+    <section class="sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center">
+      <div class="max-w-7xl mx-auto px-4 sm:py-12">
+        <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
+        <p class="mb-8 max-w-4xl mx-auto">
+          Explore our flexible workspace solutions designed for every professional. From solo work
+          to large team gatherings, we have the perfect space for you.
+        </p>
+        <p>Find the perfect workspace in your location.</p>
+        <RouterLink class="primary" :to="'/workspaces'">Go to Booking</RouterLink>
+      </div>
+    </section>
+
+    <!-- Workspace Sections (Dynamic) -->
+    <section
+      v-for="(workspace, index) in workspaces"
+      :key="workspace.title"
+      :class="['py-12', workspace.altBg && 'bg-alt-bg']"
+    >
+      <div class="container px-4">
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <!-- Image Column -->
+          <div :class="index % 2 === 0 ? 'order-2 md:order-1' : ''">
+            <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
+          </div>
+
+          <!-- Content Column -->
+          <div :class="index % 2 === 0 ? 'order-1 md:order-2' : ''">
+            <h2 class="mb-4">{{ workspace.title }}</h2>
+
+            <p class="mb-4">
+              {{ workspace.description }}
+            </p>
+
+            <ul class="space-y-3 mb-8 text-body">
+              <li v-for="feature in workspace.features" :key="feature" class="flex items-start">
+                <span class="text-primary-text font-bold mr-3">✓</span>
+                <span>{{ feature }}</span>
+              </li>
+            </ul>
+
+            <!-- Dynamic RouterLink for each workspace -->
+            <RouterLink :to="workspace.route" class="inline-block primary"> Book Now </RouterLink>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
+        <p class="text-lg mb-8 opacity-90">
+          Book a tour today and discover why Resonate is the best coworking solution for your needs.
+        </p>
+        <RouterLink to="/workspaces" class="inline-block primary"> Start Booking Now </RouterLink>
+      </div>
+    </section>
+  </main>
+</template>
