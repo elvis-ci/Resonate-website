@@ -1,5 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
+import { ref } from 'vue'
+import BookingFormModal from '@/components/BookingFormModal.vue'
 
 const workspaces = [
   {
@@ -75,6 +77,19 @@ const workspaces = [
     route: '/workspaces/seminar-halls',
   },
 ]
+
+const bookingDialog = ref(null)
+const selectedWorkspace = ref('')
+
+const openBooking = (workspaceTitle) => {
+  selectedWorkspace.value = workspaceTitle
+  bookingDialog.value.showModal()
+}
+
+const closeBooking = () => {
+  bookingDialog.value.close()
+  selectedWorkspace.value = ''
+}
 </script>
 
 <template>
@@ -121,7 +136,13 @@ const workspaces = [
             </ul>
 
             <!-- Dynamic RouterLink for each workspace -->
-            <RouterLink :to="workspace.route" class="inline-block primary"> Book Now </RouterLink>
+            <div class="flex gap-4">
+              <!-- View button -->
+              <RouterLink :to="workspace.route" class="secondary"> View </RouterLink>
+
+              <!-- Book Now button -->
+              <button class="primary" @click="openBooking(workspace.title)">Book Now</button>
+            </div>
           </div>
         </div>
       </div>
@@ -137,5 +158,9 @@ const workspaces = [
         <RouterLink to="/workspaces" class="inline-block primary"> Start Booking Now </RouterLink>
       </div>
     </section>
+
+    <dialog ref="bookingDialog" class="rounded-xl backdrop:bg-black/40 mx-auto p-0">
+      <BookingFormModal :workspaceType="selectedWorkspace" @close="closeBooking" />
+    </dialog>
   </main>
 </template>
