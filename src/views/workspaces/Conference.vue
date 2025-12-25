@@ -40,32 +40,25 @@
 <script setup>
 const features = [
   {
-    icon: IconBuildingStorefront,
     title: 'Modern Workspaces',
     description: 'Ergonomically designed workstations with high-speed internet and all essential amenities.',
   },
-  {
-    icon: IconWifi,
-    title: 'Reliable Connectivity',
+  {    title: 'Reliable Connectivity',
     description: 'Stay connected with our robust Wi-Fi infrastructure, ensuring seamless online experiences.',
   },
   {
-    icon: IconCoffee,
     title: 'Refreshment Zones',
     description: 'Enjoy complimentary coffee and snacks in our dedicated refreshment areas to keep you energized.',
   },
   {
-    icon: IconShieldCheck,
     title: 'Secure Environment',
     description: '24/7 security and surveillance to ensure a safe and secure working atmosphere for all members.',
   },
   {
-    icon: IconUsers,
     title: 'Community Events',
     description: 'Engage in regular networking events, workshops, and social gatherings to connect with like-minded professionals.',
   },
   {
-    icon: IconCalendarEvent,
     title: 'Flexible Booking',
     description: 'Easily book workspaces and meeting rooms through our user-friendly online platform.',
   },
