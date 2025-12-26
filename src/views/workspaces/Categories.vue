@@ -159,7 +159,7 @@ const closeBooking = () => {
       </div>
     </section>
 
-    <dialog ref="bookingDialog" class="rounded-xl backdrop:bg-black/40 mx-auto p-0">
+    <dialog @click.self="closeBooking" ref="bookingDialog" class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0">
       <BookingFormModal :workspaceType="selectedWorkspace" @close="closeBooking" />
     </dialog>
   </main>
