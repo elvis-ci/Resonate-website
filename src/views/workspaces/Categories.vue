@@ -164,3 +164,9 @@ const closeBooking = () => {
     </dialog>
   </main>
 </template>
+<style scoped>
+  dialog {
+  overscroll-behavior: contain;
+}
+
+</style>
