@@ -27,6 +27,7 @@
     --color-body: #4b5563;
     --color-muted: #64748b;
     --color-primary-text: #a05a00;
+    --color-secondary-text: #a05a00;
 
     --color-success: #059669;
     --color-warning: #dc2626;
@@ -66,6 +67,7 @@
     --color-body: #cbd5e1;
     --color-muted: #94a3b8;
     --color-primary-text: #e67e00;
+    --color-secondary-text: #e5e7eb;
 
     --color-success: #10b981;
     --color-warning: #f87171;
@@ -214,7 +216,7 @@ button.secondary {
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 a.secondary {
-  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-primary/0 border border-primary text-text 
+  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-primary/0 border border-primary-hover text-secondary-text 
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 /* Buttons end */
