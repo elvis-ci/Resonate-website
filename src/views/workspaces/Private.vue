@@ -175,9 +175,9 @@ watch(
 <template>
   <main id="maincontent">
     <!-- HERO & QUICK FACTS -->
-    <section class="hero mt-6">
+    <section class="hero py-16">
       <div class="container">
-        <div class="flex justify-between items-start">
+        <div class="flex justify-between items-center">
           <div class="max-w-2xl">
             <h1 class="main-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
@@ -224,7 +224,7 @@ watch(
         :autoplay="{ delay: 3000, disableOnInteraction: false }"
         navigation
         pagination
-        class="mt-6 rounded-xl overflow-hidden"
+        class=" rounded-xl overflow-hidden"
       >
         <SwiperSlide v-for="(img, index) in currentLocationData.images" :key="index">
           <img
@@ -237,7 +237,7 @@ watch(
     </section>
 
     <!-- FEATURES & ACCESSIBILITY -->
-    <section class="">
+    <section class="mt-16">
       <div class="container">
         <h2 class="mb-4">Workspace Features & Accessibility</h2>
 
@@ -324,8 +324,7 @@ watch(
       </div>
     </section>
 
-    <!-- CTA SECTION -->
-
+    <!-- Form Section -->
     <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
       <div class="max-w-4xl mx-auto text-center">
         <h2 class="text-2xl font-semibold mb-4">For More Inquiries</h2>
@@ -390,5 +389,15 @@ watch(
 .swiper-slide-active {
   transform: scale(1);
   opacity: 1;
+}
+
+.accordion::after {
+  content: '';
+  transform: translateY(-80%) rotate(-135deg);
+  border: solid var(--color-primary-hover);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transition: transform 0.2s;
 }
 </style>
