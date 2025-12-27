@@ -1,5 +1,14 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import 'swiper/css/autoplay'
+import SwiperCore from 'swiper'
+import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules'
+
+SwiperCore.use([Navigation, Pagination, Autoplay, EffectCoverflow])
 
 const locations = computed(() => {
   return Object.entries(space.value.locations).flatMap(([city, locs]) =>
@@ -20,6 +29,8 @@ const space = ref({
   images: [
     '/images/coworking/private-office-1.webp',
     '/images/coworking/private-office-2.webp',
+    '/images/coworking/private-office-3.webp',
+    '/images/coworking/private-office-3.webp',
     '/images/coworking/private-office-3.webp',
   ],
   highlights: {
@@ -82,76 +93,74 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
 <template>
   <main id="maincontent">
     <!-- HERO & QUICK FACTS -->
-    <section class="hero">
+    <section class="hero mt-6">
       <div class="container">
-        <h1 class="main-heading">{{ space.name }}</h1>
-        <!-- Quick Facts -->
-        <p class="mt-2 text-sm text-muted">
-          Available in (<span v-for="(loc, i) in locations" :key="loc">
-            {{ loc }}<span v-if="i < locations.length - 1">, </span> </span
-          >)
-        </p>
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <h1 class="main-heading">{{ space.name }}</h1>
+            <p class="mt-2 text-sm text-muted">
+              Available in
+              <span v-for="(loc, i) in locations" :key="loc">
+                {{ loc }}<span v-if="i < locations.length - 1">, </span>
+              </span>
+            </p>
+          </div>
+          <button class="primary ">Book Now</button>
+        </div>
+        <!-- Swiper Carousel -->
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div v-for="(img, index) in space.images" :key="index" class="relative">
+      <Swiper
+        :slides-per-view="3"
+        :space-between="20"
+        centered-slides="true"
+        loop="true"
+        :autoplay="{ delay: 3000, disableOnInteraction: true }"
+        navigation
+        pagination
+        class="mt-6 rounded-xl overflow-hidden"
+      >
+        <SwiperSlide v-for="(img, index) in space.images" :key="index">
           <img
             :src="img"
             :alt="`${space.name} workspace image ${index + 1}`"
-            class="rounded-xl object-cover h-64 w-full"
+            class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
           />
-          <span class="absolute bottom-2 left-2 text-xs px-2 py-1 rounded bg-black/70 text-white">
-            Image {{ index + 1 }}
-          </span>
-        </div>
-      </div>
+        </SwiperSlide>
+      </Swiper>
     </section>
 
-    <!-- IMAGE GALLERY -->
     <section>
       <div class="container">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div v-for="(img, index) in space.images" :key="index" class="relative">
-            <img
-              :src="img"
-              :alt="`${space.name} workspace image ${index + 1}`"
-              class="rounded-xl object-cover h-64 w-full"
-            />
-            <span class="absolute bottom-2 left-2 text-xs px-2 py-1 rounded bg-black/70 text-white">
-              Image {{ index + 1 }}
-            </span>
+        <div>
+          <!-- Location Selector -->
+          <label class="flex items-center gap-x-2 mt-4 text-sm font-medium text-heading mb-2">
+            Choose a Location
+            <select
+              v-model="selectedLocation"
+              class="mt-1 py-3 px-2 bg-card-bg2 block rounded-md border border-text focus:ring-primary focus:border-primary"
+            >
+              <option v-for="loc in locations" :key="loc">
+                {{ loc }}
+              </option>
+            </select>
+          </label>
+
+          <!-- Pricing Box -->
+          <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
+            <p class="body">{{ formattedPrice }}</p>
+            <p class="text-xs text-muted mt-1">Includes Wi-Fi, power, and basic amenities</p>
+            <p class="text-xs text-muted mt-1">Available today · Instant confirmation</p>
+
+            <div class="mt-2 flex gap-x-2">
+              <p>Capacity:</p>
+              <p class="font-semibold">{{ space.highlights.capacity }}</p>
+            </div>
+
+            <button class="primary w-full mt-4">Book Now</button>
           </div>
         </div>
       </div>
     </section>
-
-    <div>
-      <!-- Location Selector -->
-      <label class="flex items-center gap-x-2 mt-4 text-sm font-medium text-heading mb-2">
-        Choose a Location
-        <select
-          v-model="selectedLocation"
-          class="mt-1 py-3 px-2 bg-card-bg2 block rounded-md border border-text focus:ring-primary focus:border-primary"
-        >
-          <option v-for="loc in locations" :key="loc">
-            {{ loc }}
-          </option>
-        </select>
-      </label>
-
-      <!-- Pricing Box -->
-      <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
-        <p class="body">{{ formattedPrice }}</p>
-        <p class="text-xs text-muted mt-1">Includes Wi-Fi, power, and basic amenities</p>
-        <p class="text-xs text-muted mt-1">Available today · Instant confirmation</p>
-
-        <div class="mt-2 flex gap-x-2">
-          <p>Capacity:</p>
-          <p class="font-semibold">{{ space.highlights.capacity }}</p>
-        </div>
-
-        <button class="primary w-full mt-4">Book Now</button>
-      </div>
-    </div>
 
     <!-- FEATURES & ACCESSIBILITY -->
     <section class="mt-10">
@@ -243,3 +252,15 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
     </section>
   </main>
 </template>
+
+<style scoped>
+.swiper-slide {
+  transform: scale(0.8);
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+.swiper-slide-active {
+  transform: scale(1);
+  opacity: 1;
+}
+</style>
