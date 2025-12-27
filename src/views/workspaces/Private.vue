@@ -34,7 +34,7 @@ const space = ref({
     '/images/coworking/private-office-3.webp',
   ],
   highlights: {
-    capacity: '2 – 6 persons',
+    capacity: '1 persons',
   },
   features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Meeting Rooms'],
   accessibility: [
@@ -115,24 +115,24 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         </div>
         <!-- Swiper Carousel -->
       </div>
-<Swiper
-  :slides-per-view="3"
-  :space-between="20"
-  :centered-slides="true"
-  :loop="true"
-  :autoplay="{ delay: 3000, disableOnInteraction: false }"
-  navigation
-  pagination
-  class="mt-6 rounded-xl overflow-hidden"
->
-  <SwiperSlide v-for="(img, index) in space.images" :key="index">
-    <img
-      :src="img"
-      :alt="`${space.name} workspace image ${index + 1}`"
-      class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
-    />
-  </SwiperSlide>
-</Swiper>
+      <Swiper
+        :slides-per-view="3"
+        :space-between="20"
+        :centered-slides="true"
+        :loop="true"
+        :autoplay="{ delay: 3000, disableOnInteraction: false }"
+        navigation
+        pagination
+        class="mt-6 rounded-xl overflow-hidden"
+      >
+        <SwiperSlide v-for="(img, index) in space.images" :key="index">
+          <img
+            :src="img"
+            :alt="`${space.name} workspace image ${index + 1}`"
+            class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
+          />
+        </SwiperSlide>
+      </Swiper>
     </section>
 
     <section>
