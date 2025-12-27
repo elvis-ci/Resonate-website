@@ -41,6 +41,34 @@ const space = ref({
       rating: 4,
       comment: 'Great workspace, fast internet.',
     },
+    {
+      id: 2,
+      name: 'Ikenna',
+      rating: 4,
+      comment: 'Great workspace, fast internet.',
+    },
+  ],
+  faqs: [
+    {
+      id: 1,
+      question: 'Can I book this space for just a few hours?',
+      answer:
+        'Yes. Although the displayed price is per day, hourly bookings are available depending on the location.',
+      open: false,
+    },
+    {
+      id: 2,
+      question: 'Is this workspace wheelchair accessible?',
+      answer:
+        'Yes. All locations offering this space include step-free access and accessible restrooms.',
+      open: false,
+    },
+    {
+      id: 3,
+      question: 'What happens if there is a power outage?',
+      answer: 'All our coworking spaces have 24/7 backup power to ensure uninterrupted work.',
+      open: false,
+    },
   ],
 })
 
@@ -49,16 +77,20 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
 
 <template>
   <main id="maincontent" class="">
-    <!-- HERO -->
     <section class="">
-      <div class="container grid md:grid-cols-2 gap-8 lg:gap-12">
+      <div
+        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:p-24 grid md:grid-cols-2 gap-8 lg:gap-12"
+      >
         <div>
           <h1 class="main-heading">
             {{ space.name }}
           </h1>
+          <p>
+            Available in (<span v-for="loc in locations" :key="loc">{{ loc }}, </span>)
+          </p>
 
           <label class="flex items-center gap-x-2 mt-4 text-sm font-medium text-heading mb-2">
-            Location
+            Choose a Location
             <select
               v-model="selectedLocation"
               class="mt-1 py-3 px-2 bg-card-bg2 block rounded-md border border-text focus:ring-primary focus:border-primary"
@@ -70,7 +102,7 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
           </label>
         </div>
 
-        <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end">
+        <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
           <p class="body">
             {{ formattedPrice }}
           </p>
@@ -105,15 +137,17 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         <div>
           <h2 class="mb-4">Workspace Features</h2>
           <ul class="space-y-2">
-            <li v-for="f in space.features" :key="f">✓ {{ f }}</li>
+            <li v-for="f in space.features" :key="f" class="flex gap-x-3">
+              <span class="text-primary font-bold">✓</span> {{ f }}
+            </li>
           </ul>
         </div>
 
         <div>
           <h2 class="mb-4">Accessibility Features</h2>
           <ul class="space-y-2">
-            <li v-for="a in space.accessibility" :key="a" class="flex gap-2">
-              ♿ <span>{{ a }}</span>
+            <li v-for="a in space.accessibility" :key="a" class="flex gap-x-3">
+              <span class="text-primary font-bold">♿</span> {{ a }}
             </li>
           </ul>
         </div>
@@ -124,9 +158,12 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
     <section>
       <div class="container">
         <h2 class="mb-4">User Reviews</h2>
-        <div class="grid md:grid-cols-2 gap-8 ">
+        <div class="grid md:grid-cols-3 gap-8">
           <article v-for="r in space.reviews" :key="r.id" class="border rounded-lg p-4">
-            <p class="font-semibold">{{ r.name }} — ⭐ {{ r.rating }}</p>
+            <div class="flex justify-between">
+              <h3 class="font-semibold">{{ r.name }}</h3>
+              <div class="flex"><p v-for="rating in r.rating" :key="rating">⭐</p></div>
+            </div>
             <p class="mt-2">
               {{ r.comment }}
             </p>
@@ -134,5 +171,50 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         </div>
       </div>
     </section>
+
+    <!-- FAQS -->
+    <section>
+      <div class="container max-w-3xl">
+        <h2 class="mb-6">Frequently Asked Questions</h2>
+
+        <div class="space-y-4">
+          <div v-for="faq in space.faqs" :key="faq.id" class="border rounded-lg overflow-hidden">
+            <!-- Accordion Header -->
+            <h3
+              class="has-accordion w-full flex justify-between items-center px-4 py-4 text-left font-medium focus:outline-none focus-visible:ring bg-card-bg2/60"
+              :aria-expanded="faq.open"
+            >
+              <span>{{ faq.question }}</span>
+            </h3>
+
+            <!-- Accordion Panel -->
+            <div v-show="faq.open" class="p-4 pb-4 text-text ">
+              {{ faq.answer }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 </template>
+<style scoped>
+.has-accordion {
+  position: relative;
+  padding-right: 1rem;
+}
+.accordion{
+position: relative;
+}
+
+.accordion::after {
+  content: '';
+  top: -10%;
+  transform: translateY(-80%) rotate(-135deg);
+  border: solid var(--color-primary);
+  border-width: 0 2px 2px 0;
+  display: inline-block;
+  padding: 3px;
+  transition: transform 0.2s;
+  z-index: 100;
+}
+</style>
