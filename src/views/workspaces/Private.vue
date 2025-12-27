@@ -97,36 +97,42 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
       <div class="container">
         <div class="flex justify-between items-start">
           <div class="flex-1">
-            <h1 class="main-heading">{{ space.name }}</h1>
+            <h1 class="main-heading flex">{{ space.name }}</h1>
+            <p class="flex flex-wrap gap-x-4 mb-4">
+              <span>Capacity: {{ space.highlights.capacity }}</span>
+              <span>Noise level: Quiet</span>
+              <span>Best for: Focused work</span>
+            </p>
             <p class="mt-2 text-sm text-muted">
-              Available in
+              Available in (
               <span v-for="(loc, i) in locations" :key="loc">
                 {{ loc }}<span v-if="i < locations.length - 1">, </span>
               </span>
+              )
             </p>
           </div>
-          <button class="primary ">Book Now</button>
+          <button class="primary">Book Now</button>
         </div>
         <!-- Swiper Carousel -->
       </div>
-      <Swiper
-        :slides-per-view="3"
-        :space-between="20"
-        centered-slides="true"
-        loop="true"
-        :autoplay="{ delay: 3000, disableOnInteraction: true }"
-        navigation
-        pagination
-        class="mt-6 rounded-xl overflow-hidden"
-      >
-        <SwiperSlide v-for="(img, index) in space.images" :key="index">
-          <img
-            :src="img"
-            :alt="`${space.name} workspace image ${index + 1}`"
-            class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
-          />
-        </SwiperSlide>
-      </Swiper>
+<Swiper
+  :slides-per-view="3"
+  :space-between="20"
+  :centered-slides="true"
+  :loop="true"
+  :autoplay="{ delay: 3000, disableOnInteraction: false }"
+  navigation
+  pagination
+  class="mt-6 rounded-xl overflow-hidden"
+>
+  <SwiperSlide v-for="(img, index) in space.images" :key="index">
+    <img
+      :src="img"
+      :alt="`${space.name} workspace image ${index + 1}`"
+      class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
+    />
+  </SwiperSlide>
+</Swiper>
     </section>
 
     <section>
