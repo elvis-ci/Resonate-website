@@ -224,7 +224,7 @@ watch(
         :autoplay="{ delay: 3000, disableOnInteraction: false }"
         navigation
         pagination
-        class=" rounded-xl overflow-hidden"
+        class="rounded-xl overflow-hidden"
       >
         <SwiperSlide v-for="(img, index) in currentLocationData.images" :key="index">
           <img
@@ -317,7 +317,7 @@ watch(
               ></button>
             </h3>
             <div v-show="faq.open" class="p-4 pb-4 text-text">
-              {{ faq.answer }}
+              <p>{{ faq.answer }}</p>
             </div>
           </div>
         </div>
