@@ -34,9 +34,9 @@ const space = ref({
     '/images/coworking/private-office-3.webp',
   ],
   highlights: {
-    capacity: '1 persons',
+    capacity: '1 person',
   },
-  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Meeting Rooms'],
+  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Adjustable Screens'],
   accessibility: [
     'Wheelchair Accessible Entrance',
     'Adjustable Height Desks',
@@ -100,8 +100,8 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
             <h1 class="main-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
               <span>Capacity: {{ space.highlights.capacity }}</span>
-              <span>Noise level: Quiet</span>
               <span>Best for: Focused work</span>
+              <span>Noise level: Quiet</span>
             </p>
             <p class="mt-2 text-sm text-muted">
               Available in (
@@ -110,6 +110,20 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
               </span>
               )
             </p>
+            <div>
+              <!-- Location Selector -->
+              <label class="flex items-center gap-x-2 mt-4 text-sm font-medium text-heading mb-2">
+                Choose a Location
+                <select
+                  v-model="selectedLocation"
+                  class="mt-1 py-3 px-2 bg-card-bg2 block rounded-md border border-text focus:ring-primary focus:border-primary"
+                >
+                  <option v-for="loc in locations" :key="loc">
+                    {{ loc }}
+                  </option>
+                </select>
+              </label>
+            </div>
           </div>
           <button class="primary">Book Now</button>
         </div>
@@ -135,71 +149,45 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
       </Swiper>
     </section>
 
-    <section>
+    <!-- FEATURES & ACCESSIBILITY -->
+    <section class="">
       <div class="container">
-        <div>
-          <!-- Location Selector -->
-          <label class="flex items-center gap-x-2 mt-4 text-sm font-medium text-heading mb-2">
-            Choose a Location
-            <select
-              v-model="selectedLocation"
-              class="mt-1 py-3 px-2 bg-card-bg2 block rounded-md border border-text focus:ring-primary focus:border-primary"
-            >
-              <option v-for="loc in locations" :key="loc">
-                {{ loc }}
-              </option>
-            </select>
-          </label>
+        <h2 class="mb-4">Workspace Features & Accessibility</h2>
 
-          <!-- Pricing Box -->
-          <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
-            <p class="body">{{ formattedPrice }}</p>
-            <p class="text-xs text-muted mt-1">Includes Wi-Fi, power, and basic amenities</p>
-            <p class="text-xs text-muted mt-1">Available today · Instant confirmation</p>
+        <!-- Quick facts row -->
+        <p class="flex flex-wrap gap-x-4 mb-6 ">
+          <span>Capacity: {{ space.highlights.capacity }}</span>
+          <span>Best for: Focused work</span>
+          <span>Noise level: Quiet</span>
+        </p>
 
-            <div class="mt-2 flex gap-x-2">
-              <p>Capacity:</p>
-              <p class="font-semibold">{{ space.highlights.capacity }}</p>
-            </div>
+        <!-- Grid for features and accessibility -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Workspace Features -->
+          <div>
+            <h3 class="mb-3">Workspace Features</h3>
+            <ul class="space-y-2">
+              <li v-for="f in space.features" :key="f" class="flex gap-x-3">
+                <p><span class="text-primary font-bold">✓</span> {{ f }}</p>
+              </li>
+            </ul>
+          </div>
 
-            <button class="primary w-full mt-4">Book Now</button>
+          <!-- Accessibility Features -->
+          <div>
+            <h3 class="mb-3">Accessibility Features</h3>
+            <ul class="space-y-2">
+              <li v-for="a in space.accessibility" :key="a" class="flex gap-x-3">
+                <p><span class="text-primary font-bold">♿</span> {{ a }}</p>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- FEATURES & ACCESSIBILITY -->
-    <section class="mt-10">
-      <div class="container">
-        <h2 class="">Workspace Features</h2>
-        <p class="flex flex-wrap gap-x-4 mb-4">
-          <span>Capacity: {{ space.highlights.capacity }}</span>
-          <span>Noise level: Quiet</span>
-          <span>Internet: 250 Mbps</span>
-          <span>Best for: Focused work</span>
-        </p>
-
-        <div>
-          <ul class="space-y-2">
-            <li v-for="f in space.features" :key="f" class="flex gap-x-3">
-              <span class="text-primary font-bold">✓</span> {{ f }}
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h2 class="mb-4">Accessibility Features</h2>
-          <ul class="space-y-2">
-            <li v-for="a in space.accessibility" :key="a" class="flex gap-x-3">
-              <span class="text-primary font-bold">♿</span> {{ a }}
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
     <!-- GOOD TO KNOW -->
-    <section class="mt-10">
+    <section class="">
       <div class="container max-w-3xl">
         <h2 class="mb-4">Good to Know</h2>
         <ul class="space-y-1 text-sm text-muted">
@@ -211,7 +199,7 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
     </section>
 
     <!-- REVIEWS -->
-    <section class="mt-10">
+    <section class="">
       <div class="container">
         <h2 class="mb-4">User Reviews</h2>
         <div class="text-sm text-muted mb-4">
@@ -232,7 +220,7 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
     </section>
 
     <!-- FAQS -->
-    <section class="mt-10">
+    <section class="">
       <div class="container max-w-3xl">
         <h2 class="mb-6">Frequently Asked Questions</h2>
         <div class="space-y-4">
@@ -270,3 +258,16 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
   opacity: 1;
 }
 </style>
+<!-- Pricing Box -->
+<!-- <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
+                <p class="body">{{ formattedPrice }}</p>
+                <p class="text-xs text-muted mt-1">Includes Wi-Fi, power, and basic amenities</p>
+                <p class="text-xs text-muted mt-1">Available today · Instant confirmation</p>
+
+                <div class="mt-2 flex gap-x-2">
+                  <p>Capacity:</p>
+                  <p class="font-semibold">{{ space.highlights.capacity }}</p>
+                </div>
+
+                <button class="primary w-full mt-4">Book Now</button>
+              </div> -->
