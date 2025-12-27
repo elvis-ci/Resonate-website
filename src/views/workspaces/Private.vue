@@ -181,6 +181,7 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
           <div v-for="faq in space.faqs" :key="faq.id" class="border rounded-lg overflow-hidden">
             <!-- Accordion Header -->
             <h3
+              @click="faq.open = !faq.open"
               class="has-accordion w-full flex justify-between items-center px-4 py-4 text-left font-medium focus:outline-none focus-visible:ring bg-card-bg2/60"
               :aria-expanded="faq.open"
             >
