@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -11,28 +11,16 @@ import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/module
 SwiperCore.use([Navigation, Pagination, Autoplay, EffectCoverflow])
 
 const locations = computed(() => {
-  return Object.entries(space.value.locations).flatMap(([city, locs]) =>
-    locs.map((loc) => `${loc} - ${city.replace('_', ' ')}`),
+  return Object.entries(space.value.locations).flatMap(([city, cityData]) =>
+    cityData.areas.map((area) => `${area} - ${city.replace('_', ' ')}`),
   )
 })
 
-const selectedLocation = ref(locations[0])
+const selectedLocation = ref('')
 
 const space = ref({
   name: 'Private Office',
-  locations: {
-    Lagos: ['Victoria Island', 'Yaba', 'Ikeja'],
-    Abuja: ['Central'],
-    Port_Harcourt: ['GRA'],
-  },
   pricePerDay: 15000,
-  images: [
-    '/images/coworking/private-office-1.webp',
-    '/images/coworking/private-office-2.webp',
-    '/images/coworking/private-office-3.webp',
-    '/images/coworking/private-office-3.webp',
-    '/images/coworking/private-office-3.webp',
-  ],
   highlights: {
     capacity: '1 person',
   },
@@ -43,26 +31,98 @@ const space = ref({
     'Accessible Restroom',
     'Clear Signage',
   ],
-  reviews: [
-    {
-      id: 1,
-      name: 'Amina',
-      rating: 5,
-      comment: 'Very accessible and quiet. Staff were helpful.',
+  locations: {
+    Lagos: {
+      areas: ['Victoria Island', 'Yaba', 'Ikeja'],
+      images: [
+        '/images/coworking/private-office-1.webp',
+        '/images/coworking/private-office-2.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+      ],
+      reviews: [
+        {
+          id: 1,
+          name: 'Amina',
+          rating: 5,
+          comment: 'Very accessible and quiet. Staff were helpful.',
+        },
+        {
+          id: 2,
+          name: 'Tunde',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+        {
+          id: 3,
+          name: 'Ikenna',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+      ],
     },
-    {
-      id: 2,
-      name: 'Tunde',
-      rating: 4,
-      comment: 'Great workspace, fast internet.',
+    Abuja: {
+      areas: ['Central'],
+      images: [
+        '/images/coworking/private-office-1.webp',
+        '/images/coworking/private-office-2.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+      ],
+      reviews: [
+        {
+          id: 1,
+          name: 'Amina',
+          rating: 5,
+          comment: 'Very accessible and quiet. Staff were helpful.',
+        },
+        {
+          id: 2,
+          name: 'Tunde',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+        {
+          id: 3,
+          name: 'Ikenna',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+      ],
     },
-    {
-      id: 3,
-      name: 'Ikenna',
-      rating: 4,
-      comment: 'Great workspace, fast internet.',
+    Port_Harcourt: {
+      areas: ['GRA'],
+      images: [
+        '/images/coworking/private-office-1.webp',
+        '/images/coworking/private-office-2.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office-3.webp',
+      ],
+      reviews: [
+        {
+          id: 1,
+          name: 'Amina',
+          rating: 5,
+          comment: 'Very accessible and quiet. Staff were helpful.',
+        },
+        {
+          id: 2,
+          name: 'Tunde',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+        {
+          id: 3,
+          name: 'Tony',
+          rating: 4,
+          comment: 'Great workspace, fast internet.',
+        },
+      ],
     },
-  ],
+  },
   faqs: [
     {
       id: 1,
@@ -87,7 +147,29 @@ const space = ref({
   ],
 })
 
+const currentLocationData = computed(() => {
+  const [area, city] = selectedLocation.value.split(' - ')
+  return space.value.locations[city.replace(' ', '_')]
+})
+const currentReviews = computed(() => currentLocationData.value.reviews)
+
+const averageRating = computed(() => {
+  const reviews = currentReviews.value
+  const total = reviews.reduce((sum, r) => sum + r.rating, 0)
+  return (total / reviews.length).toFixed(1)
+})
+
 const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleString()} / day`)
+
+watch(
+  locations,
+  (newLocations) => {
+    if (!selectedLocation.value && newLocations.length) {
+      selectedLocation.value = newLocations[0]
+    }
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -96,14 +178,14 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
     <section class="hero mt-6">
       <div class="container">
         <div class="flex justify-between items-start">
-          <div class="flex-1">
+          <div class="max-w-2xl">
             <h1 class="main-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
               <span>Capacity: {{ space.highlights.capacity }}</span>
               <span>Best for: Focused work</span>
               <span>Noise level: Quiet</span>
             </p>
-            <p class="mt-2 text-sm text-muted">
+            <p class="mt-2">
               Available in (
               <span v-for="(loc, i) in locations" :key="loc">
                 {{ loc }}<span v-if="i < locations.length - 1">, </span>
@@ -125,7 +207,12 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
               </label>
             </div>
           </div>
-          <button class="primary">Book Now</button>
+          <!-- Pricing Box -->
+          <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
+            <p class="body font-bold">{{ formattedPrice }}</p>
+            <p class="text-xs text-muted mt-1">Available</p>
+            <button class="primary w-full mt-4">Book Now</button>
+          </div>
         </div>
         <!-- Swiper Carousel -->
       </div>
@@ -139,11 +226,11 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         pagination
         class="mt-6 rounded-xl overflow-hidden"
       >
-        <SwiperSlide v-for="(img, index) in space.images" :key="index">
+        <SwiperSlide v-for="(img, index) in currentLocationData.images" :key="index">
           <img
             :src="img"
             :alt="`${space.name} workspace image ${index + 1}`"
-            class="object-cover w-full h-64 rounded-xl transition-transform duration-300"
+            class="object-cover w-full h-64 rounded-xl"
           />
         </SwiperSlide>
       </Swiper>
@@ -155,7 +242,7 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         <h2 class="mb-4">Workspace Features & Accessibility</h2>
 
         <!-- Quick facts row -->
-        <p class="flex flex-wrap gap-x-4 mb-6 ">
+        <p class="flex flex-wrap gap-x-4 mb-6">
           <span>Capacity: {{ space.highlights.capacity }}</span>
           <span>Best for: Focused work</span>
           <span>Noise level: Quiet</span>
@@ -186,27 +273,19 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
       </div>
     </section>
 
-    <!-- GOOD TO KNOW -->
-    <section class="">
-      <div class="container max-w-3xl">
-        <h2 class="mb-4">Good to Know</h2>
-        <ul class="space-y-1 text-sm text-muted">
-          <li>📞 Calls allowed in designated areas</li>
-          <li>🍽️ Food allowed (no strong odors)</li>
-          <li>⚡ Power backup available</li>
-        </ul>
-      </div>
-    </section>
-
     <!-- REVIEWS -->
     <section class="">
       <div class="container">
         <h2 class="mb-4">User Reviews</h2>
-        <div class="text-sm text-muted mb-4">
-          ⭐ 4.6 from {{ space.reviews.length }} reviews · Most users mention quietness & fast Wi-Fi
+        <div class="mb-4">
+          <p>
+            ⭐ {{ averageRating }} from {{ currentReviews.length }} reviews · Most users mention
+            quietness & fast Wi-Fi
+          </p>
         </div>
+
         <div class="grid md:grid-cols-3 gap-8">
-          <article v-for="r in space.reviews" :key="r.id" class="border rounded-lg p-4">
+          <article v-for="r in currentReviews" :key="r.id" class="border rounded-lg p-4">
             <div class="flex justify-between">
               <h3 class="font-semibold">{{ r.name }}</h3>
               <div class="flex">
@@ -244,6 +323,61 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
         </div>
       </div>
     </section>
+
+    <!-- CTA SECTION -->
+
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-semibold mb-4">For More Inquiries</h2>
+        <p class="text-sm text-muted mb-6">
+          Have questions or need more information about this workspace? Our team is here to help.
+        </p>
+
+        <!-- contact form -->
+        <form class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-start">
+          <!-- Name -->
+          <div class="flex flex-col">
+            <label for="name" class="mb-1 font-semibold text-sm">Your Name</label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Your Name"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="flex flex-col">
+            <label for="email" class="mb-1 font-semibold text-sm">Your Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Your Email"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <!-- Message -->
+          <div class="flex flex-col md:col-span-2">
+            <label for="message" class="mb-1 font-semibold">Your Message</label>
+            <textarea
+              id="message"
+              placeholder="Your Message"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="primary px-6 py-3 w-full md:col-span-2 mt-2">
+            Send Inquiry
+          </button>
+        </form>
+      </div>
+    </section>
   </main>
 </template>
 
@@ -258,16 +392,3 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
   opacity: 1;
 }
 </style>
-<!-- Pricing Box -->
-<!-- <div class="bg-bg shadow rounded-xl p-6 w-full md:w-80 justify-self-end text-text">
-                <p class="body">{{ formattedPrice }}</p>
-                <p class="text-xs text-muted mt-1">Includes Wi-Fi, power, and basic amenities</p>
-                <p class="text-xs text-muted mt-1">Available today · Instant confirmation</p>
-
-                <div class="mt-2 flex gap-x-2">
-                  <p>Capacity:</p>
-                  <p class="font-semibold">{{ space.highlights.capacity }}</p>
-                </div>
-
-                <button class="primary w-full mt-4">Book Now</button>
-              </div> -->
