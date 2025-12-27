@@ -128,16 +128,6 @@ onMounted(() => {
           </li>
         </ul>
 
-        <!-- Book Now Button (Desktop) -->
-        <div class="hidden lg:block">
-          <RouterLink
-            to="/bookings"
-            class="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-6 rounded-lg transition duration-300"
-          >
-            Book Now
-          </RouterLink>
-        </div>
-
         <!-- Mobile Toggle -->
         <div class="lg:hidden">
           <button
@@ -201,17 +191,6 @@ onMounted(() => {
               </transition>
             </li>
           </ul>
-
-          <!-- Book Now Button (Mobile) -->
-          <div class="px-4 py-4 border-t">
-            <RouterLink
-              to="/bookings"
-              @click="closeMobile"
-              class="block w-full bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-6 rounded-lg transition duration-300 text-center"
-            >
-              Book Now
-            </RouterLink>
-          </div>
         </nav>
       </transition>
     </div>
