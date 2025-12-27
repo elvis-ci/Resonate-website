@@ -47,8 +47,8 @@
     --color-card-bg: #111827;
     --color-card-bg2: #1f2933;
 
-    --color-primary: #a05a00;
-    --color-primary-hover: #e67e00;
+    --color-primary: #e67e00;
+    --color-primary-hover: #a05a00;
 
     --color-secondary: #e5e7eb;
     --color-secondary-hover: #f9fafb;
@@ -162,7 +162,7 @@ section.hero {
 
 /* fixes max width on section content */
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:py-24;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 md:p-24;
 }
 /* section end */
 
