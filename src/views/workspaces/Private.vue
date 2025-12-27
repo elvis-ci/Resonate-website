@@ -186,6 +186,11 @@ const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleStri
               :aria-expanded="faq.open"
             >
               <span>{{ faq.question }}</span>
+              <button
+                @click.stop="faq.open = !faq.open"
+                class="transition-transform w-4 h-4 duration-200 accordion text-primary :hover:text-primary-hover focus:outline-primary-hover"
+                :class="{ 'rotate-180': faq.open }"
+              ></button>
             </h3>
 
             <!-- Accordion Panel -->
