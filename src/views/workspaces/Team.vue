@@ -19,15 +19,26 @@ const locations = computed(() => {
 const selectedLocation = ref('')
 
 const space = ref({
-  name: 'Private Office',
+  name: 'Team Rooms',
   pricePerDay: 15000,
   highlights: {
-    capacity: '1 person',
+    capacity: '15 person',
   },
-  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Adjustable Screens'],
+  features: [
+    'Comfortable seating for small teams',
+    'High-speed Wi-Fi and stable power supply',
+    'Smart TV or monitor for presentations and screen sharing',
+    'Video conferencing setup for remote participants',
+    'Whiteboard and brainstorming tools',
+    'Soundproofed room for private discussions',
+    'Climate control for comfort',
+    'On-demand technical support',
+  ],
   accessibility: [
     'Wheelchair Accessible Entrance',
     'Adjustable Height Desks',
+    'Wheelchair-accessible seating layout',
+    'Adjustable lighting for focus and presentations',
     'Accessible Restroom',
     'Clear Signage',
   ],
@@ -182,7 +193,7 @@ watch(
             <h1 class="main-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
               <span>Capacity: {{ space.highlights.capacity }}</span>
-              <span>Best for: Focused work</span>
+              <span>Best for: Sprints & Team Meetings</span>
               <span>Noise level: Quiet</span>
             </p>
             <p class="mt-2">
