@@ -186,7 +186,7 @@ watch(
       <div class="container">
         <div class="flex justify-between items-center">
           <div class="max-w-2xl">
-            <h1 class="main-heading flex">{{ space.name }}</h1>
+            <h1 class="main-heading text-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
               <span>Capacity: {{ space.highlights.capacity }}</span>
               <span>Best for: Board Conference</span>
