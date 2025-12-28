@@ -20,7 +20,7 @@ const subscribe = (e) => {
 <template>
   <div class="hidden md:block relative w-full bg-red-900 -mt-12">
     <svg
-      class="w-full absolute -top-12 h-12"
+      class="w-full absolute -top-11 h-12"
       preserveAspectRatio="none"
       viewBox="0 0 1440 100"
       fill="none"
