@@ -2,7 +2,9 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
+// -----------------------------
 // Route configuration
+// -----------------------------
 const navRoutes = [
   { path: '/', title: 'Home', children: [] },
   {
@@ -35,165 +37,181 @@ const navRoutes = [
   { path: '/contact', title: 'Contact', children: [] },
 ]
 
+// -----------------------------
 // Mobile menu state
+// -----------------------------
 const isMobileOpen = ref(false)
 const mobileSubmenu = ref({})
-const toggleMobile = () => (isMobileOpen.value = !isMobileOpen.value)
+
+const toggleMobile = () => {
+  isMobileOpen.value = !isMobileOpen.value
+}
+
 const toggleSubmenu = (path) => {
   mobileSubmenu.value[path] = !mobileSubmenu.value[path]
 }
-const closeMobile = () => (isMobileOpen.value = false)
 
-// Nav scroll state
-const lastScrollY = ref(0)
+const closeMobile = () => {
+  isMobileOpen.value = false
+}
+
+// -----------------------------
+// Scroll-based nav visibility
+// -----------------------------
 const isNavVisible = ref(true)
+const lastScrollY = ref(window.scrollY)
 
-onMounted(() => {
-  // Scroll event listener
-  const handleScroll = () => {
-    const currentScroll = window.pageYOffset || document.documentElement.scrollTop
+const SCROLL_THRESHOLD = 10   // prevents flicker
+const HIDE_AFTER = 80         // keeps nav visible near top
 
-    // Sticky class
-    const topnav = document.getElementById('topnav')
-    if (topnav) {
-      if (currentScroll > 50) topnav.classList.add('nav-sticky')
-      else topnav.classList.remove('nav-sticky')
-    }
+const handleScroll = () => {
+  // Do not hide nav when mobile menu is open
+  if (isMobileOpen.value) return
 
-    // Back-to-top button
-    const backToTop = document.getElementById('back-to-top')
-    if (backToTop) backToTop.style.display = currentScroll > 100 ? 'inline' : 'none'
+  const currentScroll = window.scrollY
+  const delta = currentScroll - lastScrollY.value
 
-    // Scroll direction → hide/show nav
-    if (currentScroll > lastScrollY.value && currentScroll > 50) {
-      isNavVisible.value = false
-    } else {
-      isNavVisible.value = true
-    }
-
+  // Ignore tiny scroll movements but still update lastScrollY
+  if (Math.abs(delta) < SCROLL_THRESHOLD) {
     lastScrollY.value = currentScroll
+    return
   }
 
-  window.addEventListener('scroll', handleScroll)
-
-  // Key listener for Escape to close mobile menu
-  const handleKey = (e) => {
-    if (e.key === 'Escape' && isMobileOpen.value) closeMobile()
+  // Scroll down → hide nav (after offset)
+  if (delta > 0 && currentScroll > HIDE_AFTER) {
+    isNavVisible.value = false
   }
-  document.addEventListener('keydown', handleKey)
+  // Scroll up → show nav
+  else if (delta < 0) {
+    isNavVisible.value = true
+  }
 
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-    document.removeEventListener('keydown', handleKey)
+  lastScrollY.value = currentScroll
+}
+
+// -----------------------------
+// Lifecycle
+// -----------------------------
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll, { passive: true })
+
+  // Close mobile menu with Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMobileOpen.value) {
+      closeMobile()
+    }
   })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <template>
   <header
     id="topnav"
-    class="fixed top-0 z-1000 w-full backdrop-blur-xs transition-nav"
+    class="fixed top-0 z-1000 w-full backdrop-blur-xs transition-nav bg-gray-900/90"
     :class="{ 'nav-hidden': !isNavVisible }"
   >
-    <div class="communitynav">
-      <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
+    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
 
-        <!-- Logo -->
-        <div class="flex-shrink-0">
-          <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
-        </div>
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
+      </div>
 
-        <!-- Desktop Navigation -->
-        <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-          <li
-            v-for="route in navRoutes"
-            :key="route.path"
-            class="relative group py-4"
-            :class="{ 'has-children': route.children.length }"
+      <!-- Desktop Navigation -->
+      <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
+        <li
+          v-for="route in navRoutes"
+          :key="route.path"
+          class="relative group py-4"
+          :class="{ 'has-children': route.children.length }"
+        >
+          <RouterLink :to="route.path">{{ route.title }}</RouterLink>
+
+          <!-- Dropdown for children -->
+          <ul
+            v-if="route.children.length"
+            class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
           >
-            <RouterLink :to="route.path">{{ route.title }}</RouterLink>
-
-            <!-- Dropdown for children -->
-            <ul
-              v-if="route.children.length"
-              class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
-            >
-              <li v-for="child in route.children" :key="child.path">
-                <RouterLink :to="child.path" class="block px-4 py-2 text-text">
-                  {{ child.title }}
-                </RouterLink>
-              </li>
-            </ul>
-          </li>
-        </ul>
-
-        <!-- Mobile Toggle -->
-        <div class="lg:hidden">
-          <button
-            type="button"
-            @click="toggleMobile"
-            class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
-          >
-            <span class="sr-only">Open menu</span>
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-          </button>
-        </div>
-      </nav>
-
-      <!-- Mobile Menu -->
-      <transition name="slide-down">
-        <nav v-if="isMobileOpen" class="lg:hidden absolute w-full bg-bg border-t">
-          <ul class="px-4 py-2 space-y-1">
-            <li v-for="route in navRoutes" :key="`m-${route.path}`">
-              <div class="flex">
-                <RouterLink
-                  :to="route.path"
-                  @click="closeMobile"
-                  class="block w-full px-3 py-2 group router-link-active:text-primary"
-                >
-                  {{ route.title }}
-                </RouterLink>
-                <button
-                  v-if="route.children.length"
-                  @click.prevent="toggleSubmenu(route.path)"
-                  class="w-10"
-                  aria-label="toggle submenu"
-                >
-                  <span
-                    class="inline-block transition-transform duration-200 text-lg"
-                    :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
-                    >▴</span
-                  >
-                </button>
-              </div>
-
-              <!-- Mobile children -->
-              <transition name="slide-down">
-                <ul v-if="mobileSubmenu[route.path]" class="submenu pl-4 group-hover">
-                  <li v-for="child in route.children" :key="`m-${child.path}`">
-                    <RouterLink
-                      :to="child.path"
-                      @click="closeMobile"
-                      class="block px-3 py-2 router-link-active:text-primary"
-                    >
-                      {{ child.title }}
-                    </RouterLink>
-                  </li>
-                </ul>
-              </transition>
+            <li v-for="child in route.children" :key="child.path">
+              <RouterLink :to="child.path" class="block px-4 py-2 text-text">
+                {{ child.title }}
+              </RouterLink>
             </li>
           </ul>
-        </nav>
-      </transition>
-    </div>
+        </li>
+      </ul>
+
+      <!-- Mobile Toggle -->
+      <div class="lg:hidden">
+        <button
+          type="button"
+          @click="toggleMobile"
+          class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+        >
+          <span class="sr-only">Open menu</span>
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <transition name="slide-down">
+      <nav v-if="isMobileOpen" class="lg:hidden absolute w-full bg-gray-900">
+        <ul class="pr-4 py-2 space-y-1">
+          <li v-for="route in navRoutes" :key="`m-${route.path}`">
+            <div class="flex">
+              <RouterLink
+                :to="route.path"
+                @click="closeMobile"
+                class="block w-full px-3 py-2 group router-link-active:text-primary"
+              >
+                {{ route.title }}
+              </RouterLink>
+              <button
+                v-if="route.children.length"
+                @click.prevent="toggleSubmenu(route.path)"
+                class="w-10"
+                aria-label="toggle submenu"
+              >
+                <span
+                  aria-hidden="true"
+                  class="inline-block transition-transform duration-200 text-lg text-white"
+                  :class="!mobileSubmenu[route.path] ? '' : 'rotate-180'"
+                  >▴</span
+                >
+              </button>
+            </div>
+
+            <!-- Mobile children -->
+            <transition name="slide-down" class="">
+              <ul v-if="mobileSubmenu[route.path]" class="mobile-submenu pl-4 group-hover">
+                <li v-for="child in route.children" :key="`m-${child.path}`">
+                  <RouterLink
+                    :to="child.path"
+                    @click="closeMobile"
+                    class="block px-3 py-2 router-link-active:text-primary"
+                  >
+                    {{ child.title }}
+                  </RouterLink>
+                </li>
+              </ul>
+            </transition>
+          </li>
+        </ul>
+      </nav>
+    </transition>
   </header>
 </template>
 
@@ -294,7 +312,13 @@ header {
   font-size: 0.875rem;
   z-index: 1000;
 }
-
+.mobile-submenu {
+  font-size: 0.875rem;
+  z-index: 1000;
+}
+.mobile-submenu a {
+  color: rgb(215, 214, 214);
+}
 .has-children > a {
   position: relative;
   padding-right: 1rem;
