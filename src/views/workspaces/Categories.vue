@@ -5,18 +5,18 @@ import BookingFormModal from '@/components/BookingFormModal.vue'
 
 const workspaces = [
   {
-    title: 'Single Workspace',
+    title: 'General Workspace',
     description:
       'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
     image: '/images/coworking/about.webp',
-    alt: 'Single Workspace',
+    alt: 'General Workspace',
     features: [
       'Dedicated desk with storage',
       'High-speed WiFi and power outlets',
       'Access to meeting rooms',
       'Coffee and refresh station',
     ],
-    route: '/workspaces/single-workspace',
+    route: '/workspaces/general-workspace',
   },
   {
     title: 'Private Rooms',
