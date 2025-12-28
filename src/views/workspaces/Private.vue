@@ -20,7 +20,7 @@ const selectedLocation = ref('')
 
 const space = ref({
   name: 'Private Office',
-  pricePerDay: 15000,
+  pricePerDay: 25000,
   highlights: {
     capacity: '1 person',
   },
