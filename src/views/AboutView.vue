@@ -275,5 +275,60 @@ const features = [
         </div>
       </div>
     </section>
+
+    <!-- Partnership form -->
+    <!-- Form Section -->
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+      <div class="max-w-4xl mx-auto text-center">
+        <h2 class="text-2xl font-semibold mb-4">For Partnership and Inquiries</h2>
+        <p class="text-sm text-muted mb-6">
+          Have questions or need more information about us? feel free to reach out.
+        </p>
+
+        <!-- contact form -->
+        <form class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-start">
+          <!-- Name -->
+          <div class="flex flex-col">
+            <label for="name" class="mb-1 font-semibold text-sm">Your Name</label>
+            <input
+              id="name"
+              type="text"
+              placeholder="Your Name"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="flex flex-col">
+            <label for="email" class="mb-1 font-semibold text-sm">Your Email</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Your Email"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+            />
+          </div>
+
+          <!-- Message -->
+          <div class="flex flex-col md:col-span-2">
+            <label for="message" class="mb-1 font-semibold">Your Message</label>
+            <textarea
+              id="message"
+              placeholder="Your Message"
+              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="primary px-6 py-3 w-full md:col-span-2 mt-2">
+            Send Inquiry
+          </button>
+        </form>
+      </div>
+    </section>
   </main>
 </template>
