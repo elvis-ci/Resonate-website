@@ -19,17 +19,28 @@ const locations = computed(() => {
 const selectedLocation = ref('')
 
 const space = ref({
-  name: 'Private Office',
+  name: 'General Space',
   pricePerDay: 15000,
   highlights: {
     capacity: '1 person',
   },
-  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Adjustable Screens'],
+  features: [
+    'Flexible open seating arrangement',
+    'Comfortable chairs and shared tables',
+    'Reliable power supply with shared charging points',
+    'High-speed Wi-Fi across the seating area',
+    'Good natural and ambient lighting',
+    'Quiet zones and casual collaboration areas',
+    'Climate-controlled environment',
+    'Regular cleaning and maintenance',
+  ],
   accessibility: [
-    'Wheelchair Accessible Entrance',
-    'Adjustable Height Desks',
-    'Accessible Restroom',
-    'Clear Signage',
+    'Step-free and wheelchair-accessible entry',
+    'Clear, wide walkways between seating areas',
+    'Designated wheelchair seating spaces',
+    'Accessible restrooms nearby',
+    'Clear visual signage and wayfinding',
+    'Non-slip flooring throughout the space',
   ],
   locations: {
     Lagos: {
