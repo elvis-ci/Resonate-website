@@ -39,7 +39,7 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   @theme {
     --color-bg: #0f172a;
     --color-alt-bg: #111827;
@@ -79,7 +79,7 @@
   :root {
     color-scheme: dark;
   }
-}
+} */
 
 @font-face {
   font-family: 'Nunito';
@@ -168,7 +168,7 @@ section div.container {
 
 /* headings */
 .main-heading {
-  @apply text-4xl sm:text-5xl md:text-5xl font-bold;
+  @apply text-4xl sm:text-5xl md:text-5xl font-bold ;
 }
 
 /* h1 {
@@ -204,7 +204,7 @@ p.white {
 /* Buttons */
 /* Primary Button */
 button.primary {
-  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-bold bg-primary text-white rounded-lg hover:bg-primary-hover focus:bg-primary-hover transition-colors duration-200 active:scale-95;
+  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 mt-4 inline-block text-sm sm:text-base md:text-base lg:text-lg font-bold bg-primary text-white rounded-lg hover:bg-primary-hover focus:bg-primary-hover transition-colors duration-200 active:scale-95;
 }
 a.primary {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 mt-4 inline-block text-sm sm:text-base md:text-base lg:text-lg font-bold bg-primary text-secondary rounded-lg hover:bg-primary-hover focus:bg-primary-hover transition-colors duration-200 active:scale-95;
@@ -212,11 +212,10 @@ a.primary {
 
 /* Secondary Button */
 button.secondary {
-  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold  border border-primary-hover text-primary-hover 
-  rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
+  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 mt-4 inline-block text-sm sm:text-base md:text-base lg:text-lg font-bold  border-[1.5px] border-primary-hover text-primary-hover rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 a.secondary {
-  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 sm:py-2.5 md:py-3 lg:py-3.5 text-sm sm:text-base md:text-base lg:text-lg font-semibold bg-primary/0 border border-primary-hover text-secondary-text 
+  @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 mt-4 inline-block text-sm sm:text-base md:text-base lg:text-lg font-bold bg-primary/0 border-[1.5px] border-primary-hover text-secondary-text 
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
 /* Buttons end */
