@@ -186,7 +186,7 @@ watch(
 <template>
   <main id="maincontent">
     <!-- HERO & QUICK FACTS -->
-    <section class="hero py-12 md:py-16">
+    <section class="">
       <div class="container">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-8">
           <!-- Text Content -->
@@ -238,7 +238,7 @@ watch(
     <!-- carousel -->
     <section>
       <!-- Swiper Carousel -->
-      <div class="mt-12 md:mt-16 relative z-0 isolate">
+      <div class=" relative z-0 isolate">
         <Swiper
           :slides-per-view="1.1"
           :space-between="16"
