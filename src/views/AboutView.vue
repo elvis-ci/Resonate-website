@@ -87,7 +87,7 @@ const features = [
 <template>
   <main id="maincontent">
     <!-- Hero Section -->
-    <section class="relative bg-linear-to-b from-primary/20 to-primary/15">
+    <!-- <section class="relative bg-linear-to-b from-primary/20 to-primary/15">
       <div class="container">
         <div class="text-center">
           <h1 class="main-heading text-heading mb-4">About Us</h1>
@@ -96,10 +96,9 @@ const features = [
           </p>
         </div>
       </div>
-    </section>
-
+    </section> -->
     <!-- Wave Divider -->
-    <div class="relative w-full overflow-hidden bg-linear-to-b from-primary/15 to-primary/5">
+    <!-- <div class="relative w-full overflow-hidden bg-linear-to-b from-primary/15 to-primary/5">
       <svg
         class="w-full block text-alt-bg"
         preserveAspectRatio="none"
@@ -109,7 +108,21 @@ const features = [
       >
         <path d="M0,0 C360,100 1080,100 1440,0 L1440,100 L0,100 Z" fill="currentColor" />
       </svg>
-    </div>
+    </div> -->
+
+    <!-- Hero Section -->
+    <section
+      class="relative sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center"
+    >
+      <div class="container">
+        <div class="text-center">
+          <h1 class="main-heading text-heading mb-4">About Us</h1>
+          <p class="max-w-2xl mx-auto">
+            Learn more about Resonate and our mission to create the perfect coworking space
+          </p>
+        </div>
+      </div>
+    </section>
 
     <!-- Our Story Section -->
     <section id="our-story" class="bg-alt-bg">
@@ -148,10 +161,10 @@ const features = [
           <div>
             <h2 class="mb-4">Our Story</h2>
             <p class="mb-4">
-              <span class="text-primary-text font-bold">Resonate</span> was born from a vision to create a
-              coworking space that truly understands the needs of modern professionals. We believe
-              that productivity isn't just about having a desk—it's about creating an environment
-              where people can thrive.
+              <span class="text-primary-text font-bold">Resonate</span> was born from a vision to
+              create a coworking space that truly understands the needs of modern professionals. We
+              believe that productivity isn't just about having a desk—it's about creating an
+              environment where people can thrive.
             </p>
             <p class="mb-4">
               From freelancers to startup teams, our community is built on the foundation of
@@ -171,14 +184,14 @@ const features = [
             <h2 class="mb-6">Our Mission & Vision</h2>
             <div class="space-y-4">
               <div class="bg-card-bg2 border-l-4 border-primary p-6 rounded shadow-sm">
-                <h3 class="mb-2 "><span class="text-primary-text">Mission</span></h3>
+                <h3 class="mb-2"><span class="text-primary-text">Mission</span></h3>
                 <p class="">
                   To provide affordable, accessible, and inspiring coworking spaces where
                   entrepreneurs and professionals can collaborate, grow, and succeed together.
                 </p>
               </div>
               <div class="bg-card-bg2 border-l-4 border-alternate p-6 rounded shadow-sm">
-                <h3 class="mb-2 "><span class="text-primary-text">Vision</span></h3>
+                <h3 class="mb-2"><span class="text-primary-text">Vision</span></h3>
                 <p class="">
                   A world where location and circumstance don't limit opportunity; where work is
                   flexible, community is thriving, and everyone has a place to achieve their goals.
