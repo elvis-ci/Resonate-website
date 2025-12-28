@@ -19,14 +19,26 @@ const locations = computed(() => {
 const selectedLocation = ref('')
 
 const space = ref({
-  name: 'Private Office',
-  pricePerDay: 15000,
+  name: 'Seminar Halls',
+  pricePerDay: 400000,
   highlights: {
-    capacity: '1 person',
+    capacity: '800 Seats',
   },
-  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Adjustable Screens'],
+  features: [
+    'Seating capacity for up to 500 attendees',
+    'Professional stage with lectern and backdrop',
+    'High-quality PA system with wireless microphones',
+    'Large LED screen / projector with HDMI & AV inputs',
+    'High-speed Wi-Fi for speakers and attendees',
+    'Central air-conditioning and proper ventilation',
+    'Soundproofed hall with acoustic treatment',
+    'On-site technical and event support',
+  ],
   accessibility: [
     'Wheelchair Accessible Entrance',
+    'Wheelchair-accessible seating and stage access',
+    'Assistive listening system for hearing-impaired users',
+    'Clear aisle spacing and emergency exits',
     'Adjustable Height Desks',
     'Accessible Restroom',
     'Clear Signage',
