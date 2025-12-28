@@ -14,7 +14,7 @@ const navRoutes = [
     path: '/workspaces',
     title: 'Workspaces',
     children: [
-      { path: '/workspaces/single-workspace', title: 'Single Workspace' },
+      { path: '/workspaces/General-workspace', title: 'General Workspace' },
       { path: '/workspaces/private-rooms', title: 'Private Rooms' },
       { path: '/workspaces/team-sprint-rooms', title: 'Team Sprint Rooms' },
       { path: '/workspaces/conference-rooms', title: 'Conference Rooms' },
