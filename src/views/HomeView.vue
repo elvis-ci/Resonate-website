@@ -95,23 +95,6 @@ onMounted(() => {
     </section>
     <!-- Hero End -->
 
-    <!-- Partners -->
-    <section class="bg-alt-bg text-text">
-      <div class="container">
-        <h2 class="text-center">Trusted by over 100+ companies worldwide</h2>
-        <div class="grid grid-cols-3 sm:grid-cols-6 gap-4 mt-8">
-          <div v-for="logo in 6" :key="logo" class="flex justify-center">
-            <img
-              src="/images/coworking/about.webp"
-              class="h-12 w-12 sm:h-16 sm:w-16 object-contain"
-              alt=""
-              loading="lazy"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- about -->
     <section>
       <div class="container mx-auto">
@@ -135,10 +118,10 @@ onMounted(() => {
 
               <p class="">
                 Start working with
-                <span class="text-primary-text font-bold">Resonate</span>, a coworking community designed
-                to help ideas grow and people thrive. Whether you need a quiet space to focus or a
-                collaborative environment to connect, Resonate offers flexible, accessible
-                workspaces that support productivity—without the premium price tag.
+                <span class="text-primary-text font-bold">Resonate</span>, a coworking community
+                designed to help ideas grow and people thrive. Whether you need a quiet space to
+                focus or a collaborative environment to connect, Resonate offers flexible,
+                accessible workspaces that support productivity—without the premium price tag.
               </p>
 
               <a href="javascript:void(0)" class="primary"> Join Now </a>
@@ -155,8 +138,8 @@ onMounted(() => {
           <h2 class="">Your Comfort Is Our Priority</h2>
           <p class="">
             Build your best workday at
-            <span class="text-primary-text font-bold">Resonate</span> — a coworking space thoughtfully
-            designed for comfort, focus, and connection.
+            <span class="text-primary-text font-bold">Resonate</span> — a coworking space
+            thoughtfully designed for comfort, focus, and connection.
           </p>
         </div>
 
@@ -169,9 +152,9 @@ onMounted(() => {
             <div class="flex justify-center">
               <component :is="service.icon" class="text-primary" :size="40" />
             </div>
-            <h3 class="my-3">
+            <p class="my-3 font-semibold">
               {{ service.name }}
-            </h3>
+            </p>
           </div>
         </div>
       </div>
@@ -245,7 +228,7 @@ onMounted(() => {
               </button> -->
 
               <button
-              aria-label="Play Video of Resonate Coworking Space"
+                aria-label="Play Video of Resonate Coworking Space"
                 @click="showModal = true"
                 class="bg-white text-primary flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 transition"
               >
@@ -265,11 +248,55 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+        <!-- Partners -->
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
+      <div>
+        <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
+          Trusted by over 100+ companies worldwide
+        </h2>
+        <div class="overflow-hidden">
+          <div class="flex animate-scroll space-x-12">
+            <div v-for="logo in 6" :key="'logo1-' + logo" class="flex-shrink-0">
+              <img
+                src="/images/coworking/about.webp"
+                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+            <!-- Repeat logos to make seamless loop -->
+            <div v-for="logo in 6" :key="'logo2-' + logo" class="flex-shrink-0">
+              <img
+                src="/images/coworking/about.webp"
+                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 </template>
 
 <style scoped>
 p {
   padding-inline: 0px;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 15s linear infinite;
 }
 </style>

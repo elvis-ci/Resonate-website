@@ -238,9 +238,9 @@ const features = [
 
             <!-- Text -->
             <div>
-              <h3 class="">
+              <p class=" font-semibold">
                 {{ feature.title }}
-              </h3>
+              </p>
               <!-- <p class="text-sm text-gray-600 mt-1">
                     {{ feature.description }}
                   </p> -->
@@ -277,9 +277,8 @@ const features = [
     </section>
 
     <!-- Partnership form -->
-    <!-- Form Section -->
     <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
-      <div class="max-w-4xl mx-auto text-center">
+      <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="text-2xl font-semibold mb-4">For Partnership and Inquiries</h2>
         <p class="text-sm text-muted mb-6">
           Have questions or need more information about us? feel free to reach out.

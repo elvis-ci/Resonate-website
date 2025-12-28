@@ -93,80 +93,87 @@ const closeBooking = () => {
 </script>
 
 <template>
-  <main id="maincontent">
-    <!-- Hero Section -->
-    <section class="sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center">
-      <div class="max-w-7xl mx-auto px-4 sm:py-12">
-        <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
-        <p class="mb-8 max-w-4xl mx-auto">
-          Explore our flexible workspace solutions designed for every professional. From solo work
-          to large team gatherings, we have the perfect space for you.
-        </p>
-        <p>Find the perfect workspace in your location.</p>
-        <RouterLink class="primary" :to="'/workspaces'">Go to Booking</RouterLink>
-      </div>
-    </section>
+  <!-- Hero Section -->
+  <section class="sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center">
+    <div class="container">
+      <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
+      <p class="mb-8 max-w-4xl mx-auto">
+        Explore our flexible workspace solutions designed for every professional. From solo work to
+        large team gatherings, we have the perfect space for you.
+      </p>
+      <p>Find the perfect workspace in your location.</p>
+      <RouterLink class="primary" :to="'/workspaces'">Go to Booking</RouterLink>
+    </div>
+  </section>
 
-    <!-- Workspace Sections (Dynamic) -->
-    <section
-      v-for="(workspace, index) in workspaces"
-      :key="workspace.title"
-      :class="['py-12', workspace.altBg && 'bg-alt-bg']"
-    >
-      <div class="container px-4">
-        <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
-          <!-- Image Column -->
-          <div :class="index % 2 === 0 ? 'order-2 md:order-1' : ''">
+  <!-- Workspace Sections (Dynamic) -->
+  <section
+    v-for="(workspace, index) in workspaces"
+    :key="workspace.title"
+    :class="index % 2 === 0 ? 'bg-alt-bg' : ''"
+  >
+    <div class="container px-4">
+      <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <!-- Content Column -->
+        <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
+          <h2 class="mb-4">{{ workspace.title }}</h2>
+
+          <!-- Image (mobile placement) -->
+          <div class="md:hidden mb-4">
             <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
           </div>
 
-          <!-- Content Column -->
-          <div :class="index % 2 === 0 ? 'order-1 md:order-2' : ''">
-            <h2 class="mb-4">{{ workspace.title }}</h2>
+          <p class="mb-4">
+            {{ workspace.description }}
+          </p>
 
-            <p class="mb-4">
-              {{ workspace.description }}
-            </p>
+          <ul class="space-y-3 mb-8 text-body">
+            <li v-for="feature in workspace.features" :key="feature" class="flex items-start">
+              <span class="text-primary-text font-bold mr-3">✓</span>
+              <span>{{ feature }}</span>
+            </li>
+          </ul>
 
-            <ul class="space-y-3 mb-8 text-body">
-              <li v-for="feature in workspace.features" :key="feature" class="flex items-start">
-                <span class="text-primary-text font-bold mr-3">✓</span>
-                <span>{{ feature }}</span>
-              </li>
-            </ul>
+          <div class="flex flex-col sm:flex-row gap-1">
+            <RouterLink :to="workspace.route" class="secondary w-full sm:w-auto text-center">
+              View
+            </RouterLink>
 
-            <!-- Dynamic RouterLink for each workspace -->
-            <div class="flex gap-4">
-              <!-- View button -->
-              <RouterLink :to="workspace.route" class="secondary"> View </RouterLink>
-
-              <!-- Book Now button -->
-              <button class="primary" @click="openBooking(workspace.title)">Book Now</button>
-            </div>
+            <button class="primary w-full sm:w-auto" @click="openBooking(workspace.title)">
+              Book Now
+            </button>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- CTA Section -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
-      <div class="max-w-4xl mx-auto px-4 text-center">
-        <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
-        <p class="text-lg mb-8 opacity-90">
-          Book a tour today and discover why Resonate is the best coworking solution for your needs.
-        </p>
-        <RouterLink to="/workspaces" class="inline-block primary"> Start Booking Now </RouterLink>
+        <!-- Image Column (desktop only) -->
+        <div class="hidden md:block" :class="index % 2 === 0 ? 'md:order-1' : 'md:order-2'">
+          <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <dialog @click.self="closeBooking" ref="bookingDialog" class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0">
-      <BookingFormModal :workspaceType="selectedWorkspace" @close="closeBooking" />
-    </dialog>
-  </main>
+  <!-- CTA Section -->
+  <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
+      <p class="text-lg mb-8 opacity-90">
+        Book a tour today and discover why Resonate is the best coworking solution for your needs.
+      </p>
+      <RouterLink to="/workspaces" class="inline-block primary"> Start Booking Now </RouterLink>
+    </div>
+  </section>
+
+  <dialog
+    @click.self="closeBooking"
+    ref="bookingDialog"
+    class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
+  >
+    <BookingFormModal :workspaceType="selectedWorkspace" @close="closeBooking" />
+  </dialog>
 </template>
 <style scoped>
-  dialog {
+dialog {
   overscroll-behavior: contain;
 }
-
 </style>
