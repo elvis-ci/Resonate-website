@@ -19,12 +19,19 @@ const locations = computed(() => {
 const selectedLocation = ref('')
 
 const space = ref({
-  name: 'Private Office',
+  name: 'Conference Halls',
   pricePerDay: 15000,
   highlights: {
-    capacity: '1 person',
+    capacity: '10 - 15 person',
   },
-  features: ['24/7 Power Supply', 'High-speed Internet', 'Ergonomic Chairs', 'Adjustable Screens'],
+features: [
+  'Large conference table with comfortable seating',
+  'Smart TV / Projector with HDMI & wireless screen sharing',
+  'Video conferencing setup (camera, microphone & speakers)',
+  'Whiteboard and presentation tools',
+  'Soundproofed room for private meetings',
+  'On-site technical support on request',
+],
   accessibility: [
     'Wheelchair Accessible Entrance',
     'Adjustable Height Desks',
@@ -182,7 +189,7 @@ watch(
             <h1 class="main-heading flex">{{ space.name }}</h1>
             <p class="flex flex-wrap gap-x-4 mb-4">
               <span>Capacity: {{ space.highlights.capacity }}</span>
-              <span>Best for: Focused work</span>
+              <span>Best for: Board Conference</span>
               <span>Noise level: Quiet</span>
             </p>
             <p class="mt-2">
