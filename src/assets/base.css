@@ -162,7 +162,7 @@ section.hero {
 
 /* fixes max width on section content */
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 md:py-14;
 }
 /* section end */
 
@@ -213,7 +213,6 @@ a.secondary {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 mt-4 inline-block text-base sm:text-base md:text-base lg:text-base font-bold bg-primary/0 border-[1.5px] border-primary-hover text-secondary-text 
   rounded-lg hover:bg-primary-hover/30 focus:bg-primary-hover/30  transition-opacity duration-200 active:scale-95;
 }
-
 
 /* Extras */
 /* Ribbon wrapper */
