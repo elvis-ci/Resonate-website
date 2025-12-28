@@ -37,8 +37,8 @@ const routes = [
         meta: { title: 'Workspace — Categories' },
       },
       {
-        path: 'single-workspace',
-        name: 'single-workspace',
+        path: 'general-workspace',
+        name: 'general-workspace',
         component: () => import('../views/workspaces/Single.vue'),
         meta: { title: 'Workspace — Single Space' },
       },
