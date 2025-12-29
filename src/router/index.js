@@ -136,6 +136,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+
+  scrollBehavior(to, from, savedPosition) {
+    // Back / forward button
+    if (savedPosition) {
+      return savedPosition
+    }
+
+    // Every new navigation starts at the top
+    return { top: 0 }
+  },
 })
 
 // Set document title from route meta
