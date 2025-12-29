@@ -105,7 +105,7 @@ body {
 }
 
 main {
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 /* nav */
@@ -157,7 +157,7 @@ nav > ul > li:focus-within {
 
 /* section */
 section.hero {
-  @apply relative my-0 py-0 w-full h-screen text-white;
+  @apply relative my-0 py-0 w-full h-[100dvh] text-white;
 }
 
 /* fixes max width on section content */
