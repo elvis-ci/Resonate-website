@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 const events = ref([
   {
@@ -127,28 +127,74 @@ const events = ref([
     ],
   },
 ])
+
+// 🔹 Countdown values
+const days = ref('00')
+const hours = ref('00')
+const minutes = ref('00')
+const seconds = ref('00')
+
+let timer = null
+
+// 🔹 Set your event date (match the HERO content)
+const eventDate = new Date('March 11, 2026 00:00:00').getTime()
+
+const updateCountdown = () => {
+  const now = new Date().getTime()
+  const distance = eventDate - now
+
+  if (distance <= 0) {
+    days.value = hours.value = minutes.value = seconds.value = '00'
+    clearInterval(timer)
+    return
+  }
+
+  days.value = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0')
+  hours.value = String(
+    Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  ).padStart(2, '0')
+  minutes.value = String(
+    Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+  ).padStart(2, '0')
+  seconds.value = String(
+    Math.floor((distance % (1000 * 60)) / 1000)
+  ).padStart(2, '0')
+}
+
+onMounted(() => {
+  updateCountdown()
+  timer = setInterval(updateCountdown, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(timer)
+})
 </script>
 
 <template>
   <div class="overflow-x-hidden">
     
     <!-- HERO -->
+  <div class="overflow-x-hidden">
+    <!-- HERO -->
     <section
       class="relative min-h-screen flex items-center bg-cover bg-center"
       :style="{
-        'background-image': 'url(/images/coworking/about.webp)',
-        'background-size': 'cover',
-        'background-position': 'center',
+        backgroundImage: 'url(/images/coworking/about.webp)',
       }"
     >
+      <!-- Overlay -->
       <div class="absolute inset-0 bg-black/60"></div>
 
+      <!-- Content -->
       <div class="relative z-10 container px-4 text-center">
-        <p class="font-bold mb-4 white">Upcoming Event</p>
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
-          Digital Conference 202021
+        <p class="white bold">Upcoming Event</p>
+
+        <h1 class="main-heading text-white mb-4">
+          Digital Conference 2025
         </h1>
-        <p class=" text-green-400 mb-2">11th October, 2020</p>
+
+        <p class="white mb-2 font-bold">11th October, 2025</p>
 
         <p class="white max-w-2xl mx-auto mb-8">
           Launch your campaign and benefit from our expertise on designing and managing
@@ -157,16 +203,28 @@ const events = ref([
 
         <!-- COUNTDOWN -->
         <div class="flex flex-wrap justify-center gap-6 mb-10">
-          <div
-            v-for="(val, label) in { Days: days, Hours: hours, Minutes: minutes, Seconds: seconds }"
-            :key="label"
-            class="text-white text-center"
-          >
-            <div class="text-3xl sm:text-4xl font-bold">{{ val }}</div>
-            <div class="text-sm mt-1">{{ label }}</div>
+          <div class="text-white text-center">
+            <div class="text-3xl sm:text-4xl font-bold">{{ days }}</div>
+            <div class="text-sm mt-1">Days</div>
+          </div>
+
+          <div class="text-white text-center">
+            <div class="text-3xl sm:text-4xl font-bold">{{ hours }}</div>
+            <div class="text-sm mt-1">Hours</div>
+          </div>
+
+          <div class="text-white text-center">
+            <div class="text-3xl sm:text-4xl font-bold">{{ minutes }}</div>
+            <div class="text-sm mt-1">Minutes</div>
+          </div>
+
+          <div class="text-white text-center">
+            <div class="text-3xl sm:text-4xl font-bold">{{ seconds }}</div>
+            <div class="text-sm mt-1">Seconds</div>
           </div>
         </div>
 
+        <!-- CTA -->
         <button
           @click="navigateTo('community-events')"
           class="primary tracking-wider font-bold"
@@ -175,7 +233,7 @@ const events = ref([
         </button>
       </div>
     </section>
-
+  </div>
     <!-- EVENTS SECTIONS -->
     <section class=" bg-alt-bg">
       <div class="container mx-auto max-w-7xl px-4">
