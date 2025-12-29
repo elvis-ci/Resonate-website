@@ -251,7 +251,7 @@ const features = [
     </section>
 
     <!-- Team Section -->
-    <section id="team" class="pb-20">
+    <section id="team" class="">
       <div class="container px-4">
         <div class="text-center mb-12">
           <h2 class="mb-4">Meet Our Team</h2>
@@ -277,7 +277,7 @@ const features = [
     </section>
 
     <!-- Partnership form -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+    <section class="py-12 md:py-20 bg-linear-to-t from-primary/20 to-primary/0">
       <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="text-2xl font-semibold mb-4">For Partnership and Inquiries</h2>
         <p class="text-sm text-muted mb-6">

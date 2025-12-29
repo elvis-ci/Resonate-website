@@ -162,7 +162,7 @@ section.hero {
 
 /* fixes max width on section content */
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-9 md:py-20;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20;
 }
 /* section end */
 
