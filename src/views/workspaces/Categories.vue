@@ -146,7 +146,7 @@ const closeBooking = () => {
         </div>
 
         <!-- Image Column (desktop only) -->
-        <div class="hidden md:block" :class="index % 2 === 0 ? 'md:order-1' : 'md:order-2'">
+        <div class="hidden md:block" >
           <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
         </div>
       </div>
