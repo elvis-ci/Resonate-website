@@ -45,7 +45,7 @@ const submitForm = () => {
     <div class="container max-w-6xl mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-14">
         <!-- CONTACT FORM -->
-        <div class="bg-card-bg rounded-2xl shadow-soft px-8">
+        <div class="bg-card-bg rounded-2xl shadow-soft">
           <h2 class="mb-6">Send Us a Message</h2>
 
           <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-5">
@@ -57,7 +57,7 @@ const submitForm = () => {
                 type="text"
                 required
                 placeholder="Your full name"
-                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-border focus:ring-primary focus:border-primary"
+                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-body focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -69,7 +69,7 @@ const submitForm = () => {
                 type="email"
                 required
                 placeholder="you@example.com"
-                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-border focus:ring-primary focus:border-primary"
+                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-body focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -80,7 +80,7 @@ const submitForm = () => {
                 v-model="form.subject"
                 type="text"
                 placeholder="How can we help?"
-                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-border focus:ring-primary focus:border-primary"
+                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-body focus:ring-primary focus:border-primary"
               />
             </div>
 
@@ -92,46 +92,46 @@ const submitForm = () => {
                 rows="5"
                 required
                 placeholder="Write your message here..."
-                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-border focus:ring-primary focus:border-primary"
+                class="w-full px-4 py-3 rounded-md bg-card-bg2 border border-body focus:ring-primary focus:border-primary"
               ></textarea>
             </div>
 
-            <button type="submit" class="primary mt-4 w-fit">Send Message</button>
+            <button type="submit" class="primary mt-2 w-full md:w-fit">Send Message</button>
           </form>
         </div>
 
         <!-- CONTACT DETAILS -->
-        <div class="flex flex-col gap-8">
-          <div>
-            <h2>Contact Information</h2>
+        <div class="flex flex-col gap-4">
+          <div class="">
+            <h2 class="">Contact Information</h2>
             <p class="mt-2 text-muted">You can also reach us directly via the channels below.</p>
           </div>
 
-          <div class="bg-card-bg rounded-2xl shadow-soft px-6 space-y-4">
+          <div class="bg-card-bg rounded-2xl shadow-soft space-y-4">
             <div>
-              <p class="font-semibold text-heading">Support Email</p>
+              <p class="contact font-semibold text-heading">Support Email</p>
               <a href="mailto:support@yourworkspace.com" class="text-primary">
                 support@yourworkspace.com
               </a>
             </div>
 
             <div>
-              <p class="font-semibold text-heading">General Enquiries</p>
+              <p class="contact font-semibold text-heading">General Enquiries</p>
               <a href="mailto:hello@yourworkspace.com" class="text-primary">
                 hello@yourworkspace.com
               </a>
             </div>
 
             <div>
-              <p class="font-semibold text-heading">Call Us</p>
+              <p class="contact font-semibold text-heading">Call Us</p>
               <a href="tel:+2348000000000" class="text-primary"> +234 800 000 0000 </a>
             </div>
           </div>
 
           <!-- SOCIAL LINKS -->
-          <div class="bg-card-bg rounded-2xl shadow-soft p-6">
+          <div class="bg-card-bg rounded-2xl shadow-soft p-6 text-center">
             <h3 class="mb-4">Connect With Us</h3>
-            <ul class="flex gap-6">
+            <ul class="flex gap-6 justify-center">
               <li>
                 <a
                   href="https://www.linkedin.com"
@@ -169,3 +169,9 @@ const submitForm = () => {
     </div>
   </section>
 </template>
+
+<style scoped>
+  p.contact{
+    margin-bottom: 2px;
+  }
+</style>
