@@ -25,13 +25,15 @@ const navRoutes = [
   },
   {
     path: '/community',
-    title: 'Community',
+        title: 'Events',
+
+    // title: 'Community',
     children: [
-      { path: '/community/events', title: 'Events' },
-      { path: '/community/opportunities', title: 'Opportunities' },
-      { path: '/community/resources', title: 'Resources' },
-      { path: '/community/mentorship', title: 'Mentorship' },
-      { path: '/community/stories', title: 'Stories' },
+      // { path: '/community/events', title: 'Events' },
+      // { path: '/community/opportunities', title: 'Opportunities' },
+      // { path: '/community/resources', title: 'Resources' },
+      // { path: '/community/mentorship', title: 'Mentorship' },
+      // { path: '/community/stories', title: 'Stories' },
     ],
   },
   { path: '/contact', title: 'Contact', children: [] },
@@ -145,7 +147,7 @@ onUnmounted(() => {
           </ul>
         </li>
       </ul>
-
+<button class="primary">Contact</button>
       <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
