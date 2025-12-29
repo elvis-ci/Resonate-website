@@ -30,14 +30,14 @@ const subscribe = (e) => {
     </svg>
   </div>
 
-  <footer class="bg-gray-900 text-gray-200 pb-[env(safe-area-inset-bottom)]">
+  <footer class="bg-gray-900 text-gray-200">
     <div class="container mx-auto px-4 py-12">
       <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
         <!-- About / Social -->
         <div>
           <p class="white mb-4">
-            Start working with <span class="text-primary-text font-bold">Resonate</span> that can provide everything you need to generate awareness,
-            drive traffic, connect.
+            Start working with <span class="text-primary-text font-bold">Resonate</span> that can
+            provide everything you need to generate awareness, drive traffic, connect.
           </p>
           <div class="flex space-x-3 mt-4">
             <a
@@ -158,7 +158,7 @@ const subscribe = (e) => {
     </div>
 
     <!-- Footer Bottom -->
-    <div class="bg-gray-800 py-4">
+    <div class="bg-gray-800 py-4 pb-[env(safe-area-inset-bottom)]">
       <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
         © {{ currentYear }} Resonate. All Rights Reserved.
       </div>
