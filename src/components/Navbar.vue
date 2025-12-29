@@ -25,7 +25,7 @@ const navRoutes = [
   },
   {
     path: '/community',
-        title: 'Events',
+    title: 'Events',
 
     // title: 'Community',
     children: [
@@ -63,8 +63,8 @@ const closeMobile = () => {
 const isNavVisible = ref(true)
 const lastScrollY = ref(window.scrollY)
 
-const SCROLL_THRESHOLD = 10   // prevents flicker
-const HIDE_AFTER = 80         // keeps nav visible near top
+const SCROLL_THRESHOLD = 10 // prevents flicker
+const HIDE_AFTER = 80 // keeps nav visible near top
 
 const handleScroll = () => {
   // Do not hide nav when mobile menu is open
@@ -147,7 +147,7 @@ onUnmounted(() => {
           </ul>
         </li>
       </ul>
-<button class="primary">Contact</button>
+      <button class="primary hidden md:block">Space Pricing</button>
       <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
