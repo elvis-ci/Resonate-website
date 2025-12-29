@@ -109,7 +109,7 @@ body {
 }
 
 main {
-  @apply min-h-[100dvh] pb-[env(safe-area-inset-bottom)];
+  @apply flex-1 pt-[4rem] pb-[env(safe-area-inset-bottom)];
 }
 
 /* nav */

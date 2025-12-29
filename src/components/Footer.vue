@@ -30,7 +30,7 @@ const subscribe = (e) => {
     </svg>
   </div>
 
-  <footer class="bg-gray-900 text-gray-200">
+  <footer class="bg-gray-900 text-gray-200 pb-[env(safe-area-inset-bottom)]">
     <div class="container mx-auto px-4 py-12">
       <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
         <!-- About / Social -->

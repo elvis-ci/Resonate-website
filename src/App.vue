@@ -21,6 +21,5 @@ import Footer from './components/Footer.vue'
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding-bottom: env(safe-area-inset-bottom);
 }
 </style>
