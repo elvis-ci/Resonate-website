@@ -90,6 +90,7 @@
   font-display: swap;
 }
 
+html,
 body {
   margin: 0;
   padding: 0;
@@ -104,11 +105,11 @@ body {
   font-size-adjust: 0.5;
   background-color: var(--color-bg);
   min-height: 100dvh;
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 main {
-@apply min-h-[100dvh] pb-[env(safe-area-inset-bottom)]  
+  @apply min-h-[100dvh] pb-[env(safe-area-inset-bottom)];
 }
 
 /* nav */
