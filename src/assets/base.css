@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
 :root {
+  --safe-bottom: env(safe-area-inset-bottom);
   @theme {
     --color-bg: #ffff;
     --color-alt-bg: #f9fafb;
@@ -100,14 +101,14 @@ body {
     Roboto,
     Arial,
     sans-serif;
-
   font-size-adjust: 0.5;
-  padding-top: 4rem;
   background-color: var(--color-bg);
+  min-height: 100dvh;
+  padding-bottom: var(--safe-bottom);
 }
 
 main {
-  min-height: 100dvh;
+@apply min-h-[100dvh] pb-[env(safe-area-inset-bottom)]  
 }
 
 /* nav */
