@@ -117,11 +117,13 @@ onUnmounted(() => {
     :class="{ 'nav-hidden': !isNavVisible }"
   >
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-      <a href="#maincontent" ref="skipLink" class="skip-link">Skip to main content</a>
+      <a href="#maincontent" ref="skipLink" class="skip-link text-black bg-secondary"
+        >Skip to main content</a
+      >
 
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <RouterLink to="/" class="text-xl font-bold">Resonate</RouterLink>
+        <RouterLink to="/" class="text-xl white font-bold">Resonate</RouterLink>
       </div>
 
       <!-- Desktop Navigation -->
@@ -236,8 +238,7 @@ header {
   opacity: 0;
 }
 
-.skip-link:focus,
-.skip-link:hover {
+.skip-link:focus{
   opacity: 1;
   background-color: white;
   padding: 0.5em;
