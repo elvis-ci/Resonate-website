@@ -35,7 +35,9 @@ const subscribe = (e) => {
       <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
         <!-- About / Social -->
         <div>
-          <p class="white mb-4">
+          <RouterLink to="/" class="text-xl white font-bold">Resonate</RouterLink>
+
+          <p class="white my-3">
             Start working with <span class="text-primary-text font-bold">Resonate</span> that can
             provide everything you need to generate awareness, drive traffic, connect.
           </p>
