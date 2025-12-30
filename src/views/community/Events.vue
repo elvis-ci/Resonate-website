@@ -150,15 +150,12 @@ const updateCountdown = () => {
   }
 
   days.value = String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, '0')
-  hours.value = String(
-    Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  ).padStart(2, '0')
-  minutes.value = String(
-    Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-  ).padStart(2, '0')
-  seconds.value = String(
-    Math.floor((distance % (1000 * 60)) / 1000)
-  ).padStart(2, '0')
+  hours.value = String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(
+    2,
+    '0',
+  )
+  minutes.value = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0')
+  seconds.value = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0')
 }
 
 onMounted(() => {
@@ -173,69 +170,63 @@ onUnmounted(() => {
 
 <template>
   <div class="overflow-x-hidden">
-    
     <!-- HERO -->
-  <div class="overflow-x-hidden">
-    <!-- HERO -->
-    <section
-      class="relative min-h-screen flex items-center bg-cover bg-center"
-      :style="{
-        backgroundImage: 'url(/images/coworking/about.webp)',
-      }"
-    >
-      <!-- Overlay -->
-      <div class="absolute inset-0 bg-black/60"></div>
+    <div class="overflow-x-hidden">
+      <!-- HERO -->
+      <section
+        class="relative min-h-screen flex items-center bg-cover bg-center"
+        :style="{
+          backgroundImage: 'url(/images/coworking/about.webp)',
+        }"
+      >
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black/60"></div>
 
-      <!-- Content -->
-      <div class="relative z-10 container px-4 text-center">
-        <p class="white bold">Upcoming Event</p>
+        <!-- Content -->
+        <div class="relative z-10 container px-4 text-center">
+          <p class="white bold">Upcoming Event</p>
 
-        <h1 class="main-heading text-white mb-4">
-          Digital Conference 2025
-        </h1>
+          <h1 class="main-heading text-white mb-4">Digital Conference 2025</h1>
 
-        <p class="white mb-2 font-bold">11th October, 2025</p>
+          <p class="white mb-2 font-bold">11th October, 2025</p>
 
-        <p class="white max-w-2xl mx-auto mb-8">
-          Launch your campaign and benefit from our expertise on designing and managing
-          conversion-centered pages.
-        </p>
+          <p class="white max-w-2xl mx-auto mb-8">
+            Launch your campaign and benefit from our expertise on designing and managing
+            conversion-centered pages.
+          </p>
 
-        <!-- COUNTDOWN -->
-        <div class="flex flex-wrap justify-center gap-6 mb-10">
-          <div class="text-white text-center">
-            <div class="text-3xl sm:text-4xl font-bold">{{ days }}</div>
-            <div class="text-sm mt-1">Days</div>
+          <!-- COUNTDOWN -->
+          <div class="flex flex-wrap justify-center gap-6 mb-10">
+            <div class="text-white text-center">
+              <div class="text-3xl sm:text-4xl font-bold">{{ days }}</div>
+              <div class="text-sm mt-1">Days</div>
+            </div>
+
+            <div class="text-white text-center">
+              <div class="text-3xl sm:text-4xl font-bold">{{ hours }}</div>
+              <div class="text-sm mt-1">Hours</div>
+            </div>
+
+            <div class="text-white text-center">
+              <div class="text-3xl sm:text-4xl font-bold">{{ minutes }}</div>
+              <div class="text-sm mt-1">Minutes</div>
+            </div>
+
+            <div class="text-white text-center">
+              <div class="text-3xl sm:text-4xl font-bold">{{ seconds }}</div>
+              <div class="text-sm mt-1">Seconds</div>
+            </div>
           </div>
 
-          <div class="text-white text-center">
-            <div class="text-3xl sm:text-4xl font-bold">{{ hours }}</div>
-            <div class="text-sm mt-1">Hours</div>
-          </div>
-
-          <div class="text-white text-center">
-            <div class="text-3xl sm:text-4xl font-bold">{{ minutes }}</div>
-            <div class="text-sm mt-1">Minutes</div>
-          </div>
-
-          <div class="text-white text-center">
-            <div class="text-3xl sm:text-4xl font-bold">{{ seconds }}</div>
-            <div class="text-sm mt-1">Seconds</div>
-          </div>
+          <!-- CTA -->
+          <button @click="navigateTo('community-events')" class="primary tracking-wider font-bold">
+            Register Now
+          </button>
         </div>
-
-        <!-- CTA -->
-        <button
-          @click="navigateTo('community-events')"
-          class="primary tracking-wider font-bold"
-        >
-          Register Now
-        </button>
-      </div>
-    </section>
-  </div>
+      </section>
+    </div>
     <!-- EVENTS SECTIONS -->
-    <section class=" bg-alt-bg">
+    <section class="bg-alt-bg">
       <div class="container mx-auto max-w-7xl px-4">
         <div
           v-for="event in events"
@@ -260,27 +251,17 @@ onUnmounted(() => {
 
               <!-- DATE & TIME -->
               <div class="mb-4">
-                <p class="mb-2">
-                  <span class="text-primary-text">📅 Date:</span> {{ event.date }}
-                </p>
-                <p class="">
-                  <span class="text-primary-text">⏰ Time:</span> {{ event.time }}
-                </p>
+                <p class="mb-2"><span class="text-primary-text">📅 Date:</span> {{ event.date }}</p>
+                <p class=""><span class="text-primary-text">⏰ Time:</span> {{ event.time }}</p>
               </div>
 
               <!-- VENUE -->
               <div class="mb-6">
-                <p class="">
-                  <span class="text-primary-text">📍 Venue:</span> {{ event.venue }}
-                </p>
+                <p class=""><span class="text-primary-text">📍 Venue:</span> {{ event.venue }}</p>
               </div>
 
               <!-- REGISTER BUTTON -->
-              <button
-                class="w-full primary"
-              >
-                Register Now
-              </button>
+              <button class="w-full primary">Register Now</button>
             </div>
           </div>
 
