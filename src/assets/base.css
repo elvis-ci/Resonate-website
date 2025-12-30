@@ -40,7 +40,7 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   @theme {
     --color-bg: #0f172a;
     --color-alt-bg: #111827;
@@ -80,7 +80,7 @@
   :root {
     color-scheme: dark;
   }
-}
+} */
 
 @font-face {
   font-family: 'Nunito';
@@ -109,7 +109,7 @@ body {
 }
 
 main {
-  @apply flex-1 pt-[4rem] pb-[env(safe-area-inset-bottom)];
+  @apply flex-1  pb-[env(safe-area-inset-bottom)];
 }
 
 /* nav */
@@ -197,6 +197,12 @@ p {
 }
 p.white {
   @apply text-base sm:text-lg md:text-xl lg:text-xl leading-relaxed text-white/90;
+}
+a.white {
+  @apply bg-gradient-to-r from-primary-hover via-white to-primary-hover
+
+         bg-clip-text text-transparent 
+         text-xl leading-relaxed;
 }
 
 /* paragraphs end */
