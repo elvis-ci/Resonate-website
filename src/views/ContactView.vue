@@ -129,9 +129,9 @@ const submitForm = () => {
           </div>
 
           <!-- SOCIAL LINKS -->
-          <div class="bg-card-bg rounded-2xl shadow-soft p-6 text-center">
+          <div class="bg-card-bg rounded-2xl shadow-soft py-6 text-center md:text-start">
             <h3 class="mb-4">Connect With Us</h3>
-            <ul class="flex gap-6 justify-center">
+            <ul class="flex gap-6 justify-center md:justify-start">
               <li>
                 <a
                   href="https://www.linkedin.com"
