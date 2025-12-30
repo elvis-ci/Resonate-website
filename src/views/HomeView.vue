@@ -70,7 +70,7 @@ onMounted(() => {
         :style="{
           'background-image': 'url(/images/coworking/bg01.webp)',
           'background-size': 'cover',
-          'background-position': 'center',
+          'background-position': 'contain',
         }"
       >
         <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
@@ -86,11 +86,12 @@ onMounted(() => {
               Enjoy flexible offices, accessible facilities, and a vibrant community all at an
               affordable price.
             </p>
-            <div class="mt-8">
-              <button class="primary">Reserve Your Space</button>
+            <div class="mt-10">
+              <RouterLink class="primary cta" style="padding-block: 15px;">Reserve Your Space</RouterLink>
             </div>
           </div>
         </div>
+
       </div>
     </section>
     <!-- Hero End -->
