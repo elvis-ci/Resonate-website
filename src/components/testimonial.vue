@@ -8,16 +8,16 @@
       <div class="flex items-center mb-6">
         <img
           :src="testimonial.profile"
-          class="w-16 h-16 rounded-full object-cover mr-4"
+          class="w-16 h-16 rounded-full object-cover mr-2 self-start"
           :alt="testimonial.name"
           loading="lazy"
         />
         <div>
           <h3 class="">{{ testimonial.name }}</h3>
-          <p class="">{{ testimonial.designation }}</p>
+          <span class="text-md text-primary font-semibold">{{ testimonial.designation }}</span>
         </div>
       </div>
-      <p class=" italic">"{{ testimonial.message }}"</p>
+      <p class="">"{{ testimonial.message }}"</p>
     </div>
   </div>
 </template>
