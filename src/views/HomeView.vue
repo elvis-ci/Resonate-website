@@ -87,11 +87,12 @@ onMounted(() => {
               affordable price.
             </p>
             <div class="mt-10">
-              <RouterLink class="primary cta" style="padding-block: 15px;">Reserve Your Space</RouterLink>
+              <RouterLink to="/bookings" class="primary" style="padding-block: 15px"
+                >Space Pricing</RouterLink
+              >
             </div>
           </div>
         </div>
-
       </div>
     </section>
     <!-- Hero End -->
@@ -125,7 +126,7 @@ onMounted(() => {
                 accessible workspaces that support productivity—without the premium price tag.
               </p>
 
-              <a href="javascript:void(0)" class="primary"> Join Now </a>
+              <!-- <RouterLink to="/workspaces" class="primary"> Join Now </RouterLink> -->
             </div>
           </div>
         </div>
@@ -177,7 +178,7 @@ onMounted(() => {
     <section class="bg-alt-bg">
       <div class="container">
         <div class="text-center mb-12">
-          <h2 class="">Trusted Co-workers</h2>
+          <h2 class="">What Our Coworkers have to say</h2>
           <p class="">
             Start working with
             <span class="text-primary-text font-bold">Resonate</span>
@@ -190,8 +191,11 @@ onMounted(() => {
     <!-- Blog -->
     <section class="">
       <div class="container">
-        <div class="text-center mb-12">
+        <div class="w-full text-center mb-12">
           <h2 class="">Latest News & Events</h2>
+          <p class="max-w-2xl md:mx-auto">
+            Catch up on what’s happening in our community, from news updates to featured events.
+          </p>
         </div>
         <Suspense>
           <template #default>
@@ -250,7 +254,7 @@ onMounted(() => {
       </div>
     </section>
 
-        <!-- Partners -->
+    <!-- Partners -->
     <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
       <div>
         <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
@@ -279,7 +283,6 @@ onMounted(() => {
         </div>
       </div>
     </section>
-
   </main>
 </template>
 
