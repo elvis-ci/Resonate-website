@@ -14,7 +14,7 @@
         width="400"
         height="200"
       />
-      <div class="p-6 sm:p-8">
+      <div class="py-6 px-2 sm:py-8 sm:px-4">
         <span class="text-lg text-primary font-semibold">{{ article.category }}</span>
         <h3 class="my-3">{{ article.title }}</h3>
         <p class="mb-4">
