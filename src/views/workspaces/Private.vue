@@ -175,7 +175,7 @@ watch(
 <template>
   <main id="maincontent">
     <!-- HERO & QUICK FACTS -->
-    <section class="">
+    <section class="sm:pt-16 md:pt-20">
       <div class="container">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-8">
           <!-- Text Content -->
