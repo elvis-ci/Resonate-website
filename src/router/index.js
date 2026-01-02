@@ -123,8 +123,6 @@ const routes = [
     component: ContactView,
     meta: { title: 'Contact' },
   },
-
-  /* ✅ MUST BE LAST */
   {
     path: '/:pathMatch(.*)*',
     name: 'PageError',
