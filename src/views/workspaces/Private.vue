@@ -218,6 +218,7 @@ watch(
               {{ formattedPrice }}
             </p>
             <p class="mt-1">Available</p>
+            <button class="secondary w-full mt-4">Make Reservation</button>
             <button class="primary w-full mt-4">Book Now</button>
           </div>
         </div>
