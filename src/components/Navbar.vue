@@ -149,7 +149,7 @@ onUnmounted(() => {
           </ul>
         </li>
       </ul>
-      <button class="primary hidden md:block">Space Pricing</button>
+      <RouterLink to="/bookings" class="primary"> Bookings</RouterLink>
       <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
