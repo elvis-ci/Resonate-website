@@ -102,7 +102,7 @@ const closeBooking = () => {
         large team gatherings, we have the perfect space for you.
       </p>
       <p>Find the perfect workspace in your location.</p>
-      <RouterLink class="primary" :to="'/workspaces'">Go to Booking</RouterLink>
+      <!-- <RouterLink class="primary" :to="'/bookings'">Go to Booking</RouterLink> -->
     </div>
   </section>
 
@@ -134,9 +134,9 @@ const closeBooking = () => {
             </li>
           </ul>
 
-          <div class="flex flex-col sm:flex-row gap-1">
+          <div class="flex flex-col sm:flex-row gap-1 md:gap-4">
             <RouterLink :to="workspace.route" class="secondary w-full sm:w-auto text-center">
-              View
+              View Details
             </RouterLink>
 
             <button class="primary w-full sm:w-auto" @click="openBooking(workspace.title)">
