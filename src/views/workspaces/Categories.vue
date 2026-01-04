@@ -134,7 +134,7 @@ const closeBooking = () => {
             </li>
           </ul>
 
-          <div class="flex flex-col sm:flex-row gap-1 md:gap-4">
+          <div class="flex flex-col sm:flex-row gap-4">
             <RouterLink :to="workspace.route" class="secondary w-full sm:w-auto text-center">
               View Details
             </RouterLink>
