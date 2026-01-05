@@ -274,7 +274,7 @@ onUnmounted(() => {
                 <span
                   v-for="(sponsor, idx) in event.sponsors"
                   :key="idx"
-                  class="bg-primary/15 text-primary-text px-4 py-2 rounded-full font-semibold"
+                  class="bg-primary/15 text-sm text-primary-text p-2 md:px-4 md:py-2 rounded-full font-semibold"
                 >
                   {{ sponsor }}
                 </span>
