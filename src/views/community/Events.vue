@@ -293,15 +293,15 @@ onUnmounted(() => {
                     :alt="speaker.name"
                     class="w-12 h-12 rounded-full object-cover"
                   />
-                  <div class="flex-1">
+                  <div class="">
                     <div class="flex items-center gap-2">
-                      <p class="font-semibold text-body">{{ speaker.name }}</p>
+                      <h4 class="font-semibold text-body">{{ speaker.name }}</h4>
                       <a
                         v-if="speaker.linkedin"
                         :href="speaker.linkedin"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="text-primary-text hover:text-primary transition"
+                        class="text-primary-text hover:text-primary transition flex items-center"
                         title="Visit LinkedIn profile"
                       >
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
