@@ -234,7 +234,7 @@ onUnmounted(() => {
           class="mb-16 rounded-lg shadow-lg overflow-hidden"
         >
           <!-- EVENT HEADER WITH IMAGE -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 py-8 px-4">
             <!-- IMAGE -->
             <div class="flex items-start justify-center">
               <img
@@ -266,7 +266,7 @@ onUnmounted(() => {
           </div>
 
           <!-- SPONSORS & SPEAKERS SECTION -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 px-8 pb-8 border-t pt-8">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 py-8 border-t">
             <!-- SPONSORS -->
             <div>
               <h3 class="mb-4">Sponsors</h3>
