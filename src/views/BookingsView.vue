@@ -6,7 +6,7 @@ import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue'
 <template>
   <main id="maincontent" class="view bookings">
     <!-- Hero -->
-    <section class="sm:py-16 md:py-20 bg-gradient-to-b from-primary/10 to-transparent">
+    <section class="heading bg-gradient-to-b from-primary/10 to-transparent">
       <div class="container">
         <h1 class="text-4xl sm:text-5xl md:text-6xl text-center font-bold text-text mb-4">
           Book Your Space

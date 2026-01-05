@@ -9,7 +9,7 @@ const goHome = () => router.push('/')
 <template>
   <main class="min-h-screen flex items-center justify-center px-6">
     <section
-      class="max-w-xl w-full text-center bg-white rounded-3xl shadow-lg p-10"
+      class="max-w-xl heading w-full text-center bg-white rounded-3xl shadow-lg p-10"
     >
       <!-- 404 Number -->
       <h1 class="text-7xl font-extrabold mb-4 text-gray-900">

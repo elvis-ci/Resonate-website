@@ -159,6 +159,9 @@ nav > ul > li:focus-within {
 }
 /* nav end */
 
+section.heading{
+  @apply py-10 sm:py-16 md:py-20
+}
 /* section */
 section.hero {
   @apply relative my-0 py-0 w-full h-[100dvh] text-white;

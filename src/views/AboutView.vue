@@ -110,7 +110,7 @@ const features = [
   <main id="maincontent">
     <!-- Hero -->
     <section
-      class="relative sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center"
+      class="relative py-10 sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center"
     >
       <div class="container">
         <h1 class="main-heading text-heading mb-4">About Us</h1>
@@ -177,7 +177,7 @@ const features = [
     <section id="mission-vision">
       <div class="container px-4">
         <div class="grid md:grid-cols-2 gap-12 items-center">
-          <div>
+          <div class="md:order-1">
             <h2 class="mb-6">Our Mission & Vision</h2>
 
             <div class="space-y-4">
@@ -204,7 +204,7 @@ const features = [
             height="600"
             loading="lazy"
             decoding="async"
-            class="w-full rounded-lg shadow-lg"
+            class="w-full rounded-lg shadow-lg md:order-2"
           />
         </div>
       </div>
