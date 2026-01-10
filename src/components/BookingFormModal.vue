@@ -35,6 +35,23 @@ const emit = defineEmits(['close'])
             <option value="seminar">Seminar Hall</option>
           </select>
         </div>
+        <!-- location -->
+        <div>
+          <label for="space-type" class="block text-lg font-semibold mb-1">
+            Select location
+          </label>
+          <select
+            id="space-type"
+            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+          >
+            <option :value="workspaceType">{{ workspaceType }}</option>
+            <option value="single">Single Workspace</option>
+            <option value="private">Private Room</option>
+            <option value="team-sprint">Team Sprint Room (4-8 persons)</option>
+            <option value="conference">Conference Room (up to 16 persons)</option>
+            <option value="seminar">Seminar Hall</option>
+          </select>
+        </div>
 
         <!-- Date Selection -->
         <div class="grid md:grid-cols-2 gap-6">
