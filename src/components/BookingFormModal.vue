@@ -1,19 +1,79 @@
 <script setup>
-defineProps({
+import { ref, toRef, onMounted, watch } from 'vue'
+import { fetchAvailableLocations } from '@/services/locationsService.js'
+const props = defineProps({
   workspaceType: {
     type: String,
     required: true,
   },
 })
+const isLoading = ref(false)
+const availbaleLocations = ref([])
+const selectedWorkspaceType = toRef(props, 'workspaceType')
 
 const emit = defineEmits(['close'])
+watch(
+  () => props.workspaceType,
+  (newVal, oldVal) => {
+    console.log('workspaceType changed:', oldVal, '→', newVal)
+  }
+)
+
+watch(
+  () => props.workspaceType,
+  async (type) => {
+    if (!type) return
+
+    const dbType = type.replace(/\s+/g, '_').toLowerCase() //this turns "Shared Workspace" to "shared_workspace" to mach database names
+    isLoading.value = true
+    try {
+      const result = await fetchAvailableLocations(dbType)
+      console.log('Supabase returned:', result)
+      availbaleLocations.value = result
+    } catch (err) {
+      console.error(err)
+      availbaleLocations.value = []
+    } finally {
+      isLoading.value = false
+    }
+  },
+  { immediate: true }
+)
+
+
+// watch(
+//   () => props.workspaceType,
+//   async (type) => {
+//     if (!type) return
+
+//     isLoading.value = true
+//     availbaleLocations.value = [] // reset
+
+//     try {
+//       const dbType = type.replace(/\s+/g, '_').toLowerCase()
+//       availbaleLocations.value = await fetchAvailableLocations(dbType)
+//       console.log('Fetched locations:', availbaleLocations.value)
+//     } catch (err) {
+//       console.error(err)
+//       availbaleLocations.value = []
+//     } finally {
+//       isLoading.value = false
+//     }
+//   },
+//   { immediate: true },
+// )
 </script>
 
 <template>
   <div class="relative max-w-4xl mx-auto bg-bg rounded-lg shadow-lg p-8 border-2 border-primary/20">
-    <button @click="emit('close')" class="absolute top-4 right-4 text-heading font-bold hover:text-primary/70">X </button>
+    <button
+      @click="emit('close')"
+      class="absolute top-4 right-4 text-heading font-bold hover:text-primary/70"
+    >
+      X
+    </button>
     <h2 class="mb-8">
-      Booking Form <span class="text-primary">({{ workspaceType }})</span>
+      Booking Form <span class="text-primary">({{ selectedWorkspaceType }})</span>
     </h2>
 
     <form class="text-text">
@@ -25,9 +85,10 @@ const emit = defineEmits(['close'])
           </label>
           <select
             id="space-type"
+            disabled
             class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
           >
-            <option :value="workspaceType">{{ workspaceType }}</option>
+            <option :value="selectedWorkspaceType">{{ selectedWorkspaceType }}</option>
             <option value="single">Single Workspace</option>
             <option value="private">Private Room</option>
             <option value="team-sprint">Team Sprint Room (4-8 persons)</option>
@@ -37,19 +98,15 @@ const emit = defineEmits(['close'])
         </div>
         <!-- location -->
         <div>
-          <label for="space-type" class="block text-lg font-semibold mb-1">
-            Select location
-          </label>
+          <label for="space-type" class="block text-lg font-semibold mb-1"> Select location </label>
           <select
             id="space-type"
             class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
           >
-            <option :value="workspaceType">{{ workspaceType }}</option>
-            <option value="single">Single Workspace</option>
-            <option value="private">Private Room</option>
-            <option value="team-sprint">Team Sprint Room (4-8 persons)</option>
-            <option value="conference">Conference Room (up to 16 persons)</option>
-            <option value="seminar">Seminar Hall</option>
+            <option value="">select location</option>
+            <option v-for="location in availbaleLocations" :key="location.id" :value="location">
+              {{ `${location.location} - ${location.city}` }}
+            </option>
           </select>
         </div>
 
