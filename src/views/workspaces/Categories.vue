@@ -5,54 +5,54 @@ import BookingFormModal from '@/components/BookingFormModal.vue'
 
 const workspaces = [
   {
-    title: 'General Workspace',
+    title: 'Shared Workspace',
     description:
       'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
     image: '/images/coworking/about.webp',
-    alt: 'General Workspace',
+    alt: 'Shared Workspace',
     features: [
       'Dedicated desk with storage',
       'High-speed WiFi and power outlets',
       'Access to meeting rooms',
       'Coffee and refresh station',
     ],
-    route: '/workspaces/general-workspace',
+    route: '/workspaces/shared-workspace',
   },
   {
-    title: 'Private Rooms',
+    title: 'Private Office Suite',
     description:
-      'Ideal for small teams, startups, or client meetings. Our private rooms offer complete privacy, professional ambiance, and full control of your workspace.',
+      'Ideal for small teams, startups, or client meetings. Our private office suites offer complete privacy, professional ambiance, and full control of your workspace.',
     image: '/images/coworking/about.webp',
-    alt: 'Private Room',
+    alt: 'Private Office Suite',
     features: [
-      '1-3 person capacity',
+      '1–3 person capacity',
       'Soundproof walls for confidentiality',
       'Video conferencing setup',
       'Flexible lease terms',
     ],
     altBg: true,
-    route: '/workspaces/private-rooms',
+    route: '/workspaces/private-office-suites',
   },
   {
-    title: 'Team Sprint Rooms',
+    title: 'Team Collaboration Room',
     description:
-      'Perfect for collaborative work sessions and intensive team projects. These spacious rooms accommodate 4-8 people and feature all the tools needed for productive collaboration.',
+      'Designed for collaborative work sessions and intensive team projects. These rooms accommodate 4–8 people and include all the tools needed for productive teamwork.',
     image: '/images/coworking/about.webp',
-    alt: 'Team Sprint Room',
+    alt: 'Team Collaboration Room',
     features: [
-      'Capacity for 4-8 people',
+      'Capacity for 4–8 people',
       'Large collaboration tables and whiteboards',
       'Projector and presentation equipment',
       'Comfortable seating and standing options',
     ],
-    route: '/workspaces/team-sprint-rooms',
+    route: '/workspaces/team-collaboration-rooms',
   },
   {
-    title: 'Conference Rooms',
+    title: 'Executive Conference Room',
     description:
-      'Impress your clients and stakeholders with our state-of-the-art conference rooms. Designed for professional meetings and presentations with capacity up to 16 people.',
+      'Impress clients and stakeholders with our premium conference rooms, designed for professional meetings and presentations with seating for up to 16 people.',
     image: '/images/coworking/about.webp',
-    alt: 'Conference Room',
+    alt: 'Executive Conference Room',
     features: [
       'Seating for up to 16 people',
       'Advanced AV system with 4K projection',
@@ -60,21 +60,21 @@ const workspaces = [
       'Catering and beverage service available',
     ],
     altBg: true,
-    route: '/workspaces/conference-rooms',
+    route: '/workspaces/executive-conference-rooms',
   },
   {
-    title: 'Seminar Halls',
+    title: 'Event & Seminar Hall',
     description:
-      'Host large events, workshops, and seminars with our spacious, fully-equipped seminar halls. Perfect for training sessions, conferences, and community gatherings.',
+      'Host large events, workshops, and seminars in our fully-equipped halls. Ideal for training sessions, conferences, and community gatherings.',
     image: '/images/coworking/about.webp',
-    alt: 'Seminar Hall',
+    alt: 'Event & Seminar Hall',
     features: [
-      'Flexible seating arrangements (theater, classroom, banquet)',
+      'Flexible seating arrangements',
       'Professional stage with lighting and sound system',
       'Breakout rooms for workshops and sessions',
       'Full catering and event coordination services',
     ],
-    route: '/workspaces/seminar-halls',
+    route: '/workspaces/event-seminar-halls',
   },
 ]
 
