@@ -1,10 +1,7 @@
 <script setup>
 import { ref, toRef, watch } from 'vue'
 import { getLocationsPerWorkspace } from '@/services/locationsService.js'
-import {
-  getOverlappingWorkspaceBookings,
-  getAvailableBookingSlots,
-} from '@/services/bookingService.js'
+import { getOverlappingWorkspaceBookings } from '@/services/bookingService.js'
 
 const props = defineProps({
   workspaceType: {
@@ -14,7 +11,6 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
-const isFocused = ref(false)
 const isLoading = ref(false)
 const availableLocations = ref([])
 const selectedWorkspaceType = toRef(props, 'workspaceType')
@@ -22,8 +18,8 @@ const selectedLocation = ref(null)
 const selectedDate = ref(null)
 const selectedStartTime = ref(null)
 const selectedEndTime = ref(null)
+const availabilityMessage = ref('') // <-- simple string for UI
 
-// Map frontend workspace labels to normalized DB values
 const workspaceTypeMap = {
   'Shared Workspace': 'shared_workspace',
   'Private Office Suite': 'private_office_suite',
@@ -31,29 +27,22 @@ const workspaceTypeMap = {
   'Executive Conference Room': 'executive_conference_room',
   'Event & Seminar Hall': 'event_seminar_hall',
 }
-async function checkAvailability(){
-  
-}
-// Watch workspace type changes and fetch locations
+
+// Load available locations when workspace type changes
 watch(
   () => selectedWorkspaceType.value,
   async (type) => {
     if (!type) return
-
     const dbType = workspaceTypeMap[type]
     if (!dbType) {
-      console.warn(`No matching DB value for workspace type: "${type}"`)
       availableLocations.value = []
       return
     }
-
     isLoading.value = true
     try {
       const result = await getLocationsPerWorkspace(dbType)
-      availableLocations.value = result || []
-    } catch (err) {
-      console.error(err)
-      availableLocations.value = []
+      availableLocations.value = result && result.length ? result : []
+      console.log('Available locations:', availableLocations.value)
     } finally {
       isLoading.value = false
     }
@@ -61,9 +50,69 @@ watch(
   { immediate: true },
 )
 
+// --- CHECK AVAILABILITY ---
+async function checkAvailability() {
+  console.log({
+    selectedLocation: selectedLocation.value,
+    selectedDate: selectedDate.value,
+    selectedStartTime: selectedStartTime.value,
+    selectedEndTime: selectedEndTime.value,
+  })
 
+  if (
+    !selectedLocation.value ||
+    !selectedDate.value ||
+    !selectedStartTime.value ||
+    !selectedEndTime.value
+  ) {
+    availabilityMessage.value = 'Please complete all fields before checking availability'
+    return
+  }
+
+  const dbWorkspaceType = workspaceTypeMap[selectedWorkspaceType.value]
+  if (!dbWorkspaceType) {
+    availabilityMessage.value = 'Invalid workspace type'
+    return
+  }
+
+  try {
+    isLoading.value = true
+    const overlaps = await getOverlappingWorkspaceBookings(
+      selectedLocation.value,
+      dbWorkspaceType,
+      selectedDate.value,
+      selectedStartTime.value,
+      selectedEndTime.value,
+    )
+
+    if (overlaps.length > 0) {
+      availabilityMessage.value = 'Space not available for this time period'
+      console.log(availabilityMessage.value)
+    } else {
+      availabilityMessage.value = 'Space is available'
+      console.log(availabilityMessage.value)
+    }
+  } catch (error) {
+    console.error('Availability check failed:', error)
+    availabilityMessage.value = 'Unable to check availability. Please try again.'
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// --- SUBMIT HANDLER ---
+async function submitBooking() {
+  await checkAvailability()
+  if (
+    availabilityMessage.value === 'Space not available for this time period' ||
+    availabilityMessage.value.startsWith('Please')
+  )
+    return
+
+  // proceed with booking logic
+  console.log('Booking can proceed!')
+}
 </script>
-
 <template>
   <div class="relative max-w-4xl mx-auto bg-bg rounded-lg shadow-lg p-8 border-2 border-primary/20">
     <button
@@ -123,10 +172,11 @@ watch(
             v-model="selectedLocation"
           >
             <option value="">Select location</option>
-            <option v-for="location in availableLocations" :key="location.id" :value="location.id">
+            <option v-for="location in availableLocations" :key="location.id" :value="location.location_id">
               {{ `${location.location} - ${location.city}` }}
             </option>
           </select>
+          <p>Selected Location: {{ selectedLocation }}</p>
         </div>
 
         <!-- Date & Time -->
@@ -181,7 +231,24 @@ watch(
             <span class="text-red-500">Select time in full hours</span>
           </div> -->
         </div>
-        <div class="flex justify-center "><button @click="checkAvailability" class="primary">Check Availability</button></div>
+        <div class="flex justify-center">
+          <div class="flex justify-center flex-col items-center mt-2">
+            <button type="button" @click="checkAvailability" class="primary">
+              Check Availability
+            </button>
+
+            <!-- Show availability result -->
+            <span
+              v-if="availabilityMessage"
+              :class="
+                availabilityMessage === 'Space is available' ? 'text-green-600' : 'text-red-600'
+              "
+              class="mt-2 font-semibold"
+            >
+              {{ availabilityMessage }}
+            </span>
+          </div>
+        </div>
 
         <!-- Contact Info -->
         <div class="mt-5 pt-7 border-t-[0.5px] border-t-primary/30">
