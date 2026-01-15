@@ -8,20 +8,33 @@ export async function getOverlappingWorkspaceBookings(
   workspaceType,
   date,
   startTime,
-  endTime,
+  endTime
 ) {
-  const { data, error } = await supabase
+  // Get all active workspaces of this type at the selected location
+  const { data: workspaces, error: wsError } = await supabase
+    .from('workspaces')
+    .select('id') // id is custom string (e.g., "IKOESH01")
+    .eq('location_id', locationId)
+    .eq('type', workspaceType)
+    .eq('status', 'active')
+
+  if (wsError) throw wsError
+  if (!workspaces || workspaces.length === 0) return [] // no workspaces → no overlaps
+
+  const workspaceIds = workspaces.map((w) => w.id) // array of strings
+
+  //Check overlapping bookings for these workspaces
+  const { data: bookings, error: bookingError } = await supabase
     .from('workspace_bookings')
     .select('*')
-    .eq('location_id', locationId)
-    .eq('workspace_type', workspaceType) // if stored
+    .in('workspace_id', workspaceIds) // ✅ string IDs now match DB
     .eq('booking_date', date)
     .lt('start_time', endTime)
     .gt('end_time', startTime)
     .in('status', ['pending', 'confirmed'])
 
-  if (error) throw error
-  return data
+  if (bookingError) throw bookingError
+  return bookings || []
 }
 
 /**
