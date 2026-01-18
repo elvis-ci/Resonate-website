@@ -43,6 +43,7 @@ watch(
       const result = await getLocationsPerWorkspace(dbType)
       availableLocations.value = result && result.length ? result : []
       console.log('Available locations:', availableLocations.value)
+
     } finally {
       isLoading.value = false
     }
@@ -172,7 +173,11 @@ async function submitBooking() {
             v-model="selectedLocation"
           >
             <option value="">Select location</option>
-            <option v-for="location in availableLocations" :key="location.id" :value="location.location_id">
+            <option
+              v-for="location in availableLocations"
+              :key="location.id"
+              :value="String(location.id)"
+            >
               {{ `${location.location} - ${location.city}` }}
             </option>
           </select>
