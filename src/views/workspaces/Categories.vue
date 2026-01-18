@@ -1,7 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
-import BookingFormModal from '@/components/BookingFormModal.vue'
+import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
 
 const workspaces = [
   {
