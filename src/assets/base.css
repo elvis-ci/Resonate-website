@@ -195,8 +195,11 @@ h3.white {
 /* headings end */
 
 /* paragraphs */
-p {
+p:not(.error):not(.white) {
   @apply text-base sm:text-lg md:text-xl lg:text-xl leading-relaxed text-body mb-4;
+}
+p.error {
+  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed mb-4;
 }
 p.white {
   @apply text-base sm:text-lg md:text-xl lg:text-xl leading-relaxed text-white/90;
