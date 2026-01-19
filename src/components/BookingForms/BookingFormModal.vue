@@ -88,15 +88,25 @@ watch(
   { immediate: true },
 )
 
+const isAvailabilityFormComplete = computed(() => {
+  return (
+    !!selectedLocation.value &&
+    !!selectedDate.value &&
+    !!selectedStartTime.value &&
+    !!selectedEndTime.value
+  )
+})
+
+const validationError = ref(false)
+
 // --- CHECK AVAILABILITY ---
 async function checkAvailability() {
-  if (
-    !selectedLocation.value ||
-    !selectedDate.value ||
-    !selectedStartTime.value ||
-    !selectedEndTime.value
-  ) {
-    availabilityMessage.value = 'Please complete all fields before checking availability'
+  validationError.value = false
+
+  if (!isAvailabilityFormComplete.value) {
+    validationError.value = true
+    availabilityState.value = null
+    availabilityMessage.value = ''
     return
   }
 
@@ -123,12 +133,10 @@ async function checkAvailability() {
       isAvailable.value = true
       availabilityState.value = 'available'
       alternativeSlots.value = []
-      availabilityMessage.value = 'This space is available for your selected time period'
     } else {
       isAvailable.value = false
       availabilityState.value = 'unavailable'
       alternativeSlots.value = data.available_slots || []
-      availabilityMessage.value = 'Selected time is already taken. Choose an option below.'
     }
   } catch (err) {
     availabilityMessage.value = err.message
@@ -150,7 +158,9 @@ async function submitBooking() {
 }
 </script>
 <template>
-  <div class="relative max-w-3xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20">
+  <div
+    class="relative max-w-3xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20"
+  >
     <button
       @click="emit('close')"
       class="absolute top-4 right-4 text-heading font-bold hover:text-primary/70"
@@ -269,59 +279,67 @@ async function submitBooking() {
             <span class="text-red-500">Select time in full hours</span>
           </div> -->
           </div>
-          <div class="flex justify-center">
-            <div class="flex justify-center flex-col items-center mt-2 text-center">
-              <button type="button" @click="checkAvailability" class="primary">
-                Check Availability
-              </button>
 
-              <!-- Show availability result -->
-              <!-- this p-tags are not dynamically rendered to ensure screen reader alert compatibility by ensuring re-render based on availability state -->
-              <div aria-live="polite" aria-atomic="true" class="mt-2">
-                <p
-                  v-if="availabilityState === 'available'"
-                  :key="'available'"
-                  role="status"
-                  class="font-semibold text-green-600 error"
-                >
-                  selected time is available, click proceed to confirm.
-                </p>
-
-                <p
-                  v-if="availabilityState === 'unavailable'"
-                  :key="'unavailable'"
-                  role="status"
-                  class="font-semibold text-red-600 error"
-                >
-                  Selected time is already taken. Choose an option below.
-                </p>
-
-                <p
-                  v-if="availabilityState === 'selected'"
-                  :key="'selected'"
-                  role="status"
-                  class="font-semibold"
-                >
-                  New time slot selected.
-                </p>
-              </div>
-
-              <div
-                v-if="sortedAlternativeSlots.length"
-                class="flex flex-wrap gap-2 mt-4 justify-center"
+          <div class="flex justify-center flex-col items-center mt-1 text-center">
+            <!-- Show availability result -->
+            <!-- this p-tags are not dynamically rendered to ensure screen reader alert compatibility by ensuring re-render based on availability state -->
+            <div aria-live="polite" aria-atomic="true" class="">
+              <p
+                v-if="validationError"
+                key="validation"
+                role="alert"
+                class="font-semibold text-red-600 error"
               >
-                <button
-                  v-for="(slot, index) in sortedAlternativeSlots"
-                  :key="index"
-                  type="button"
-                  @click="() => (selectAlternativeSlot(slot),checkAvailability())"
-                  class="px-2 py-2 rounded-full border border-primary/40 text-xs md:text-sm font-medium bg-white hover:bg-primary/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-primary/50"
-                >
-                  {{ formatSlot(slot) }}
-                </button>
-              </div>
+                Please fill in all required fields before checking availability.
+              </p>
+              <p
+                v-if="availabilityState === 'available'"
+                :key="'available'"
+                role="status"
+                class="font-semibold text-green-600 error"
+              >
+                selected time is available, click proceed to confirm.
+              </p>
+
+              <p
+                v-if="availabilityState === 'unavailable'"
+                :key="'unavailable'"
+                role="status"
+                class="font-semibold text-red-600 error"
+              >
+                Selected time is already taken. Choose an option below.
+              </p>
+
+              <p
+                v-if="availabilityState === 'selected'"
+                :key="'selected'"
+                role="status"
+                class="font-semibold"
+              >
+                New time slot selected.
+              </p>
             </div>
+            
+            <div
+              v-if="sortedAlternativeSlots.length"
+              class="flex flex-wrap gap-2 mb-4 justify-center"
+            >
+              <button
+                v-for="(slot, index) in sortedAlternativeSlots"
+                :key="index"
+                type="button"
+                @click="() => (selectAlternativeSlot(slot), checkAvailability())"
+                class="px-2 py-2 rounded-full border border-primary/40 text-xs md:text-sm font-medium bg-white hover:bg-primary/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-primary/50"
+              >
+                {{ formatSlot(slot) }}
+              </button>
+            </div>
+
+            <button type="button" @click="checkAvailability" class="primary">
+              Check Availability
+            </button>
           </div>
+
           <div class="flex items-center justify-center">
             <button
               type="button"
@@ -386,7 +404,9 @@ async function submitBooking() {
 
           <!-- Buttons -->
           <div class="md:flex md:gap-4 mt-4 justify-center items-center space-y-4 md:space-y-0">
-            <button type="button" @click.prevent="prevStep" class="secondary w-full md:w-1/2">Previous Step</button>
+            <button type="button" @click.prevent="prevStep" class="secondary w-full md:w-1/2">
+              Previous Step
+            </button>
             <button type="submit" class="primary w-full md:w-1/2">Proceed to payment</button>
           </div>
         </div>
