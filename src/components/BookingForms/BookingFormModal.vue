@@ -159,7 +159,7 @@ async function submitBooking() {
 </script>
 <template>
   <div
-    class="relative max-w-3xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20"
+    class="relative md:w-2xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20"
   >
     <button
       @click="emit('close')"
@@ -193,10 +193,10 @@ async function submitBooking() {
     <!-- Actual Form -->
     <form v-else class="text-text">
       <div class="space-y-4">
-        <div v-if="stepCount == 1" class="space-y-6">
+        <div v-if="stepCount == 1" class="space-y-2 md:space-y-6">
           <!-- Space Type Selection -->
           <div>
-            <label for="space-type" class="block text-lg font-semibold mb-1">
+            <label for="space-type" class="block text-lg font-semibold">
               Select Space Type
             </label>
             <select
@@ -210,7 +210,7 @@ async function submitBooking() {
 
           <!-- Location Selection -->
           <div>
-            <label for="location" class="block text-lg font-semibold mb-1">Select Location</label>
+            <label for="location" class="block text-lg font-semibold">Select Location</label>
             <select
               id="location"
               class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
@@ -228,62 +228,58 @@ async function submitBooking() {
           </div>
 
           <!-- Date & Time -->
-          <div class="grid md:grid-cols-2 gap-6">
-            <div>
-              <label for="date" class="block text-lg font-semibold mb-1">Date</label>
-              <input
-                id="date"
-                type="date"
-                v-model="selectedDate"
-                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <!-- Start Time -->
+          <div>
+            <div class="grid md:grid-cols-2 gap-6">
               <div>
-                <label for="start_time" class="block text-lg font-semibold mb-1">
-                  From <span>(hours)</span>
-                </label>
+                <label for="date" class="block text-lg font-semibold mb-1">Date</label>
                 <input
-                  id="start_time"
-                  type="time"
-                  v-model="selectedStartTime"
-                  step="3600"
-                  min="08:00"
-                  max="18:00"
-                  pattern="^([01]\\d|2[0-3]):00$"
-                  title="Please select a full hour (e.g. 10:00)"
+                  id="date"
+                  type="date"
+                  v-model="selectedDate"
                   class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Start Time -->
+                <div>
+                  <label for="start_time" class="block text-lg font-semibold mb-1">
+                    From <span>(hours)</span>
+                  </label>
+                  <input
+                    id="start_time"
+                    type="time"
+                    v-model="selectedStartTime"
+                    step="3600"
+                    min="08:00"
+                    max="18:00"
+                    pattern="^([01]\\d|2[0-3]):00$"
+                    title="Please select a full hour (e.g. 10:00)"
+                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                </div>
 
-              <!-- End Time -->
-              <div>
-                <label for="end_time" class="block text-lg font-semibold mb-1">
-                  To <span>(hours)</span>
-                </label>
-                <input
-                  id="end_time"
-                  type="time"
-                  v-model="selectedEndTime"
-                  step="3600"
-                  min="09:00"
-                  max="19:00"
-                  pattern="^([01]\\d|2[0-3]):00$"
-                  title="Please select a full hour (e.g. 12:00)"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                />
+                <!-- End Time -->
+                <div>
+                  <label for="end_time" class="block text-lg font-semibold mb-1">
+                    To <span>(hours)</span>
+                  </label>
+                  <input
+                    id="end_time"
+                    type="time"
+                    v-model="selectedEndTime"
+                    step="3600"
+                    min="09:00"
+                    max="19:00"
+                    pattern="^([01]\\d|2[0-3]):00$"
+                    title="Please select a full hour (e.g. 12:00)"
+                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                </div>
               </div>
             </div>
-            <!-- <div v-if="isFocused" aria-labelledby="time" role="alert" aria-live="assertive">
-            <span class="text-red-500">Select time in full hours</span>
-          </div> -->
-          </div>
-
-          <div class="flex justify-center flex-col items-center mt-1 text-center">
             <!-- Show availability result -->
             <!-- this p-tags are not dynamically rendered to ensure screen reader alert compatibility by ensuring re-render based on availability state -->
-            <div aria-live="polite" aria-atomic="true" class="">
+            <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
               <p
                 v-if="validationError"
                 key="validation"
@@ -319,7 +315,9 @@ async function submitBooking() {
                 New time slot selected.
               </p>
             </div>
-            
+          </div>
+
+          <div class="flex justify-center flex-col items-center mt-2 text-center">
             <div
               v-if="sortedAlternativeSlots.length"
               class="flex flex-wrap gap-2 mb-4 justify-center"
@@ -353,7 +351,7 @@ async function submitBooking() {
         </div>
 
         <!--step 2 Contact Info -->
-        <div v-else class="space-y-6">
+        <div v-else class="space-y-2 md:space-y-6">
           <div class="mt-5 pt-7 border-t-[0.5px] border-t-primary/30">
             <p class="mx-auto w-fit font-bold">Contact Information</p>
           </div>
