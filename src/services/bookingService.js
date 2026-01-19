@@ -1,109 +1,42 @@
 import { supabase } from '@/lib/supabaseClient'
 
 /**
- * Fetch bookings that overlap a given date & time range
+ * check workspace availability for selected location, date and timerange
+ * @param {string} workspaceType
+ * @param {number} locationId
+ * @param {string} date - 'YYYY-MM-DD'
+ * @param {string} startTime - 'HH:MM'
+ * @param {string} endTime - 'HH:MM'
+ * @returns {Promise<Array>} overlapping bookings
  */
-export async function getOverlappingWorkspaceBookings(
-  locationId,
+export async function checkWorkspaceAvailability(
   workspaceType,
+  locationId,
   date,
   startTime,
-  endTime
+  endTime,
 ) {
-  // Get all active workspaces of this type at the selected location
-  const { data: workspaces, error: wsError } = await supabase
-    .from('workspaces')
-    .select('id') // id is custom string (e.g., "IKOESH01")
-    .eq('location_id', locationId)
-    .eq('type', workspaceType)
-    .eq('status', 'active')
-
-  if (wsError) throw wsError
-  if (!workspaces || workspaces.length === 0) return [] // no workspaces → no overlaps
-
-  const workspaceIds = workspaces.map((w) => w.id) // array of strings
-
-  //Check overlapping bookings for these workspaces
-  const { data: bookings, error: bookingError } = await supabase
-    .from('workspace_bookings')
-    .select('*')
-    .in('workspace_id', workspaceIds) // ✅ string IDs now match DB
-    .eq('booking_date', date)
-    .lt('start_time', endTime)
-    .gt('end_time', startTime)
-    .in('status', ['pending', 'confirmed'])
-
-  if (bookingError) throw bookingError
-  return bookings || []
-}
-
-/**
- * Fetch available booking slots for a workspace based on its booking interval
- */
-export async function getAvailableBookingSlots(
-  workspaceId,
-  date,
-  workingHours = { start: '08:00', end: '18:00' },
-) {
-  // 1. Fetch the workspace's booking interval
-  const { data: workspace, error: workspaceError } = await supabase
-    .from('workspaces')
-    .select('booking_interval_minutes')
-    .eq('id', workspaceId)
-    .single()
-
-  if (workspaceError || !workspace) {
-    console.error('Error fetching workspace interval:', workspaceError)
-    throw workspaceError || new Error('Workspace not found')
+  //
+  const { data, error } = await supabase.rpc('check_workspace_availability', {
+    p_workspace_type: workspaceType,
+    p_location_id: locationId,
+    p_booking_date: date,
+    p_start_time: startTime,
+    p_end_time: endTime,
+  })
+  if (error) {
+    console.error(error)
+    return
   }
 
-  const slotDurationMinutes = workspace.booking_interval_minutes || 60
-
-  // 2. Fetch existing bookings
-  const { data: bookings, error: bookingsError } = await supabase
-    .from('workspace_bookings')
-    .select('start_time, end_time')
-    .eq('workspace_id', workspaceId)
-    .eq('booking_date', date)
-    .in('status', ['pending', 'confirmed'])
-    .order('start_time', { ascending: true })
-
-  if (bookingsError) {
-    console.error('Error fetching bookings:', bookingsError)
-    throw bookingsError
+  if (data.available) {
+    // Slot is free, allow user to proceed
+    console.log('Workspace is available!')
+  } else {
+    // Slot taken, show alternative time slots
+    console.log('Workspace taken. Alternatives:', data.available_slots)
   }
-
-  // 3. Prepare available slots
-  const slots = []
-  let previousEnd = workingHours.start
-
-  for (const booking of bookings) {
-    if (booking.start_time > previousEnd) {
-      slots.push({ start: previousEnd, end: booking.start_time })
-    }
-    previousEnd = booking.end_time
-  }
-
-  if (previousEnd < workingHours.end) {
-    slots.push({ start: previousEnd, end: workingHours.end })
-  }
-
-  // 4. Split slots into intervals based on workspace booking interval
-  const intervalSlots = []
-  for (const slot of slots) {
-    let slotStart = parseTime(slot.start)
-    const slotEnd = parseTime(slot.end)
-
-    while (slotStart + slotDurationMinutes <= slotEnd) {
-      intervalSlots.push({
-        start: formatTime(slotStart),
-        end: formatTime(slotStart + slotDurationMinutes),
-      })
-      slotStart += slotDurationMinutes
-    }
-  }
-
-  return intervalSlots
+  return { data, error }
 }
 
 /**
