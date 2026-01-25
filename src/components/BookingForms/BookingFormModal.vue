@@ -1,7 +1,11 @@
 <script setup>
 import { ref, toRef, watch, computed, onBeforeUnmount, defineExpose } from 'vue'
 import { getLocationsPerWorkspace } from '@/services/locationsService.js'
-import { attemptReservation, formatAlternatives, cancelReservationHold } from '@/services/reservationService.js'
+import {
+  attemptReservation,
+  formatAlternatives,
+  cancelReservationHold,
+} from '@/services/reservationService.js'
 
 const props = defineProps({
   workspaceType: { type: String, required: true },
@@ -712,7 +716,6 @@ defineExpose({
 
           <!-- Action Buttons (Hidden when expired) -->
           <div v-if="!holdExpired" class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6">
-
             <!-- Proceed to Payment Button -->
             <button
               type="button"
@@ -829,5 +832,4 @@ textarea {
 .fade-leave-to {
   opacity: 0;
 }
-
 </style>
