@@ -115,3 +115,28 @@ function formatTo12Hour(time) {
 export function isReservationExpired(holdExpiresAt) {
   return new Date() > new Date(holdExpiresAt)
 }
+
+/**
+ * Cancel a reservation hold
+ *
+ * @param {string} reservationId
+ * @returns {Promise<Object>} { success: boolean, error?: string }
+ */
+export async function cancelReservationHold(reservationId) {
+  try {
+    const { data, error } = await supabase.rpc('cancel_reservation_hold', {
+      p_reservation_id: reservationId,
+    })
+
+    if (error) {
+      console.error('RPC error cancelling reservation', error)
+      return { success: false, error: error.message }
+    }
+
+    console.log('Reservation hold cancelled', data)
+    return { success: true }
+  } catch (err) {
+    console.error('Unexpected error cancelling reservation', err)
+    return { success: false, error: err.message }
+  }
+}
