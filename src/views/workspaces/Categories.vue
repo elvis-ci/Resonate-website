@@ -79,6 +79,7 @@ const workspaces = [
 ]
 
 const bookingDialog = ref(null)
+const bookingFormRef = ref(null)
 const selectedWorkspace = ref('')
 
 const openBooking = (workspaceTitle) => {
@@ -89,6 +90,14 @@ const openBooking = (workspaceTitle) => {
 const closeBooking = () => {
   bookingDialog.value.close()
   selectedWorkspace.value = ''
+}
+
+const handleBackdropClick = () => {
+  // Trigger the close attempt on the BookingFormModal
+  // This will show the confirmation modal if there's an active reservation
+  if (bookingFormRef.value) {
+    bookingFormRef.value.attemptToCloseForm()
+  }
 }
 </script>
 
@@ -146,7 +155,7 @@ const closeBooking = () => {
         </div>
 
         <!-- Image Column (desktop only) -->
-        <div class="hidden md:block" >
+        <div class="hidden md:block">
           <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
         </div>
       </div>
@@ -165,11 +174,15 @@ const closeBooking = () => {
   </section>
 
   <dialog
-    @click.self="closeBooking"
+    @click.self="handleBackdropClick"
     ref="bookingDialog"
     class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
   >
-    <BookingFormModal :workspaceType="selectedWorkspace" @close="closeBooking" />
+    <BookingFormModal
+      ref="bookingFormRef"
+      :workspaceType="selectedWorkspace"
+      @close="closeBooking"
+    />
   </dialog>
 </template>
 <style scoped>
