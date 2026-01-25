@@ -1,7 +1,7 @@
 <script setup>
 import { ref, toRef, watch, computed, onBeforeUnmount, defineExpose } from 'vue'
 import { getLocationsPerWorkspace } from '@/services/locationsService.js'
-import { attemptReservation, formatAlternatives } from '@/services/reservationService.js'
+import { attemptReservation, formatAlternatives, cancelReservationHold } from '@/services/reservationService.js'
 
 const props = defineProps({
   workspaceType: { type: String, required: true },
@@ -95,9 +95,12 @@ function startCountdown(expiresAt) {
 
   holdExpired.value = false
 
+  // Ensure the timestamp is treated as UTC (append Z if missing)
+  const utcExpiresAt = expiresAt.endsWith('Z') ? expiresAt : expiresAt + 'Z'
+
   function updateCountdown() {
     const now = new Date().getTime()
-    const expireTime = new Date(expiresAt).getTime()
+    const expireTime = new Date(utcExpiresAt).getTime()
     const difference = expireTime - now
 
     if (difference <= 0) {
@@ -160,6 +163,35 @@ function confirmClose() {
 }
 
 function goBack() {
+  currentStep.value = 1
+  showCloseConfirmation.value = false
+}
+
+function restartBooking() {
+  // Clear all form data
+  selectedDate.value = null
+  selectedStartTime.value = null
+  selectedEndTime.value = null
+  selectedLocation.value = null
+  fullName.value = ''
+  email.value = ''
+  phone.value = ''
+
+  // Reset UI states
+  availabilityMessage.value = ''
+  availabilityState.value = null
+  validationError.value = false
+  timeRangeError.value = false
+  alternativeSlots.value = []
+  reservationData.value = null
+
+  // Reset timers
+  stopCountdown()
+  timeRemaining.value = 0
+  holdExpired.value = false
+  isPaymentStarted.value = false
+
+  // Return to step 1
   currentStep.value = 1
   showCloseConfirmation.value = false
 }
@@ -258,6 +290,21 @@ watch(selectedWorkspaceType, async (type) => {
   }
 })
 
+// Watch for when reservation hold expires and cancel it
+watch(holdExpired, async (expired) => {
+  if (expired && reservationData.value && reservationData.value.reservationId) {
+    try {
+      console.log('Hold expired, cancelling reservation:', reservationData.value.reservationId)
+      const result = await cancelReservationHold(reservationData.value.reservationId)
+      if (!result.success) {
+        console.error('Failed to cancel reservation:', result.error)
+      }
+    } catch (err) {
+      console.error('Error cancelling reservation on expiry:', err)
+    }
+  }
+})
+
 // --- RPC: Attempt Reservation (Write-First) ---
 async function attemptReservationSlot() {
   if (!isAvailabilityFormComplete.value) {
@@ -334,8 +381,10 @@ onBeforeUnmount(() => {
 // --- Expose methods for parent component ---
 defineExpose({
   attemptToCloseForm,
+  restartBooking,
 })
 </script>
+
 <template>
   <div
     class="relative md:w-2xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20"
@@ -579,109 +628,96 @@ defineExpose({
         <h2 class="mb-8 text-center">Confirm Your Booking</h2>
 
         <div class="text-text space-y-6 pt-4">
-          <!-- Reservation Success Banner -->
-          <div class="bg-green-50 border-2 border-green-300 rounded-lg p-6">
-            <p class="text-center text-green-800 font-semibold mb-2">
-              ✓ Your time slot has been reserved!
-            </p>
-            <p class="text-center text-green-700 text-sm">
-              Your chosen time has been temporarily held for {{ HOLD_DURATION_MINUTES }} minutes
-              while you complete payment.
-            </p>
-          </div>
-
           <!-- Hold Countdown Timer -->
-          <div class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
-            <p class="text-center text-yellow-900 font-semibold mb-4">
-              Time Remaining to Complete Payment:
+          <div v-if="!holdExpired" class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
+            <p class="text-center text-yellow-900 font-semibold mb-2">
+              ⏱ Your Time is Temporarily Reserved
             </p>
-            <div class="text-center">
-              <div
-                v-if="!holdExpired"
-                :class="['text-4xl font-bold font-mono', holdCountdownClass]"
-              >
+            <p class="text-center text-yellow-800 text-sm mb-4">
+              Your selected time slot has been held for {{ HOLD_DURATION_MINUTES }} minutes.
+              Complete your payment now to secure the booking.
+            </p>
+            <div class="text-center mb-4">
+              <div :class="['text-5xl font-bold font-mono', holdCountdownClass]">
                 {{ formatTimeRemaining() }}
               </div>
-              <div v-else class="text-4xl font-bold text-red-600">HOLD EXPIRED</div>
+              <p class="text-yellow-700 text-xs mt-2">
+                <span
+                  v-if="timeRemaining && timeRemaining.minutes * 60 + timeRemaining.seconds < 300"
+                  class="text-red-600 font-semibold"
+                >
+                  ⚠ Hurry! Time running out
+                </span>
+              </p>
             </div>
-            <p class="text-center text-yellow-700 text-sm mt-4">
-              <span v-if="holdExpired" class="text-red-600">
-                Your reservation hold has expired. Please start a new reservation.
-              </span>
-              <span v-else> Complete your payment before time runs out </span>
-            </p>
           </div>
 
-          <!-- Booking Summary -->
-          <div class="space-y-4 bg-gray-50 rounded-lg p-6">
+          <!-- Hold Expired UI -->
+          <div v-else class="bg-red-50 border-2 border-red-300 rounded-lg p-6">
+            <p class="text-center text-red-800 font-semibold mb-2 text-lg">
+              ✗ Reservation Hold Expired
+            </p>
+            <p class="text-center text-red-700 text-sm mb-6">
+              Your 15-minute hold period has ended. To book this time slot, you'll need to start a
+              new reservation.
+            </p>
+            <div class="text-center">
+              <button type="button" class="primary" @click="restartBooking">
+                Start New Reservation
+              </button>
+            </div>
+          </div>
+
+          <!-- Booking Summary (Hidden when expired) -->
+          <div v-if="!holdExpired" class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6">
             <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
 
-            <div class="grid grid-cols-2 gap-4 md:gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
-                <p class="text-sm text-gray-600 font-medium">Name</p>
+                <p class="">Name</p>
                 <p class="text-text font-semibold">{{ fullName }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Email</p>
+                <p class="">Email</p>
                 <p class="text-text font-semibold">{{ email }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Phone</p>
-                <p class="text-text font-semibold">{{ phone }}</p>
+                <p class="">Phone</p>
+                <p class="font-semibold">{{ phone }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Location</p>
-                <p class="text-text font-semibold">{{ getSelectedLocationName() }}</p>
+                <p class="">Location</p>
+                <p class="font-semibold">{{ getSelectedLocationName() }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Date</p>
-                <p class="text-text font-semibold">{{ getSelectedDateFormatted() }}</p>
+                <p class="">Date</p>
+                <p class="font-semibold">{{ getSelectedDateFormatted() }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Time</p>
-                <p class="text-text font-semibold">
+                <p class="">Time</p>
+                <p class="font-semibold">
                   {{ formatTo12Hour(selectedStartTime) }} – {{ formatTo12Hour(selectedEndTime) }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Workspace Type</p>
-                <p class="text-text font-semibold">{{ selectedWorkspaceType }}</p>
+                <p class="">Workspace Type</p>
+                <p class="font-semibold">{{ selectedWorkspaceType }}</p>
               </div>
               <div>
-                <p class="text-sm text-gray-600 font-medium">Reservation ID</p>
-                <p class="text-text font-semibold text-xs">{{ reservationData?.reservationId }}</p>
+                <p class="">Reservation ID</p>
+                <p class="font-semibold text-xs">{{ reservationData?.reservationId }}</p>
               </div>
             </div>
           </div>
 
-          <!-- Auto-expired UI -->
-          <div v-if="holdExpired" class="bg-red-50 border-2 border-red-300 rounded-lg p-6">
-            <p class="text-center text-red-800 font-semibold mb-2">⚠ Hold Period Expired</p>
-            <p class="text-center text-red-700 text-sm mb-4">
-              Your reservation hold has expired. Please start a new reservation to secure this time
-              slot.
-            </p>
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex flex-col gap-4 mt-6">
-            <!-- Edit Details Button -->
-            <button
-              v-if="!isPaymentStarted"
-              type="button"
-              class="secondary"
-              @click="goBack"
-              :disabled="isPaymentStarted || holdExpired"
-            >
-              ← Edit Details
-            </button>
+          <!-- Action Buttons (Hidden when expired) -->
+          <div v-if="!holdExpired" class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6">
 
             <!-- Proceed to Payment Button -->
             <button
-              v-if="!holdExpired"
               type="button"
-              class="primary"
-              :disabled="isPaymentStarted || holdExpired"
+              class="primary flex-1"
+              :disabled="isPaymentStarted"
               @click="handlePaymentStart"
             >
               <span v-if="isPaymentStarted" class="spinner" aria-hidden="true"></span>
@@ -690,9 +726,15 @@ defineExpose({
               </span>
             </button>
 
-            <!-- Start Over Button (when expired) -->
-            <button v-if="holdExpired" type="button" class="primary" @click="emit('close')">
-              Start Over
+            <!-- Cancel Reservation Button -->
+            <button
+              v-if="!isPaymentStarted"
+              type="button"
+              class="cancel"
+              @click="attemptToCloseForm"
+              :disabled="isPaymentStarted"
+            >
+              Cancel Reservation
             </button>
           </div>
 
@@ -788,50 +830,4 @@ textarea {
   opacity: 0;
 }
 
-/* Button Styles */
-.primary {
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-}
-
-.primary:hover:not(:disabled) {
-  background-color: rgba(var(--color-primary-rgb), 0.9);
-}
-
-.primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.secondary {
-  padding: 0.75rem 1.5rem;
-  background-color: rgb(229, 231, 235);
-  color: var(--color-text);
-  font-weight: 600;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1rem;
-}
-
-.secondary:hover:not(:disabled) {
-  background-color: rgb(209, 213, 219);
-}
-
-.secondary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 </style>
