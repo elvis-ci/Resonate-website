@@ -34,6 +34,7 @@ const phone = ref('')
 // --- UI State ---
 const isLoading = ref(false)
 const isReserving = ref(false)
+const isCancelling = ref(false)
 const availableLocations = ref([])
 const availabilityMessage = ref('')
 const alternativeSlots = ref([])
@@ -48,6 +49,7 @@ const timeRangeError = ref(false)
 const timeRemaining = ref(0)
 const holdExpired = ref(false)
 const countdownInterval = ref(null)
+const reservationCancelled = ref(false)
 
 // Office hours
 const OFFICE_START = '08:00'
@@ -161,9 +163,41 @@ function attemptToCloseForm() {
   }
 }
 
+function cancelReservation() {
+  // Show close confirmation modal
+  attemptToCloseForm()
+}
+
+async function confirmCancelReservation() {
+  if (!reservationData.value || !reservationData.value.reservationId) {
+    restartBooking()
+    return
+  }
+
+  isCancelling.value = true
+
+  try {
+    console.log('Cancelling reservation:', reservationData.value.reservationId)
+    const result = await cancelReservationHold(reservationData.value.reservationId)
+    console.log('Cancellation result:', result)
+    // Stop countdown and show cancelled state
+    stopCountdown()
+    reservationCancelled.value = true
+    showCloseConfirmation.value = false
+  } catch (err) {
+    console.error('Error cancelling reservation:', err)
+    // Still show cancelled state on error
+    stopCountdown()
+    reservationCancelled.value = true
+    showCloseConfirmation.value = false
+  } finally {
+    isCancelling.value = false
+  }
+}
+
 function confirmClose() {
   stopCountdown()
-  emit('close')
+  confirmCancelReservation()
 }
 
 function goBack() {
@@ -194,6 +228,7 @@ function restartBooking() {
   timeRemaining.value = 0
   holdExpired.value = false
   isPaymentStarted.value = false
+  reservationCancelled.value = false
 
   // Return to step 1
   currentStep.value = 1
@@ -294,20 +329,8 @@ watch(selectedWorkspaceType, async (type) => {
   }
 })
 
-// Watch for when reservation hold expires and cancel it
-watch(holdExpired, async (expired) => {
-  if (expired && reservationData.value && reservationData.value.reservationId) {
-    try {
-      console.log('Hold expired, cancelling reservation:', reservationData.value.reservationId)
-      const result = await cancelReservationHold(reservationData.value.reservationId)
-      if (!result.success) {
-        console.error('Failed to cancel reservation:', result.error)
-      }
-    } catch (err) {
-      console.error('Error cancelling reservation on expiry:', err)
-    }
-  }
-})
+// Note: No need to auto-cancel on holdExpired - Supabase handles that.
+// We only show the UI state that the hold has expired.
 
 // --- RPC: Attempt Reservation (Write-First) ---
 async function attemptReservationSlot() {
@@ -633,7 +656,10 @@ defineExpose({
 
         <div class="text-text space-y-6 pt-4">
           <!-- Hold Countdown Timer -->
-          <div v-if="!holdExpired" class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6"
+          >
             <p class="text-center text-yellow-900 font-semibold mb-2">
               ⏱ Your Time is Temporarily Reserved
             </p>
@@ -657,7 +683,10 @@ defineExpose({
           </div>
 
           <!-- Hold Expired UI -->
-          <div v-else class="bg-red-50 border-2 border-red-300 rounded-lg p-6">
+          <div
+            v-else-if="!reservationCancelled"
+            class="bg-red-50 border-2 border-red-300 rounded-lg p-6"
+          >
             <p class="text-center text-red-800 font-semibold mb-2 text-lg">
               ✗ Reservation Hold Expired
             </p>
@@ -672,8 +701,30 @@ defineExpose({
             </div>
           </div>
 
-          <!-- Booking Summary (Hidden when expired) -->
-          <div v-if="!holdExpired" class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6">
+          <!-- Reservation Cancelled UI -->
+          <div
+            v-else-if="reservationCancelled"
+            class="bg-green-50 border-2 border-green-300 rounded-lg p-6"
+          >
+            <p class="text-center text-green-800 font-semibold mb-2 text-lg">
+              ✓ Reservation Cancelled
+            </p>
+            <p class="text-center text-green-700 text-sm mb-6">
+              Your reservation hold has been cancelled. You can start a new booking whenever you're
+              ready.
+            </p>
+            <div class="text-center">
+              <button type="button" class="primary" @click="restartBooking">
+                Start New Booking
+              </button>
+            </div>
+          </div>
+
+          <!-- Booking Summary (Hidden when expired or cancelled) -->
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6"
+          >
             <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -714,8 +765,11 @@ defineExpose({
             </div>
           </div>
 
-          <!-- Action Buttons (Hidden when expired) -->
-          <div v-if="!holdExpired" class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6">
+          <!-- Action Buttons (Hidden when expired or cancelled) -->
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6"
+          >
             <!-- Proceed to Payment Button -->
 
             <!-- Cancel Reservation Button -->
@@ -723,7 +777,7 @@ defineExpose({
               v-if="!isPaymentStarted"
               type="button"
               class="cancel"
-              @click="attemptToCloseForm"
+              @click="cancelReservation"
               :disabled="isPaymentStarted"
             >
               Cancel Reservation
@@ -766,15 +820,24 @@ defineExpose({
           Are you sure you want to close? Your reservation will be cancelled.
         </p>
         <div class="flex gap-4">
-          <button type="button" class="secondary flex-1" @click="showCloseConfirmation = false">
+          <button
+            type="button"
+            class="secondary flex-1"
+            @click="showCloseConfirmation = false"
+            :disabled="isCancelling"
+          >
             Keep Booking
           </button>
           <button
             type="button"
-            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition flex-1"
-            @click="confirmClose"
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="confirmCancelReservation"
+            :disabled="isCancelling"
           >
-            Cancel Reservation
+            <span v-if="isCancelling" class="spinner" aria-hidden="true"></span>
+            <span>
+              {{ isCancelling ? 'Cancelling...' : 'Cancel Reservation' }}
+            </span>
           </button>
         </div>
       </div>
