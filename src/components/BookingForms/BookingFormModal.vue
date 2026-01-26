@@ -717,17 +717,6 @@ defineExpose({
           <!-- Action Buttons (Hidden when expired) -->
           <div v-if="!holdExpired" class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6">
             <!-- Proceed to Payment Button -->
-            <button
-              type="button"
-              class="primary flex-1"
-              :disabled="isPaymentStarted"
-              @click="handlePaymentStart"
-            >
-              <span v-if="isPaymentStarted" class="spinner" aria-hidden="true"></span>
-              <span>
-                {{ isPaymentStarted ? 'Processing Payment...' : 'Proceed to Payment' }}
-              </span>
-            </button>
 
             <!-- Cancel Reservation Button -->
             <button
@@ -738,6 +727,17 @@ defineExpose({
               :disabled="isPaymentStarted"
             >
               Cancel Reservation
+            </button>
+            <button
+              type="button"
+              class="primary flex-1"
+              :disabled="isPaymentStarted"
+              @click="handlePaymentStart"
+            >
+              <span v-if="isPaymentStarted" class="spinner" aria-hidden="true"></span>
+              <span>
+                {{ isPaymentStarted ? 'Processing Payment...' : 'Proceed to Payment' }}
+              </span>
             </button>
           </div>
 
