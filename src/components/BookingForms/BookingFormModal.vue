@@ -155,10 +155,14 @@ function getSelectedDateFormatted() {
 }
 
 function attemptToCloseForm() {
-  // If we're on step 2 with a reservation, show confirmation
-  if (currentStep.value === 2 && reservationData.value) {
+  // If we're on step 2 with a reservation and it hasn't been cancelled, show confirmation
+  if (currentStep.value === 2 && reservationData.value && !reservationCancelled.value) {
     showCloseConfirmation.value = true
   } else {
+    // If cancelled, reset the form silently before closing
+    if (reservationCancelled.value) {
+      restartBooking()
+    }
     emit('close')
   }
 }
