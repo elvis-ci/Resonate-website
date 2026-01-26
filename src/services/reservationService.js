@@ -117,14 +117,19 @@ export function isReservationExpired(holdExpiresAt) {
 }
 
 /**
- * Cancel a reservation hold
+ * Cancel a reservation
  *
- * @param {string} reservationId
- * @returns {Promise<Object>} { success: boolean, error?: string }
+ * @param {string} reservationId - UUID of the reservation
+ * @returns {Promise<Object>} {
+ *   success: boolean,
+ *   finalStatus?: string ('cancelled', 'expired', 'consumed', etc.),
+ *   message?: string,
+ *   error?: string
+ * }
  */
 export async function cancelReservationHold(reservationId) {
   try {
-    const { data, error } = await supabase.rpc('cancel_reservation_hold', {
+    const { data, error } = await supabase.rpc('cancel_reservation', {
       p_reservation_id: reservationId,
     })
 
@@ -133,8 +138,23 @@ export async function cancelReservationHold(reservationId) {
       return { success: false, error: error.message }
     }
 
-    console.log('Reservation hold cancelled', data)
-    return { success: true }
+    if (!data || data.length === 0) {
+      console.log('No response from cancel_reservation RPC')
+      return { success: false, error: 'No response from server' }
+    }
+
+    const row = data[0]
+    console.log('Reservation cancellation result:', {
+      success: row.success,
+      finalStatus: row.final_status,
+      message: row.message,
+    })
+
+    return {
+      success: row.success,
+      finalStatus: row.final_status,
+      message: row.message,
+    }
   } catch (err) {
     console.error('Unexpected error cancelling reservation', err)
     return { success: false, error: err.message }
