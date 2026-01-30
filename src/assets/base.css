@@ -3,6 +3,7 @@
 :root {
   --safe-bottom: env(safe-area-inset-bottom);
   @theme {
+
     --color-bg: #ffff;
     --color-alt-bg: #f9fafb;
 
@@ -121,10 +122,6 @@ main {
   @apply bg-white shadow-md;
 } */
 
-#topnav.nav-sticky a:not(.router-link-active),
-#topnav.nav-sticky nav li a:not(.router-link-active) {
-}
-
 nav li a {
   @apply font-semibold;
 }
@@ -169,7 +166,7 @@ section.hero {
 
 /* fixes max width on section content */
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20;
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12;
 }
 /* section end */
 
@@ -195,8 +192,14 @@ h3.white {
 /* headings end */
 
 /* paragraphs */
-p:not(.error):not(.white) {
+p:not(.error):not(.white):not(.tight) {
   @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-body mb-4;
+}
+p.tight {
+  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-body mb-0;
+}
+p.primary{
+  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-primary mb-4;
 }
 p.error {
   @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed mb-4;
