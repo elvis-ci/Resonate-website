@@ -460,16 +460,15 @@ onMounted(async () => {
   } catch (err) {
     loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
- if(showCloseConfirmation.vlaue === true){
-  document.addEventListener('keydown', (e) =>{
-    if(e.key === 'Escape'){
-      e.preventDefault()
-      e.stopPropagation()
-      showCloseConfirmation.value = true
-      
-    }
-  })
- }
+  if (showCloseConfirmation.vlaue === true) {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+        showCloseConfirmation.value = true
+      }
+    })
+  }
 })
 </script>
 
