@@ -9,6 +9,7 @@ import SwiperCore from 'swiper'
 import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules'
 import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
 import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
+import { formatNaira } from '@/utils/currency'
 
 SwiperCore.use([Navigation, Pagination, Autoplay, EffectCoverflow])
 
@@ -135,7 +136,7 @@ const averageRating = computed(() => {
   return (total / currentReviews.value.length).toFixed(1)
 })
 
-const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleString()} / day`)
+const formattedPrice = formatNaira(currentDbLocation.value?.max_booking_price || 0)
 const bookingDialog = ref(null)
 const bookingFormRef = ref(null)
 const selectedWorkspace = ref('')
@@ -214,7 +215,7 @@ onMounted(() => {
 
           <div class="order-2 md:order-none bg-bg shadow rounded-xl p-6 w-full md:w-80 text-text">
             <p class="font-bold">
-              {{ formattedPrice }}
+              {{ formatNaira(currentDbLocation.max_booking_price) }} per hour
             </p>
             <p class="mt-1">
               <span v-if="currentDbLocation">
