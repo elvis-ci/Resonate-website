@@ -1,6 +1,7 @@
 <script setup>
-import { ref, toRef, watch, computed, onBeforeUnmount, defineExpose } from 'vue'
-import { getLocationsPerWorkspace } from '@/services/locationsService.js'
+import { ref, toRef, watch, computed, onBeforeUnmount, onMounted, defineExpose } from 'vue'
+import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
+import { workspaceTypeMap } from '@/utils/workspaceTypeMap'
 import {
   attemptReservation,
   formatAlternatives,
@@ -25,21 +26,20 @@ const selectedStartTime = ref(null)
 const selectedEndTime = ref(null)
 const selectedLocation = ref(null)
 const selectedWorkspaceType = toRef(props, 'workspaceType')
-
+const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
 // --- Contact Info ---
 const fullName = ref('')
 const email = ref('')
 const phone = ref('')
 
 // --- UI State ---
-const isLoading = ref(false)
 const isReserving = ref(false)
 const isCancelling = ref(false)
-const availableLocations = ref([])
 const availabilityMessage = ref('')
 const alternativeSlots = ref([])
 const availabilityState = ref(null) // 'available' | 'unavailable' | 'selected'
 const reservationData = ref(null)
+const loadError = ref(null) // Error loading locations
 
 // --- Validation ---
 const validationError = ref(false)
@@ -56,15 +56,7 @@ const OFFICE_START = '08:00'
 const OFFICE_END = '18:00'
 const HOLD_DURATION_MINUTES = 15
 
-// Map display types to DB types
-const workspaceTypeMap = {
-  'Shared Workspace': 'shared_workspace',
-  'Private Office Suite': 'private_office_suite',
-  'Team Collaboration Room': 'team_collaboration_room',
-  'Executive Conference Room': 'executive_conference_room',
-  'Event & Seminar Hall': 'event_seminar_hall',
-}
-
+// Once locations load, optionally set a default:
 // --- Helpers ---
 function formatTo12Hour(time) {
   const [hour, minute] = time.split(':').map(Number)
@@ -139,12 +131,23 @@ function formatTimeRemaining() {
 }
 
 function getSelectedLocationName() {
-  const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
+  if (!selectedLocation.value) return ''
+
+  const location = availableLocations.value.find(
+    (loc) => loc.location_id === selectedLocation.value,
+  )
+
   return location ? `${location.location} - ${location.city}` : ''
 }
+
 function getSelectedLocationPrice() {
-  const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
-  return location ? location.min_booking_price : ''
+  if (!selectedLocation.value) return 0
+
+  const location = availableLocations.value.find(
+    (loc) => loc.location_id === selectedLocation.value,
+  )
+
+  return location?.min_booking_price ?? 0
 }
 
 function getSelectedDateFormatted() {
@@ -230,6 +233,7 @@ function restartBooking() {
   timeRangeError.value = false
   alternativeSlots.value = []
   reservationData.value = null
+  loadError.value = null
 
   // Reset timers
   stopCountdown()
@@ -295,7 +299,7 @@ const isAvailabilityFormComplete = computed(
     selectedStartTime.value &&
     selectedEndTime.value &&
     !timeRangeError.value &&
-    !officeClosedMessage.value &&
+    !officeHoursError.value &&
     fullName.value.trim() &&
     email.value.trim() &&
     phone.value.trim(),
@@ -304,6 +308,8 @@ const isAvailabilityFormComplete = computed(
 const hasError = computed(
   () => timeRangeError.value || officeClosedMessage.value || validationError.value,
 )
+
+const hasLoadError = computed(() => loadError.value !== null)
 
 const holdCountdownClass = computed(() => {
   if (!timeRemaining.value) return ''
@@ -320,25 +326,6 @@ watch([selectedStartTime, selectedEndTime, selectedDate], () => {
   availabilityState.value = null
   timeRangeError.value = !isValidTimeRange(selectedStartTime.value, selectedEndTime.value)
 })
-
-watch(selectedWorkspaceType, async (type) => {
-  if (!type) return
-  const dbType = workspaceTypeMap[type]
-  if (!dbType) {
-    availableLocations.value = []
-    return
-  }
-  isLoading.value = true
-  try {
-    const result = await getLocationsPerWorkspace(dbType)
-    availableLocations.value = result?.length ? result : []
-  } finally {
-    isLoading.value = false
-  }
-})
-
-// Note: No need to auto-cancel on holdExpired - Supabase handles that.
-// We only show the UI state that the hold has expired.
 
 // --- RPC: Attempt Reservation (Write-First) ---
 async function attemptReservationSlot() {
@@ -407,16 +394,81 @@ async function attemptReservationSlot() {
     isReserving.value = false
   }
 }
+const officeHoursError = computed(() => {
+  if (!selectedStartTime.value || !selectedEndTime.value) return ''
+
+  const startHour = Number(selectedStartTime.value.split(':')[0])
+  const endHour = Number(selectedEndTime.value.split(':')[0])
+
+  const officeStart = Number(OFFICE_START.split(':')[0])
+  const officeEnd = Number(OFFICE_END.split(':')[0])
+
+  if (startHour < officeStart || endHour > officeEnd) {
+    return `Spaces are only available from ${OFFICE_START} to ${OFFICE_END}`
+  }
+
+  return ''
+})
 
 // --- Cleanup ---
-onBeforeUnmount(() => {
+onBeforeUnmount(async () => {
   stopCountdown()
+
+  // Auto-cancel active reservation on unmount (safety net)
+  if (
+    reservationData.value &&
+    reservationData.value.reservationId &&
+    !reservationCancelled.value &&
+    !holdExpired.value &&
+    !isPaymentStarted.value
+  ) {
+    try {
+      await cancelReservationHold(reservationData.value.reservationId)
+    } catch (err) {
+      console.warn('Failed to auto-cancel reservation on unmount', err)
+    }
+  }
+
+  availableLocations.value = []
+  isLoadingLocations.value = false
 })
 
 // --- Expose methods for parent component ---
 defineExpose({
   attemptToCloseForm,
   restartBooking,
+})
+async function retryLoadLocations() {
+  loadError.value = null
+  try {
+    await fetchLocations(selectedWorkspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+  }
+}
+
+onMounted(async () => {
+  availableLocations.value = []
+  try {
+    await fetchLocations(selectedWorkspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+  }
+  if (showCloseConfirmation.vlaue === true) {
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        e.stopPropagation()
+        showCloseConfirmation.value = true
+      }
+    })
+  }
 })
 </script>
 
@@ -459,8 +511,30 @@ defineExpose({
       <div v-if="currentStep === 1" key="step1">
         <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Form</h2>
 
+        <!-- Load Error State -->
+        <div v-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded-lg p-6 mb-6">
+          <p class="text-center text-red-800 font-semibold mb-3 text-lg">
+            ⚠ Unable to Load Locations
+          </p>
+          <p class="text-center text-red-700 text-sm mb-4">
+            {{ loadError }}
+          </p>
+          <div class="flex gap-3 justify-center">
+            <button
+              type="button"
+              class="primary"
+              @click="retryLoadLocations"
+              :disabled="isLoadingLocations"
+            >
+              <span v-if="isLoadingLocations" class="spinner" aria-hidden="true"></span>
+              <span>{{ isLoadingLocations ? 'Retrying...' : 'Retry' }}</span>
+            </button>
+            <button type="button" class="secondary" @click="emit('close')">Close</button>
+          </div>
+        </div>
+
         <!-- Skeleton Loader -->
-        <div v-if="isLoading" class="space-y-6 animate-pulse">
+        <div v-else-if="isLoadingLocations" class="space-y-6 animate-pulse">
           <div class="h-10 bg-gray-200 rounded w-1/3"></div>
           <div class="h-10 bg-gray-200 rounded w-full"></div>
           <div class="grid md:grid-cols-2 gap-6">
@@ -527,13 +601,14 @@ defineExpose({
             <div>
               <label for="location" class="block text-lg font-semibold">Select Location</label>
               <select
+                v-if="!isLoadingLocations"
+                v-model="selectedLocation"
                 id="location"
                 class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                v-model="selectedLocation"
               >
                 <option value="">Select location</option>
                 <option
-                  v-for="location in availableLocations"
+                  v-for="location in availableLocations || []"
                   :key="location.location_id"
                   :value="location.location_id"
                 >
@@ -566,8 +641,8 @@ defineExpose({
                     v-model="selectedStartTime"
                     step="3600"
                     :min="minStartTime || OFFICE_START"
-                    :disabled="!minStartTime"
                     max="18:00"
+                    :disabled="!minStartTime"
                     pattern="^([01]\\d|2[0-3]):00$"
                     title="Please select a full hour (e.g. 10:00)"
                     class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
@@ -584,7 +659,6 @@ defineExpose({
                     step="3600"
                     :min="minEndTime"
                     :disabled="!minStartTime"
-                    max="19:00"
                     pattern="^([01]\\d|2[0-3]):00$"
                     title="Please select a full hour (e.g. 12:00)"
                     class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
@@ -595,34 +669,44 @@ defineExpose({
 
             <!-- Error / Availability Messages -->
             <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
-              <p v-if="timeRangeError" class="font-semibold text-red-600" role="alert">
-                Enter a valid time range: End time must be after Start time.
+              <p
+                v-if="validationError"
+                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                role="alert"
+              >
+                ⚠ Please fill in all required fields before checking availability.
               </p>
-              <p v-else-if="officeClosedMessage" class="font-semibold text-red-600" role="alert">
-                {{ officeClosedMessage }}
+
+              <p
+                v-else-if="timeRangeError"
+                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                role="alert"
+              >
+                Enter a valid time range between 08:00 and 18:00.
               </p>
-              <p v-else-if="validationError" class="font-semibold text-red-600" role="alert">
-                Please fill in all required fields before checking availability.
+
+              <p
+                v-else-if="officeHoursError"
+                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                role="alert"
+              >
+                ⚠ {{ officeHoursError }}
               </p>
+
               <p
                 v-else-if="availabilityState === 'available'"
-                class="font-semibold text-green-600"
+                class="font-semibold text-green-600 bg-green-50 p-3 rounded"
                 role="status"
               >
-                Selected time is available, click reserve to confirm.
+                ✓ Selected time is available.
               </p>
+
               <p
                 v-else-if="availabilityState === 'unavailable'"
-                class="font-semibold text-red-600"
+                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
                 role="status"
               >
-                Selected time is already taken. Choose an option below.
-              </p>
-              <p v-else-if="availabilityState === 'selected'" class="font-semibold" role="status">
-                New time slot selected.
-              </p>
-              <p v-else-if="availabilityMessage" class="font-semibold text-red-600" role="alert">
-                {{ availabilityMessage }}
+                ✗ Selected time is already taken.
               </p>
             </div>
 
@@ -821,6 +905,7 @@ defineExpose({
       v-if="showCloseConfirmation"
       class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       @click.self="showCloseConfirmation = false"
+      @keydown.esc.capture.stop.prevent="showCloseConfirmation = false"
     >
       <div class="bg-bg rounded-lg shadow-xl p-6 md:p-8 max-w-sm mx-4 border-2 border-primary/20">
         <h3 class="text-xl font-semibold mb-4">Close Booking Form?</h3>
