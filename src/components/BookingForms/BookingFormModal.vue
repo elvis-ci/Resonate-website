@@ -142,6 +142,10 @@ function getSelectedLocationName() {
   const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
   return location ? `${location.location} - ${location.city}` : ''
 }
+function getSelectedLocationPrice() {
+  const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
+  return location ? location.min_booking_price : ''
+}
 
 function getSelectedDateFormatted() {
   if (!selectedDate.value) return ''
@@ -327,7 +331,7 @@ watch(selectedWorkspaceType, async (type) => {
   isLoading.value = true
   try {
     const result = await getLocationsPerWorkspace(dbType)
-    availableLocations.value = result && result.length ? result : []
+    availableLocations.value = result?.length ? result : []
   } finally {
     isLoading.value = false
   }
@@ -453,7 +457,7 @@ defineExpose({
     <Transition name="fade-slide" mode="out-in">
       <!-- STEP 1: Booking Details -->
       <div v-if="currentStep === 1" key="step1">
-        <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Details</h2>
+        <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Form</h2>
 
         <!-- Skeleton Loader -->
         <div v-if="isLoading" class="space-y-6 animate-pulse">
@@ -536,6 +540,7 @@ defineExpose({
                   {{ `${location.location} - ${location.city}` }}
                 </option>
               </select>
+              <p><span class="font-bold">Price</span>: {{ getSelectedLocationPrice() }} per hour</p>
             </div>
 
             <!-- Date & Time -->
