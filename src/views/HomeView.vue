@@ -208,6 +208,36 @@ onMounted(() => {
       </div>
     </section>
 
+    <!-- Partners -->
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
+      <div>
+        <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
+          Trusted by over 100+ companies NationWide
+        </h2>
+        <div class="overflow-hidden">
+          <div class="flex space-x-12 justify-center">
+            <div v-for="logo in 4" :key="'logo1-' + logo" class="flex-shrink-0">
+              <img
+                src="/images/coworking/about.webp"
+                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+            <!-- Repeat logos to make seamless loop -->
+            <!-- <div v-for="logo in 2" :key="'logo2-' + logo" class="flex-shrink-0">
+              <img
+                src="/images/coworking/about.webp"
+                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
+                alt=""
+                loading="lazy"
+              />
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Start Form -->
     <section
       class="relative pb-28 text-center"
@@ -248,36 +278,6 @@ onMounted(() => {
               class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
             >
               <videoModal @close="showModal = !showModal" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Partners -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
-      <div>
-        <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
-          Trusted by over 100+ companies worldwide
-        </h2>
-        <div class="overflow-hidden">
-          <div class="flex animate-scroll space-x-12">
-            <div v-for="logo in 6" :key="'logo1-' + logo" class="flex-shrink-0">
-              <img
-                src="/images/coworking/about.webp"
-                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
-                alt=""
-                loading="lazy"
-              />
-            </div>
-            <!-- Repeat logos to make seamless loop -->
-            <div v-for="logo in 6" :key="'logo2-' + logo" class="flex-shrink-0">
-              <img
-                src="/images/coworking/about.webp"
-                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
-                alt=""
-                loading="lazy"
-              />
             </div>
           </div>
         </div>
