@@ -16,12 +16,13 @@ const navRoutes = [
     path: '/workspaces',
     title: 'Workspaces',
     children: [
-      { path: '/workspaces/General-workspace', title: 'General Workspace' },
-      { path: '/workspaces/private-rooms', title: 'Private Rooms' },
-      { path: '/workspaces/team-sprint-rooms', title: 'Team Sprint Rooms' },
-      { path: '/workspaces/conference-rooms', title: 'Conference Rooms' },
-      { path: '/workspaces/seminar-halls', title: 'Seminar Halls' },
+      { path: '/workspaces/shared-workspace', title: 'shared workspace' },
+      { path: '/workspaces/private-office-suites', title: 'private office suites' },
+      { path: '/workspaces/team-collaboration-rooms', title: 'team collaboration rooms' },
+      { path: '/workspaces/executive-conference-rooms', title: 'executive conference rooms' },
+      { path: '/workspaces/event-seminar-halls', title: 'event seminar halls' },
     ],
+
   },
   {
     path: '/community',
@@ -53,10 +54,11 @@ const toggleSubmenu = (path) => {
   mobileSubmenu.value[path] = !mobileSubmenu.value[path]
 }
 
+const isScrolled = ref(false)
+
 const closeMobile = () => {
   isMobileOpen.value = false
 }
-
 // -----------------------------
 // Scroll-based nav visibility
 // -----------------------------
@@ -65,11 +67,29 @@ const lastScrollY = ref(window.scrollY)
 
 const SCROLL_THRESHOLD = 10 // prevents flicker
 const HIDE_AFTER = 80 // keeps nav visible near top
+const activeDesktopMenu = ref(null)
+
+const onFocusOut = (routePath, e) => {
+  // Check if focus is leaving the current menu entirely
+  const relatedTarget = e.relatedTarget
+  const liEl = e.currentTarget
+
+  // If the newly focused element is inside this <li>, keep menu open
+  if (liEl.contains(relatedTarget)) return
+
+  // Otherwise, close it
+  if (activeDesktopMenu.value === routePath) activeDesktopMenu.value = null
+}
 
 const handleScroll = () => {
+  isScrolled.value = window.scrollY > 0
   // Do not hide nav when mobile menu is open
-  if (isMobileOpen.value) return
-
+  if (isMobileOpen.value) {
+    isMobileOpen.value = false
+  }
+  if (mobileSubmenu.value) {
+    mobileSubmenu.value = {}
+  }
   const currentScroll = window.scrollY
   const delta = currentScroll - lastScrollY.value
 
@@ -90,23 +110,20 @@ const handleScroll = () => {
 
   lastScrollY.value = currentScroll
 }
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && isMobileOpen.value) {
+    closeMobile()
+  }
+}
 
-// -----------------------------
-// Lifecycle
-// -----------------------------
 onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
-
-  // Close mobile menu with Escape key
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isMobileOpen.value) {
-      closeMobile()
-    }
-  })
+  document.addEventListener('keydown', handleKeydown)
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  document.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -128,26 +145,37 @@ onUnmounted(() => {
 
       <!-- Desktop Navigation -->
       <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-        <li
-          v-for="route in navRoutes"
-          :key="route.path"
-          class="relative group py-4"
-          :class="{ 'has-children': route.children.length }"
-        >
-          <RouterLink :to="route.path">{{ route.title }}</RouterLink>
+<li
+  v-for="route in navRoutes"
+  :key="route.path"
+  class="relative py-4"
+  :class="{ 'has-children': route.children.length }"
+  @mouseenter="activeDesktopMenu = route.path"
+  @mouseleave="activeDesktopMenu = null"
+  @focusin="activeDesktopMenu = route.path"
+  @focusout="onFocusOut(route.path, $event)"
+>
+  <RouterLink
+    :to="route.path"
+    :aria-expanded="activeDesktopMenu === route.path"
+    aria-haspopup="true"
+  >
+    {{ route.title }}
+  </RouterLink>
 
-          <!-- Dropdown for children -->
-          <ul
-            v-if="route.children.length"
-            class="submenu hidden absolute left-0 mt-4 w-40 border rounded shadow-lg z-10 group-hover:block hover:block group-focus-within:block"
-          >
-            <li v-for="child in route.children" :key="child.path">
-              <RouterLink :to="child.path" class="block px-4 py-2 text-text">
-                {{ child.title }}
-              </RouterLink>
-            </li>
-          </ul>
-        </li>
+  <!-- Desktop dropdown -->
+  <ul
+    v-if="route.children.length"
+    class="submenu absolute left-0 mt-4 w-40 border rounded shadow-lg z-10"
+    v-show="activeDesktopMenu === route.path"
+  >
+    <li v-for="child in route.children" :key="child.path">
+      <RouterLink :to="child.path" class="block px-4 py-2 text-text">
+        {{ child.title }}
+      </RouterLink>
+    </li>
+  </ul>
+</li>
       </ul>
       <RouterLink to="/bookings" class="primary hidden lg:inline-block"> Bookings</RouterLink>
       <!-- Mobile Toggle -->
@@ -238,7 +266,7 @@ header {
   opacity: 0;
 }
 
-.skip-link:focus{
+.skip-link:focus {
   opacity: 1;
   background-color: white;
   padding: 0.5em;

@@ -1,31 +1,62 @@
 <script setup>
-import { ref, toRef, watch, computed } from 'vue'
+import { ref, toRef, watch, computed, onBeforeUnmount, defineExpose } from 'vue'
 import { getLocationsPerWorkspace } from '@/services/locationsService.js'
-import { checkWorkspaceAvailability } from '@/services/bookingService.js'
+import {
+  attemptReservation,
+  formatAlternatives,
+  cancelReservationHold,
+} from '@/services/reservationService.js'
 
 const props = defineProps({
-  workspaceType: {
-    type: String,
-    required: true,
-  },
+  workspaceType: { type: String, required: true },
 })
 
-const stepCount = ref(1) // 1 or 2
+const emit = defineEmits(['close', 'reservation-confirmed'])
+const today = new Date().toISOString().split('T')[0]
 
-const emit = defineEmits(['close'])
-const isLoading = ref(false)
-const availableLocations = ref([])
-const selectedWorkspaceType = toRef(props, 'workspaceType')
-const selectedLocation = ref(null)
+// --- Form Steps ---
+const currentStep = ref(1) // 1: Booking Details, 2: Confirmation
+const showCloseConfirmation = ref(false)
+const isPaymentStarted = ref(false)
+
+// --- Form Fields ---
 const selectedDate = ref(null)
 const selectedStartTime = ref(null)
 const selectedEndTime = ref(null)
+const selectedLocation = ref(null)
+const selectedWorkspaceType = toRef(props, 'workspaceType')
 
-const availabilityMessage = ref('') // <-- simple string for UI
+// --- Contact Info ---
+const fullName = ref('')
+const email = ref('')
+const phone = ref('')
+
+// --- UI State ---
+const isLoading = ref(false)
+const isReserving = ref(false)
+const isCancelling = ref(false)
+const availableLocations = ref([])
+const availabilityMessage = ref('')
 const alternativeSlots = ref([])
-const isAvailable = ref(false)
 const availabilityState = ref(null) // 'available' | 'unavailable' | 'selected'
+const reservationData = ref(null)
 
+// --- Validation ---
+const validationError = ref(false)
+const timeRangeError = ref(false)
+
+// --- Countdown Timer State ---
+const timeRemaining = ref(0)
+const holdExpired = ref(false)
+const countdownInterval = ref(null)
+const reservationCancelled = ref(false)
+
+// Office hours
+const OFFICE_START = '08:00'
+const OFFICE_END = '18:00'
+const HOLD_DURATION_MINUTES = 15
+
+// Map display types to DB types
 const workspaceTypeMap = {
   'Shared Workspace': 'shared_workspace',
   'Private Office Suite': 'private_office_suite',
@@ -34,7 +65,7 @@ const workspaceTypeMap = {
   'Event & Seminar Hall': 'event_seminar_hall',
 }
 
-// time formatters
+// --- Helpers ---
 function formatTo12Hour(time) {
   const [hour, minute] = time.split(':').map(Number)
   const period = hour >= 12 ? 'PM' : 'AM'
@@ -46,12 +77,6 @@ function formatSlot(slot) {
   return `${formatTo12Hour(slot.start_time)} – ${formatTo12Hour(slot.end_time)}`
 }
 
-const sortedAlternativeSlots = computed(() =>
-  [...alternativeSlots.value].sort((a, b) => a.start_time.localeCompare(b.start_time)),
-)
-
-/* ---------------- SLOT SELECTION ---------------- */
-
 function selectAlternativeSlot(slot) {
   selectedStartTime.value = slot.start_time
   selectedEndTime.value = slot.end_time
@@ -59,198 +84,489 @@ function selectAlternativeSlot(slot) {
   availabilityMessage.value = 'New time slot selected'
 }
 
-function nextStep() {
-  stepCount.value = 2
-}
-function prevStep() {
-  stepCount.value = 1
+// Validate time range
+function isValidTimeRange(start, end) {
+  if (!start || !end) return false
+  const [sh, sm] = start.split(':').map(Number)
+  const [eh, em] = end.split(':').map(Number)
+  return eh > sh || (eh === sh && em > sm)
 }
 
-// Load available locations when workspace type changes
-watch(
-  () => selectedWorkspaceType.value,
-  async (type) => {
-    if (!type) return
-    const dbType = workspaceTypeMap[type]
-    if (!dbType) {
-      availableLocations.value = []
+// --- Countdown Timer Functions ---
+function startCountdown(expiresAt) {
+  // Clear any existing interval
+  if (countdownInterval.value) {
+    clearInterval(countdownInterval.value)
+  }
+
+  holdExpired.value = false
+
+  // Ensure the timestamp is treated as UTC (append Z if missing)
+  const utcExpiresAt = expiresAt.endsWith('Z') ? expiresAt : expiresAt + 'Z'
+
+  function updateCountdown() {
+    const now = new Date().getTime()
+    const expireTime = new Date(utcExpiresAt).getTime()
+    const difference = expireTime - now
+
+    if (difference <= 0) {
+      timeRemaining.value = 0
+      holdExpired.value = true
+      clearInterval(countdownInterval.value)
       return
     }
-    isLoading.value = true
-    try {
-      const result = await getLocationsPerWorkspace(dbType)
-      availableLocations.value = result && result.length ? result : []
-      console.log('Available locations:', availableLocations.value)
-    } finally {
-      isLoading.value = false
+
+    const minutes = Math.floor(difference / 1000 / 60)
+    const seconds = Math.floor((difference / 1000) % 60)
+    timeRemaining.value = { minutes, seconds }
+  }
+
+  updateCountdown()
+  countdownInterval.value = setInterval(updateCountdown, 1000)
+}
+
+function stopCountdown() {
+  if (countdownInterval.value) {
+    clearInterval(countdownInterval.value)
+    countdownInterval.value = null
+  }
+}
+
+function formatTimeRemaining() {
+  if (!timeRemaining.value) return '00:00'
+  const { minutes, seconds } = timeRemaining.value
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+}
+
+function getSelectedLocationName() {
+  const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
+  return location ? `${location.location} - ${location.city}` : ''
+}
+function getSelectedLocationPrice() {
+  const location = availableLocations.value.find((loc) => loc.location_id == selectedLocation.value)
+  return location ? location.min_booking_price : ''
+}
+
+function getSelectedDateFormatted() {
+  if (!selectedDate.value) return ''
+  const date = new Date(selectedDate.value)
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })
+}
+
+function attemptToCloseForm() {
+  // If we're on step 2 with a reservation and it hasn't been cancelled, show confirmation
+  if (currentStep.value === 2 && reservationData.value && !reservationCancelled.value) {
+    showCloseConfirmation.value = true
+  } else {
+    // If cancelled, reset the form silently before closing
+    if (reservationCancelled.value) {
+      restartBooking()
     }
-  },
-  { immediate: true },
-)
+    emit('close')
+  }
+}
 
-const isAvailabilityFormComplete = computed(() => {
-  return (
-    !!selectedLocation.value &&
-    !!selectedDate.value &&
-    !!selectedStartTime.value &&
-    !!selectedEndTime.value
-  )
-})
+function cancelReservation() {
+  // Show close confirmation modal
+  attemptToCloseForm()
+}
 
-const validationError = ref(false)
-
-// --- CHECK AVAILABILITY ---
-async function checkAvailability() {
-  validationError.value = false
-
-  if (!isAvailabilityFormComplete.value) {
-    validationError.value = true
-    availabilityState.value = null
-    availabilityMessage.value = ''
+async function confirmCancelReservation() {
+  if (!reservationData.value || !reservationData.value.reservationId) {
+    restartBooking()
     return
   }
 
-  const dbWorkspaceType = workspaceTypeMap[selectedWorkspaceType.value]
-  if (!dbWorkspaceType) {
-    availabilityMessage.value = 'Invalid workspace type'
-    return
-  }
+  isCancelling.value = true
 
   try {
-    isLoading.value = true
-
-    const { data, error } = await checkWorkspaceAvailability(
-      dbWorkspaceType,
-      selectedLocation.value,
-      selectedDate.value,
-      selectedStartTime.value,
-      selectedEndTime.value,
-    )
-
-    if (error) throw error
-
-    if (data.available) {
-      isAvailable.value = true
-      availabilityState.value = 'available'
-      alternativeSlots.value = []
-    } else {
-      isAvailable.value = false
-      availabilityState.value = 'unavailable'
-      alternativeSlots.value = data.available_slots || []
-    }
+    console.log('Cancelling reservation:', reservationData.value.reservationId)
+    const result = await cancelReservationHold(reservationData.value.reservationId)
+    console.log('Cancellation result:', result)
+    // Stop countdown and show cancelled state
+    stopCountdown()
+    reservationCancelled.value = true
+    showCloseConfirmation.value = false
   } catch (err) {
-    availabilityMessage.value = err.message
+    console.error('Error cancelling reservation:', err)
+    // Still show cancelled state on error
+    stopCountdown()
+    reservationCancelled.value = true
+    showCloseConfirmation.value = false
+  } finally {
+    isCancelling.value = false
+  }
+}
+
+function confirmClose() {
+  stopCountdown()
+  confirmCancelReservation()
+}
+
+function goBack() {
+  currentStep.value = 1
+  showCloseConfirmation.value = false
+}
+
+function restartBooking() {
+  // Clear all form data
+  selectedDate.value = null
+  selectedStartTime.value = null
+  selectedEndTime.value = null
+  selectedLocation.value = null
+  fullName.value = ''
+  email.value = ''
+  phone.value = ''
+
+  // Reset UI states
+  availabilityMessage.value = ''
+  availabilityState.value = null
+  validationError.value = false
+  timeRangeError.value = false
+  alternativeSlots.value = []
+  reservationData.value = null
+
+  // Reset timers
+  stopCountdown()
+  timeRemaining.value = 0
+  holdExpired.value = false
+  isPaymentStarted.value = false
+  reservationCancelled.value = false
+
+  // Return to step 1
+  currentStep.value = 1
+  showCloseConfirmation.value = false
+}
+
+function handlePaymentStart() {
+  isPaymentStarted.value = true
+}
+
+// --- Computed Properties ---
+const minStartTime = computed(() => {
+  if (!selectedDate.value) return OFFICE_START
+  if (selectedDate.value === today) {
+    const nextHour = new Date().getHours() + 1
+    if (nextHour >= Number(OFFICE_END.split(':')[0])) return null
+    return `${String(nextHour).padStart(2, '0')}:00`
+  }
+  return OFFICE_START
+})
+
+const minEndTime = computed(() => {
+  if (!selectedStartTime.value)
+    return String(Number(OFFICE_START.split(':')[0]) + 1).padStart(2, '0') + ':00'
+  let endHour = Number(selectedStartTime.value.split(':')[0]) + 1
+  if (endHour > Number(OFFICE_END.split(':')[0])) endHour = Number(OFFICE_END.split(':')[0])
+  return `${String(endHour).padStart(2, '0')}:00`
+})
+
+const officeClosedMessage = computed(() => {
+  if (!selectedDate.value || !selectedStartTime.value) return ''
+  const startHour = Number(selectedStartTime.value.split(':')[0])
+  if (selectedDate.value === today) {
+    const nextHour = new Date().getHours() + 1
+    if (startHour < nextHour)
+      return `Spaces only open from ${String(nextHour).padStart(2, '0')}:00 today`
+    if (startHour > Number(OFFICE_END.split(':')[0]))
+      return `Spaces only open until ${OFFICE_END}. Please choose another day.`
+  } else if (
+    startHour < Number(OFFICE_START.split(':')[0]) ||
+    startHour > Number(OFFICE_END.split(':')[0])
+  ) {
+    return `Spaces only open from ${OFFICE_START} to ${OFFICE_END}`
+  }
+  return ''
+})
+
+const sortedAlternativeSlots = computed(() =>
+  [...alternativeSlots.value].sort((a, b) => a.start_time.localeCompare(b.start_time)),
+)
+
+const isAvailabilityFormComplete = computed(
+  () =>
+    selectedLocation.value &&
+    selectedDate.value &&
+    selectedStartTime.value &&
+    selectedEndTime.value &&
+    !timeRangeError.value &&
+    !officeClosedMessage.value &&
+    fullName.value.trim() &&
+    email.value.trim() &&
+    phone.value.trim(),
+)
+
+const hasError = computed(
+  () => timeRangeError.value || officeClosedMessage.value || validationError.value,
+)
+
+const holdCountdownClass = computed(() => {
+  if (!timeRemaining.value) return ''
+  const { minutes, seconds } = timeRemaining.value
+  const totalSeconds = minutes * 60 + seconds
+  // Warn when less than 5 minutes remain
+  if (totalSeconds < 300) return 'text-red-600 font-bold'
+  return 'text-primary font-semibold'
+})
+
+// --- Watchers ---
+watch([selectedStartTime, selectedEndTime, selectedDate], () => {
+  availabilityMessage.value = ''
+  availabilityState.value = null
+  timeRangeError.value = !isValidTimeRange(selectedStartTime.value, selectedEndTime.value)
+})
+
+watch(selectedWorkspaceType, async (type) => {
+  if (!type) return
+  const dbType = workspaceTypeMap[type]
+  if (!dbType) {
+    availableLocations.value = []
+    return
+  }
+  isLoading.value = true
+  try {
+    const result = await getLocationsPerWorkspace(dbType)
+    availableLocations.value = result?.length ? result : []
   } finally {
     isLoading.value = false
   }
-}
-// --- SUBMIT HANDLER ---
-async function submitBooking() {
-  await checkAvailability()
-  if (
-    availabilityMessage.value === 'Space not available for this time period' ||
-    availabilityMessage.value.startsWith('Please')
-  )
-    return
+})
 
-  // proceed with booking logic
-  console.log('Booking can proceed!')
+// Note: No need to auto-cancel on holdExpired - Supabase handles that.
+// We only show the UI state that the hold has expired.
+
+// --- RPC: Attempt Reservation (Write-First) ---
+async function attemptReservationSlot() {
+  if (!isAvailabilityFormComplete.value) {
+    validationError.value = true
+    availabilityMessage.value = 'Please fill in all required fields before reserving.'
+    return
+  }
+
+  validationError.value = false
+  isReserving.value = true
+  availabilityMessage.value = ''
+  availabilityState.value = null
+  alternativeSlots.value = []
+
+  try {
+    const dbType = workspaceTypeMap[selectedWorkspaceType.value]
+    if (!dbType) throw new Error('Invalid workspace type selected.')
+
+    // Ensure location is passed as bigint
+    const locationId = Number(selectedLocation.value)
+    if (isNaN(locationId)) throw new Error('Invalid location selected.')
+
+    const result = await attemptReservation({
+      locationId,
+      workspaceType: dbType,
+      bookingDate: selectedDate.value, // 'YYYY-MM-DD'
+      startTime: selectedStartTime.value, // 'HH:MM'
+      endTime: selectedEndTime.value, // 'HH:MM'
+    })
+
+    if (!result.success) {
+      availabilityState.value = 'unavailable'
+      if (result.alternatives && result.alternatives.length) {
+        alternativeSlots.value = formatAlternatives(result.alternatives)
+        availabilityMessage.value = 'Selected time is taken. See alternatives below.'
+      } else {
+        availabilityMessage.value = result.error || 'Slot unavailable. Please choose another time.'
+      }
+      return
+    }
+
+    reservationData.value = {
+      reservationId: result.reservationId,
+      workspaceId: result.workspaceId,
+      holdExpiresAt: result.holdExpiresAt,
+    }
+
+    availabilityState.value = 'available'
+    availabilityMessage.value = 'Reservation successful! Proceeding to confirmation...'
+
+    // Start countdown timer
+    startCountdown(result.holdExpiresAt)
+
+    // Transition to step 2 after a short delay for UX
+    setTimeout(() => {
+      currentStep.value = 2
+    }, 500)
+
+    emit('reservation-confirmed', reservationData.value)
+  } catch (err) {
+    console.error('Reservation attempt failed', err)
+    availabilityState.value = 'unavailable'
+    availabilityMessage.value = err.message || 'Failed to reserve slot. Try again.'
+  } finally {
+    isReserving.value = false
+  }
 }
+
+// --- Cleanup ---
+onBeforeUnmount(() => {
+  stopCountdown()
+})
+
+// --- Expose methods for parent component ---
+defineExpose({
+  attemptToCloseForm,
+  restartBooking,
+})
 </script>
+
 <template>
   <div
     class="relative md:w-2xl mx-auto bg-bg rounded-lg shadow-lg p-4 md:p-8 border-2 border-primary/20"
   >
+    <!-- Close Button -->
     <button
-      @click="emit('close')"
+      @click="attemptToCloseForm"
       class="absolute top-4 right-4 text-heading font-bold hover:text-primary/70"
     >
       X
     </button>
 
-    <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Form</h2>
-
-    <!-- Skeleton Loader -->
-    <div v-if="isLoading" class="space-y-6 animate-pulse">
-      <div class="h-10 bg-gray-200 rounded w-1/3"></div>
-      <div class="h-10 bg-gray-200 rounded w-full"></div>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="h-10 bg-gray-200 rounded w-full"></div>
-        <div class="h-10 bg-gray-200 rounded w-full"></div>
+    <!-- Step Indicator -->
+    <div class="flex justify-center items-center gap-3 mb-8">
+      <div
+        :class="[
+          'w-10 h-10 rounded-full flex items-center justify-center font-bold',
+          currentStep >= 1 ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600',
+        ]"
+      >
+        1
       </div>
-      <div class="h-10 bg-gray-200 rounded w-full"></div>
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="h-10 bg-gray-200 rounded w-full"></div>
-        <div class="h-10 bg-gray-200 rounded w-full"></div>
-      </div>
-      <div class="h-24 bg-gray-200 rounded w-full"></div>
-      <div class="flex gap-4">
-        <div class="h-10 bg-gray-200 rounded w-1/2"></div>
-        <div class="h-10 bg-gray-200 rounded w-1/2"></div>
+      <div :class="['h-1 flex-1', currentStep >= 2 ? 'bg-primary' : 'bg-gray-300']"></div>
+      <div
+        :class="[
+          'w-10 h-10 rounded-full flex items-center justify-center font-bold',
+          currentStep >= 2 ? 'bg-primary text-white' : 'bg-gray-300 text-gray-600',
+        ]"
+      >
+        2
       </div>
     </div>
 
-    <!-- Actual Form -->
-    <form v-else class="text-text">
-      <div class="space-y-4">
-        <div v-if="stepCount == 1" class="space-y-2 md:space-y-6">
-          <!-- Space Type Selection -->
-          <div>
-            <label for="space-type" class="block text-lg font-semibold">
-              Select Space Type
-            </label>
-            <select
-              id="space-type"
-              disabled
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-            >
-              <option :value="selectedWorkspaceType">{{ selectedWorkspaceType }}</option>
-            </select>
-          </div>
+    <!-- Step Transitions with Animation -->
+    <Transition name="fade-slide" mode="out-in">
+      <!-- STEP 1: Booking Details -->
+      <div v-if="currentStep === 1" key="step1">
+        <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Form</h2>
 
-          <!-- Location Selection -->
-          <div>
-            <label for="location" class="block text-lg font-semibold">Select Location</label>
-            <select
-              id="location"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-              v-model="selectedLocation"
-            >
-              <option value="">Select location</option>
-              <option
-                v-for="location in availableLocations"
-                :key="location.location_id"
-                :value="location.location_id"
+        <!-- Skeleton Loader -->
+        <div v-if="isLoading" class="space-y-6 animate-pulse">
+          <div class="h-10 bg-gray-200 rounded w-1/3"></div>
+          <div class="h-10 bg-gray-200 rounded w-full"></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+          </div>
+          <div class="h-10 bg-gray-200 rounded w-full"></div>
+          <div class="grid md:grid-cols-2 gap-6">
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+            <div class="h-10 bg-gray-200 rounded w-full"></div>
+          </div>
+          <div class="h-24 bg-gray-200 rounded w-full"></div>
+          <div class="flex gap-4">
+            <div class="h-10 bg-gray-200 rounded w-1/2"></div>
+            <div class="h-10 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </div>
+
+        <!-- Booking Form -->
+        <form v-else class="text-text space-y-6 pt-4">
+          <fieldset
+            :disabled="isReserving"
+            :class="{ 'opacity-70 pointer-events-none': isReserving }"
+            class="space-y-6 transition-opacity"
+          >
+            <!-- Contact Info -->
+            <div class="space-y-4">
+              <div>
+                <label for="full-name" class="block text-lg font-semibold mb-1">Full Name</label>
+                <input
+                  id="full-name"
+                  type="text"
+                  placeholder="Enter your full name"
+                  v-model="fullName"
+                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                />
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label for="email" class="block text-lg font-semibold mb-1">Email Address</label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email"
+                    v-model="email"
+                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label for="phone" class="block text-lg font-semibold mb-1">Phone Number</label>
+                  <input
+                    id="phone"
+                    type="tel"
+                    placeholder="Enter your phone number"
+                    v-model="phone"
+                    class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Location Selection -->
+            <div>
+              <label for="location" class="block text-lg font-semibold">Select Location</label>
+              <select
+                id="location"
+                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                v-model="selectedLocation"
               >
-                {{ `${location.location} - ${location.city}` }}
-              </option>
-            </select>
-          </div>
+                <option value="">Select location</option>
+                <option
+                  v-for="location in availableLocations"
+                  :key="location.location_id"
+                  :value="location.location_id"
+                >
+                  {{ `${location.location} - ${location.city}` }}
+                </option>
+              </select>
+              <p><span class="font-bold">Price</span>: {{ getSelectedLocationPrice() }} per hour</p>
+            </div>
 
-          <!-- Date & Time -->
-          <div>
+            <!-- Date & Time -->
             <div class="grid md:grid-cols-2 gap-6">
               <div>
                 <label for="date" class="block text-lg font-semibold mb-1">Date</label>
                 <input
                   id="date"
                   type="date"
+                  :min="today"
                   v-model="selectedDate"
                   class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
                 />
               </div>
+
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Start Time -->
                 <div>
-                  <label for="start_time" class="block text-lg font-semibold mb-1">
-                    From <span>(hours)</span>
-                  </label>
+                  <label for="start_time" class="block text-lg font-semibold mb-1">Start</label>
                   <input
                     id="start_time"
                     type="time"
                     v-model="selectedStartTime"
                     step="3600"
-                    min="08:00"
+                    :min="minStartTime || OFFICE_START"
+                    :disabled="!minStartTime"
                     max="18:00"
                     pattern="^([01]\\d|2[0-3]):00$"
                     title="Please select a full hour (e.g. 10:00)"
@@ -260,15 +576,14 @@ async function submitBooking() {
 
                 <!-- End Time -->
                 <div>
-                  <label for="end_time" class="block text-lg font-semibold mb-1">
-                    To <span>(hours)</span>
-                  </label>
+                  <label for="end_time" class="block text-lg font-semibold mb-1">End</label>
                   <input
                     id="end_time"
                     type="time"
                     v-model="selectedEndTime"
                     step="3600"
-                    min="09:00"
+                    :min="minEndTime"
+                    :disabled="!minStartTime"
                     max="19:00"
                     pattern="^([01]\\d|2[0-3]):00$"
                     title="Please select a full hour (e.g. 12:00)"
@@ -277,47 +592,41 @@ async function submitBooking() {
                 </div>
               </div>
             </div>
-            <!-- Show availability result -->
-            <!-- this p-tags are not dynamically rendered to ensure screen reader alert compatibility by ensuring re-render based on availability state -->
+
+            <!-- Error / Availability Messages -->
             <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
-              <p
-                v-if="validationError"
-                key="validation"
-                role="alert"
-                class="font-semibold text-red-600 error"
-              >
+              <p v-if="timeRangeError" class="font-semibold text-red-600" role="alert">
+                Enter a valid time range: End time must be after Start time.
+              </p>
+              <p v-else-if="officeClosedMessage" class="font-semibold text-red-600" role="alert">
+                {{ officeClosedMessage }}
+              </p>
+              <p v-else-if="validationError" class="font-semibold text-red-600" role="alert">
                 Please fill in all required fields before checking availability.
               </p>
               <p
-                v-if="availabilityState === 'available'"
-                :key="'available'"
+                v-else-if="availabilityState === 'available'"
+                class="font-semibold text-green-600"
                 role="status"
-                class="font-semibold text-green-600 error"
               >
-                selected time is available, click proceed to confirm.
+                Selected time is available, click reserve to confirm.
               </p>
-
               <p
-                v-if="availabilityState === 'unavailable'"
-                :key="'unavailable'"
+                v-else-if="availabilityState === 'unavailable'"
+                class="font-semibold text-red-600"
                 role="status"
-                class="font-semibold text-red-600 error"
               >
                 Selected time is already taken. Choose an option below.
               </p>
-
-              <p
-                v-if="availabilityState === 'selected'"
-                :key="'selected'"
-                role="status"
-                class="font-semibold"
-              >
+              <p v-else-if="availabilityState === 'selected'" class="font-semibold" role="status">
                 New time slot selected.
               </p>
+              <p v-else-if="availabilityMessage" class="font-semibold text-red-600" role="alert">
+                {{ availabilityMessage }}
+              </p>
             </div>
-          </div>
 
-          <div class="flex justify-center flex-col items-center mt-2 text-center">
+            <!-- Alternative Slots -->
             <div
               v-if="sortedAlternativeSlots.length"
               class="flex flex-wrap gap-2 mb-4 justify-center"
@@ -326,91 +635,223 @@ async function submitBooking() {
                 v-for="(slot, index) in sortedAlternativeSlots"
                 :key="index"
                 type="button"
-                @click="() => (selectAlternativeSlot(slot), checkAvailability())"
+                @click="selectAlternativeSlot(slot)"
                 class="px-2 py-2 rounded-full border border-primary/40 text-xs md:text-sm font-medium bg-white hover:bg-primary/80 hover:text-white transition focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
                 {{ formatSlot(slot) }}
               </button>
             </div>
 
-            <button type="button" @click="checkAvailability" class="primary">
-              Check Availability
-            </button>
+            <div class="flex justify-center gap-4 mt-2">
+              <button
+                type="button"
+                class="primary disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="!isAvailabilityFormComplete || hasError || isReserving"
+                @click="attemptReservationSlot"
+              >
+                <span v-if="isReserving" class="spinner" aria-hidden="true"></span>
+                <span>
+                  {{ isReserving ? 'Reserving…' : 'Reserve Slot & Continue' }}
+                </span>
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <!-- STEP 2: Confirmation Screen -->
+      <div v-else-if="currentStep === 2" key="step2" v-show="reservationData">
+        <h2 class="mb-8 text-center">Confirm Your Booking</h2>
+
+        <div class="text-text space-y-6 pt-4">
+          <!-- Hold Countdown Timer -->
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6"
+          >
+            <p class="text-center text-yellow-900 font-semibold mb-2">
+              ⏱ Your Time is Temporarily Reserved
+            </p>
+            <p class="text-center text-yellow-800 text-sm mb-4">
+              Your selected time slot has been held for {{ HOLD_DURATION_MINUTES }} minutes.
+              Complete your payment now to secure the booking.
+            </p>
+            <div class="text-center mb-4">
+              <div :class="['text-5xl font-bold font-mono', holdCountdownClass]">
+                {{ formatTimeRemaining() }}
+              </div>
+              <p class="text-yellow-700 text-xs mt-2">
+                <span
+                  v-if="timeRemaining && timeRemaining.minutes * 60 + timeRemaining.seconds < 300"
+                  class="text-red-600 font-semibold"
+                >
+                  ⚠ Hurry! Time running out
+                </span>
+              </p>
+            </div>
           </div>
 
-          <div class="flex items-center justify-center">
+          <!-- Hold Expired UI -->
+          <div
+            v-else-if="!reservationCancelled"
+            class="bg-red-50 border-2 border-red-300 rounded-lg p-6"
+          >
+            <p class="text-center text-red-800 font-semibold mb-2 text-lg">
+              ✗ Reservation Hold Expired
+            </p>
+            <p class="text-center text-red-700 text-sm mb-6">
+              Your 15-minute hold period has ended. To book this time slot, you'll need to start a
+              new reservation.
+            </p>
+            <div class="text-center">
+              <button type="button" class="primary" @click="restartBooking">
+                Start New Reservation
+              </button>
+            </div>
+          </div>
+
+          <!-- Reservation Cancelled UI -->
+          <div
+            v-else-if="reservationCancelled"
+            class="bg-green-50 border-2 border-green-300 rounded-lg p-6"
+          >
+            <p class="text-center text-green-800 font-semibold mb-2 text-lg">
+              ✓ Reservation Cancelled
+            </p>
+            <p class="text-center text-green-700 text-sm mb-6">
+              Your reservation hold has been cancelled. You can start a new booking whenever you're
+              ready.
+            </p>
+            <div class="text-center">
+              <button type="button" class="primary" @click="restartBooking">
+                Start New Booking
+              </button>
+            </div>
+          </div>
+
+          <!-- Booking Summary (Hidden when expired or cancelled) -->
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6"
+          >
+            <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div>
+                <p class="">Name</p>
+                <p class="text-text font-semibold">{{ fullName }}</p>
+              </div>
+              <div>
+                <p class="">Email</p>
+                <p class="text-text font-semibold">{{ email }}</p>
+              </div>
+              <div>
+                <p class="">Phone</p>
+                <p class="font-semibold">{{ phone }}</p>
+              </div>
+              <div>
+                <p class="">Location</p>
+                <p class="font-semibold">{{ getSelectedLocationName() }}</p>
+              </div>
+              <div>
+                <p class="">Date</p>
+                <p class="font-semibold">{{ getSelectedDateFormatted() }}</p>
+              </div>
+              <div>
+                <p class="">Time</p>
+                <p class="font-semibold">
+                  {{ formatTo12Hour(selectedStartTime) }} – {{ formatTo12Hour(selectedEndTime) }}
+                </p>
+              </div>
+              <div>
+                <p class="">Workspace Type</p>
+                <p class="font-semibold">{{ selectedWorkspaceType }}</p>
+              </div>
+              <div>
+                <p class="">Reservation ID</p>
+                <p class="font-semibold text-xs">{{ reservationData?.reservationId }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons (Hidden when expired or cancelled) -->
+          <div
+            v-if="!holdExpired && !reservationCancelled"
+            class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6"
+          >
+            <!-- Proceed to Payment Button -->
+
+            <!-- Cancel Reservation Button -->
+            <button
+              v-if="!isPaymentStarted"
+              type="button"
+              class="cancel"
+              @click="cancelReservation"
+              :disabled="isPaymentStarted"
+            >
+              Cancel Reservation
+            </button>
             <button
               type="button"
-              @click.prevent="nextStep"
-              class="primary disabled:opacity-50 disabled:cursor-not-allowed"
-              :disabled="availabilityState !== 'available' && availabilityState !== 'selected'"
+              class="primary flex-1"
+              :disabled="isPaymentStarted"
+              @click="handlePaymentStart"
             >
-              Proceed to Contact Info
+              <span v-if="isPaymentStarted" class="spinner" aria-hidden="true"></span>
+              <span>
+                {{ isPaymentStarted ? 'Processing Payment...' : 'Proceed to Payment' }}
+              </span>
             </button>
           </div>
-        </div>
 
-        <!--step 2 Contact Info -->
-        <div v-else class="space-y-2 md:space-y-6">
-          <div class="mt-5 pt-7 border-t-[0.5px] border-t-primary/30">
-            <p class="mx-auto w-fit font-bold">Contact Information</p>
-          </div>
-          <div class="space-y-4">
-            <div>
-              <label for="full-name" class="block text-lg font-semibold mb-1">Full Name</label>
-              <input
-                id="full-name"
-                type="text"
-                placeholder="Enter your full name"
-                class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-              />
-            </div>
-            <div class="grid md:grid-cols-2 gap-6">
-              <div>
-                <label for="phone" class="block text-lg font-semibold mb-1">Phone Number</label>
-                <input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                />
-              </div>
-              <div>
-                <label for="email" class="block text-lg font-semibold mb-1">Email Address</label>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Special Requests -->
-          <div class="mt-4">
-            <label for="special-requests" class="block text-lg font-semibold mb-1">
-              Special Requests
-            </label>
-            <textarea
-              id="special-requests"
-              rows="4"
-              placeholder="Any special requirements or requests?"
-              class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
-            ></textarea>
-          </div>
-
-          <!-- Buttons -->
-          <div class="md:flex md:gap-4 mt-4 justify-center items-center space-y-4 md:space-y-0">
-            <button type="button" @click.prevent="prevStep" class="secondary w-full md:w-1/2">
-              Previous Step
-            </button>
-            <button type="submit" class="primary w-full md:w-1/2">Proceed to payment</button>
+          <!-- Payment Started Warning -->
+          <div v-if="isPaymentStarted" class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+            <p class="text-center text-blue-800 text-sm">
+              💳 Payment processing... Please do not close this window.
+            </p>
           </div>
         </div>
       </div>
-    </form>
+    </Transition>
   </div>
+
+  <!-- Close Confirmation Modal -->
+  <Transition name="fade">
+    <div
+      v-if="showCloseConfirmation"
+      class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      @click.self="showCloseConfirmation = false"
+    >
+      <div class="bg-bg rounded-lg shadow-xl p-6 md:p-8 max-w-sm mx-4 border-2 border-primary/20">
+        <h3 class="text-xl font-semibold mb-4">Close Booking Form?</h3>
+        <p class="text-text mb-6">
+          You have an active reservation with {{ formatTimeRemaining() }} remaining on your hold.
+          Are you sure you want to close? Your reservation will be cancelled.
+        </p>
+        <div class="flex gap-4">
+          <button
+            type="button"
+            class="secondary flex-1"
+            @click="showCloseConfirmation = false"
+            :disabled="isCancelling"
+          >
+            Keep Booking
+          </button>
+          <button
+            type="button"
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-semibold transition flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="confirmCancelReservation"
+            :disabled="isCancelling"
+          >
+            <span v-if="isCancelling" class="spinner" aria-hidden="true"></span>
+            <span>
+              {{ isCancelling ? 'Cancelling...' : 'Cancel Reservation' }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
@@ -418,5 +859,49 @@ input,
 select,
 textarea {
   background-color: var(--color-card-bg2);
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 9999px;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Step Transition Animations */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateX(20px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+/* Modal Fade Animation */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

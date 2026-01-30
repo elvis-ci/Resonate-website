@@ -9,6 +9,7 @@ import ContactView from '../views/ContactView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import Events from '../views/community/Events.vue'
 import Categories from '../views/workspaces/Categories.vue'
+import shared_workspace from '../views/workspaces/Single.vue'
 
 const routes = [
   {
@@ -39,7 +40,7 @@ const routes = [
       {
         path: 'shared-workspace',
         name: 'shared-workspace',
-        component: () => import('../views/workspaces/Single.vue'),
+        component: shared_workspace,
         meta: { title: 'Workspace — shared-workspace' },
       },
       {
