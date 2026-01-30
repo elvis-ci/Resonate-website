@@ -1,6 +1,6 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import { ref } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import { formatNaira } from '@/utils/currency'
 import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
 
@@ -86,25 +86,79 @@ const workspaces = [
 
 const bookingDialog = ref(null)
 const bookingFormRef = ref(null)
+
 const selectedWorkspace = ref('')
+const isBookingOpen = ref(false)
+const bookingError = ref(null) // Track booking modal errors
 
-const openBooking = (workspaceTitle) => {
+/**
+ * OPEN
+ */
+const openBooking = async (workspaceTitle) => {
+  bookingError.value = null
   selectedWorkspace.value = workspaceTitle
-  bookingDialog.value.showModal()
+  isBookingOpen.value = true
+
+  try {
+    await nextTick()
+    const dialog = bookingDialog.value
+    if (!dialog) {
+      bookingError.value = 'Failed to open booking dialog. Please try again.'
+      isBookingOpen.value = false
+      return
+    }
+    dialog.showModal()
+  } catch (err) {
+    console.error('Error opening booking dialog:', err)
+    bookingError.value = 'Failed to open booking dialog. Please try again.'
+    isBookingOpen.value = false
+  }
 }
 
+/**
+ * CLOSE (correct order)
+ */
 const closeBooking = () => {
-  bookingDialog.value.close()
+  bookingDialog.value?.close()
+  isBookingOpen.value = false
   selectedWorkspace.value = ''
+  bookingError.value = null
 }
 
+/**
+ * Backdrop click
+ * Delegates responsibility to the modal
+ */
 const handleBackdropClick = () => {
-  // Trigger the close attempt on the BookingFormModal
-  // This will show the confirmation modal if there's an active reservation
   if (bookingFormRef.value) {
     bookingFormRef.value.attemptToCloseForm()
   }
 }
+
+function handleEscCancel(event) {
+  // If confirmation modal is showing inside BookingFormModal, prevent default
+  // to avoid closing the dialog. The confirmation modal will handle Esc itself.
+  if (bookingFormRef.value?.showCloseConfirmation) {
+    event.preventDefault()
+    return
+  }
+
+  // Otherwise, allow the dialog to close and attempt to close the form normally
+  bookingFormRef.value?.attemptToCloseForm()
+}
+
+onMounted(() => {
+  const dialog = bookingDialog.value
+  if (!dialog) return
+
+  dialog.addEventListener('cancel', (e) => {
+    // Prevent default dialog closing behavior if confirmation is shown
+    if (bookingFormRef.value?.showCloseConfirmation) {
+      e.preventDefault()
+    }
+  })
+})
+
 </script>
 
 <template>
@@ -117,11 +171,10 @@ const handleBackdropClick = () => {
         large team gatherings, we have the perfect space for you.
       </p>
       <p>Find the perfect workspace in your location.</p>
-      <!-- <RouterLink class="primary" :to="'/bookings'">Go to Booking</RouterLink> -->
     </div>
   </section>
 
-  <!-- Workspace Sections (Dynamic) -->
+  <!-- Workspace Sections -->
   <section
     v-for="(workspace, index) in workspaces"
     :key="workspace.title"
@@ -129,7 +182,6 @@ const handleBackdropClick = () => {
   >
     <div class="container px-4">
       <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
-        <!-- Content Column -->
         <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
           <h2 class="mb-4">{{ workspace.title }}</h2>
           <p>
@@ -137,14 +189,11 @@ const handleBackdropClick = () => {
             {{ formatNaira(workspace.pricing) }} per hour
           </p>
 
-          <!-- Image (mobile placement) -->
           <div class="md:hidden mb-4">
             <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
           </div>
 
-          <p class="mb-4">
-            {{ workspace.description }}
-          </p>
+          <p class="mb-4">{{ workspace.description }}</p>
 
           <ul class="space-y-3 mb-8 text-body">
             <li v-for="feature in workspace.features" :key="feature" class="flex items-start">
@@ -164,7 +213,6 @@ const handleBackdropClick = () => {
           </div>
         </div>
 
-        <!-- Image Column (desktop only) -->
         <div class="hidden md:block">
           <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
         </div>
@@ -172,29 +220,50 @@ const handleBackdropClick = () => {
     </div>
   </section>
 
-  <!-- CTA Section -->
+  <!-- CTA -->
   <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
       <p class="text-lg mb-8 opacity-90">
         Book a tour today and discover why Resonate is the best coworking solution for your needs.
       </p>
-      <RouterLink to="/workspaces" class="inline-block primary"> Book a Tour</RouterLink>
+      <RouterLink to="/workspaces" class="inline-block primary"> Book a Tour </RouterLink>
     </div>
   </section>
 
-  <dialog
-    @click.self="handleBackdropClick"
-    ref="bookingDialog"
-    class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
-  >
-    <BookingFormModal
-      ref="bookingFormRef"
-      :workspaceType="selectedWorkspace"
-      @close="closeBooking"
-    />
-  </dialog>
+  <!-- Booking Error Toast -->
+  <Transition name="fade">
+    <div
+      v-if="bookingError"
+      class="fixed bottom-4 right-4 bg-red-50 border-2 border-red-300 rounded-lg p-4 shadow-lg max-w-sm"
+      role="alert"
+    >
+      <p class="text-red-800 font-semibold">⚠ {{ bookingError }}</p>
+      <button
+        @click="bookingError = null"
+        class="mt-2 text-sm text-red-600 hover:text-red-800 underline"
+      >
+        Dismiss
+      </button>
+    </div>
+  </Transition>
+
+  <!-- Booking Dialog -->
+<dialog
+  v-if="isBookingOpen"
+  ref="bookingDialog"
+  @cancel.prevent="handleEscCancel"
+  @click.self="handleBackdropClick"
+  class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
+>
+  <BookingFormModal
+    ref="bookingFormRef"
+    :workspaceType="selectedWorkspace"
+    @close="closeBooking"
+  />
+</dialog>
 </template>
+
 <style scoped>
 dialog {
   overscroll-behavior: contain;
