@@ -40,33 +40,30 @@ export function clearLocationsCacheForWorkspaceType(workspaceType) {
  * @returns {Promise<Array>} locations
  */
 export async function getLocationsPerWorkspace(selectedWorkspaceType) {
-  const cacheKey = `locations_${selectedWorkspaceType}`;
+  const cacheKey = `locations_${selectedWorkspaceType}`
 
   // Try cache first
-  const cached = localStorage.getItem(cacheKey);
+  const cached = localStorage.getItem(cacheKey)
   if (cached) {
-    const { data, timestamp } = JSON.parse(cached);
+    const { data, timestamp } = JSON.parse(cached)
     if (new Date(timestamp).toDateString() === new Date().toDateString()) {
-      console.log('Returning cached locations for', selectedWorkspaceType);
-      return data;
+      console.log('Returning cached locations for', selectedWorkspaceType)
+      return data
     }
-    localStorage.removeItem(cacheKey);
+    localStorage.removeItem(cacheKey)
   }
 
   // Fetch from Supabase
   const { data, error } = await supabase
     .from('available_workspace_locations')
     .select('*')
-    .eq('workspace_type', selectedWorkspaceType); // Note workspace_type
+    .eq('workspace_type', selectedWorkspaceType) // Note workspace_type
 
-  if (error) throw error;
-
+  if (error) throw error
+  console.log(data)
   // Cache for today
-  localStorage.setItem(
-    cacheKey,
-    JSON.stringify({ data, timestamp: Date.now() })
-  );
+  localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }))
 
-  console.log('Fetched and cached locations for', selectedWorkspaceType);
+  console.log('Fetched and cached locations for', selectedWorkspaceType)
   return { data, error }
 }
