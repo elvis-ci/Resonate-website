@@ -1,6 +1,7 @@
 <script setup>
 import { RouterLink } from 'vue-router'
 import { ref } from 'vue'
+import { formatNaira } from '@/utils/currency'
 import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
 
 const workspaces = [
@@ -10,6 +11,7 @@ const workspaces = [
       'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
     image: '/images/coworking/about.webp',
     alt: 'Shared Workspace',
+    pricing: 3000,
     features: [
       'Dedicated desk with storage',
       'High-speed WiFi and power outlets',
@@ -24,6 +26,7 @@ const workspaces = [
       'Ideal for small teams, startups, or client meetings. Our private office suites offer complete privacy, professional ambiance, and full control of your workspace.',
     image: '/images/coworking/about.webp',
     alt: 'Private Office Suite',
+    pricing: 13000,
     features: [
       '1–3 person capacity',
       'Soundproof walls for confidentiality',
@@ -39,6 +42,7 @@ const workspaces = [
       'Designed for collaborative work sessions and intensive team projects. These rooms accommodate 4–8 people and include all the tools needed for productive teamwork.',
     image: '/images/coworking/about.webp',
     alt: 'Team Collaboration Room',
+    pricing: 7800,
     features: [
       'Capacity for 4–8 people',
       'Large collaboration tables and whiteboards',
@@ -53,6 +57,7 @@ const workspaces = [
       'Impress clients and stakeholders with our premium conference rooms, designed for professional meetings and presentations with seating for up to 16 people.',
     image: '/images/coworking/about.webp',
     alt: 'Executive Conference Room',
+    pricing: 19500,
     features: [
       'Seating for up to 16 people',
       'Advanced AV system with 4K projection',
@@ -68,6 +73,7 @@ const workspaces = [
       'Host large events, workshops, and seminars in our fully-equipped halls. Ideal for training sessions, conferences, and community gatherings.',
     image: '/images/coworking/about.webp',
     alt: 'Event & Seminar Hall',
+    pricing: 32500,
     features: [
       'Flexible seating arrangements',
       'Professional stage with lighting and sound system',
@@ -126,6 +132,10 @@ const handleBackdropClick = () => {
         <!-- Content Column -->
         <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
           <h2 class="mb-4">{{ workspace.title }}</h2>
+          <p>
+            <span class="font-bold text-primary">Pricing</span>: from
+            {{ formatNaira(workspace.pricing) }} per hour
+          </p>
 
           <!-- Image (mobile placement) -->
           <div class="md:hidden mb-4">
