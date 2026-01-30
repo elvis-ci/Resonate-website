@@ -158,7 +158,6 @@ onMounted(() => {
     }
   })
 })
-
 </script>
 
 <template>
@@ -249,19 +248,19 @@ onMounted(() => {
   </Transition>
 
   <!-- Booking Dialog -->
-<dialog
-  v-if="isBookingOpen"
-  ref="bookingDialog"
-  @cancel.prevent="handleEscCancel"
-  @click.self="handleBackdropClick"
-  class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
->
-  <BookingFormModal
-    ref="bookingFormRef"
-    :workspaceType="selectedWorkspace"
-    @close="closeBooking"
-  />
-</dialog>
+  <dialog
+    v-if="isBookingOpen"
+    ref="bookingDialog"
+    @cancel.prevent="handleEscCancel"
+    @click.self="handleBackdropClick"
+    class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
+  >
+    <BookingFormModal
+      ref="bookingFormRef"
+      :workspaceType="selectedWorkspace"
+      @close="closeBooking"
+    />
+  </dialog>
 </template>
 
 <style scoped>
