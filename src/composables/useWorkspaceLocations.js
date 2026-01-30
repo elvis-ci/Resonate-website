@@ -11,6 +11,7 @@ export function useWorkspaceLocations() {
   async function fetchLocations(workspaceType) {
     if (!workspaceType) {
       availableLocations.value = []
+      error.value = null
       return
     }
 
@@ -18,6 +19,7 @@ export function useWorkspaceLocations() {
 
     if (!dbWorkspaceType) {
       availableLocations.value = []
+      error.value = new Error(`Unknown workspace type: ${workspaceType}`)
       return
     }
 
@@ -25,10 +27,24 @@ export function useWorkspaceLocations() {
     error.value = null
 
     try {
-      const locations = await getLocationsPerWorkspace(dbWorkspaceType)
-      availableLocations.value = locations ?? []
-      console.log('Fetched locations:', locations)
+      const response = await getLocationsPerWorkspace(dbWorkspaceType)
+
+      // Validate response structure
+      if (!response || typeof response !== 'object') {
+        throw new Error('Invalid response format from server')
+      }
+
+      const locations = response.data ?? response
+
+      // Ensure it's an array
+      if (!Array.isArray(locations)) {
+        throw new Error('Expected locations to be an array')
+      }
+
+      availableLocations.value = locations
+      console.log('Fetched available locations:', availableLocations.value)
     } catch (err) {
+      console.error('Error fetching locations:', err)
       error.value = err
       availableLocations.value = []
     } finally {
