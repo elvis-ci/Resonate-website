@@ -86,6 +86,7 @@ const space = ref({
 const workspaceType = computed(() => space.value.name)
 
 const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
+const loadError = ref(null)
 
 const availableAt = computed(() => availableLocations.value.map((l) => `${l.location}`))
 const locations = computed(() => availableLocations.value.map((l) => `${l.location} - ${l.city}`))
@@ -136,10 +137,11 @@ const averageRating = computed(() => {
   return (total / currentReviews.value.length).toFixed(1)
 })
 
-const formattedPrice = formatNaira(currentDbLocation.value?.max_booking_price || 0)
 const bookingDialog = ref(null)
 const bookingFormRef = ref(null)
 const selectedWorkspace = ref('')
+
+const hasLoadError = computed(() => loadError.value !== null)
 
 const openBooking = (workspaceTitle) => {
   selectedWorkspace.value = workspaceTitle
@@ -152,18 +154,35 @@ const closeBooking = () => {
 }
 
 const handleBackdropClick = () => {
-  // Trigger the close attempt on the BookingFormModal
-  // This will show the confirmation modal if there's an active reservation
   if (bookingFormRef.value) {
     bookingFormRef.value.attemptToCloseForm()
+  }
+}
+
+async function retryLoadLocations() {
+  loadError.value = null
+  try {
+    await fetchLocations(workspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
 }
 
 /* -----------------------------
    Fetch on mount
 -------------------------------- */
-onMounted(() => {
-  fetchLocations(workspaceType.value)
+onMounted(async () => {
+  try {
+    await fetchLocations(workspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+  }
 })
 </script>
 
@@ -202,7 +221,17 @@ onMounted(() => {
             </div>
             <label class="flex flex-col gap-2 mt-6 font-medium text-heading">
               Explore available locations
+              <!-- Loading State -->
+              <div v-if="isLoadingLocations" class="h-10 bg-gray-200 rounded animate-pulse"></div>
+
+              <!-- Error State -->
+              <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded p-3">
+                <p class="text-red-700 text-sm">⚠ Failed to load locations</p>
+              </div>
+
+              <!-- Loaded State -->
               <select
+                v-else
                 v-model="selectedLocation"
                 class="py-3 px-3 bg-card-bg2 rounded-md border border-text focus:ring-primary focus:border-primary"
               >
@@ -214,16 +243,43 @@ onMounted(() => {
           </div>
 
           <div class="order-2 md:order-none bg-bg shadow rounded-xl p-6 w-full md:w-80 text-text">
-            <p class="font-bold">
-              {{ formatNaira(currentDbLocation.max_booking_price) }} per hour
-            </p>
-            <p class="mt-1">
-              <span v-if="currentDbLocation">
-                {{ currentDbLocation.total_units }} spaces available
-              </span>
-            </p>
-            <button class="secondary w-full mt-4">Make Reservation</button>
-            <button class="primary w-full mt-4" @click="openBooking(workspaceType)">Book Now</button>
+            <!-- Loading State -->
+            <div v-if="isLoadingLocations" class="space-y-4 animate-pulse">
+              <div class="h-8 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+              <div class="h-10 bg-gray-200 rounded w-full"></div>
+              <div class="h-10 bg-gray-200 rounded w-full"></div>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded p-4">
+              <p class="text-red-800 font-semibold mb-3 text-sm">⚠ Unable to Load Pricing</p>
+              <p class="text-red-700 text-xs mb-4">{{ loadError }}</p>
+              <button
+                type="button"
+                class="primary w-full text-sm"
+                @click="retryLoadLocations"
+                :disabled="isLoadingLocations"
+              >
+                {{ isLoadingLocations ? 'Retrying...' : 'Retry' }}
+              </button>
+            </div>
+
+            <!-- Loaded State -->
+            <div v-else>
+              <p class="font-bold">
+                {{ formatNaira(currentDbLocation?.max_booking_price || 0) }} per hour
+              </p>
+              <p class="mt-1">
+                <span v-if="currentDbLocation">
+                  {{ currentDbLocation.total_units }} spaces available
+                </span>
+              </p>
+              <button class="secondary w-full mt-4">Make Reservation</button>
+              <button class="primary w-full mt-4" @click="openBooking(workspaceType)">
+                Book Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -232,7 +288,35 @@ onMounted(() => {
     <!-- CAROUSEL -->
     <section>
       <div class="relative z-0 isolate">
+        <!-- Loading State -->
+        <div v-if="isLoadingLocations" class="space-y-4 rounded-xl overflow-hidden p-4">
+          <div class="h-72 bg-gray-200 rounded-xl animate-pulse"></div>
+          <div class="flex gap-2 justify-center">
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded-xl p-6">
+          <p class="text-center text-red-800 font-semibold mb-3">⚠ Unable to Load Images</p>
+          <p class="text-center text-red-700 text-sm mb-4">{{ loadError }}</p>
+          <div class="text-center">
+            <button
+              type="button"
+              class="primary"
+              @click="retryLoadLocations"
+              :disabled="isLoadingLocations"
+            >
+              {{ isLoadingLocations ? 'Retrying...' : 'Retry' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Loaded State -->
         <Swiper
+          v-else
           :slides-per-view="1.1"
           :space-between="16"
           :centered-slides="true"
@@ -374,11 +458,7 @@ onMounted(() => {
       ref="bookingDialog"
       class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
     >
-      <BookingFormModal
-        ref="bookingFormRef"
-        :workspaceType="workspaceType"
-        @close="closeBooking"
-      />
+      <BookingFormModal ref="bookingFormRef" :workspaceType="workspaceType" @close="closeBooking" />
     </dialog>
   </main>
 </template>
