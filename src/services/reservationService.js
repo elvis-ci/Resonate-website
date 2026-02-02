@@ -18,57 +18,49 @@ import { supabase } from '@/lib/supabaseClient'
  *   error?: string
  * }
  */
-export async function attemptReservation({
-  locationId,
-  workspaceType,
-  bookingDate,
-  startTime,
-  endTime,
-}) {
+export async function attemptReservation(payload) {
   try {
-    const { data, error } = await supabase.rpc('attempt_reservation', {
-      p_location_id: locationId,
-      p_workspace_type: workspaceType,
-      p_booking_date: bookingDate,
-      p_start_time: startTime,
-      p_end_time: endTime,
-    })
+    // Get logged-in user (if any)
+    const { data: { user } = {} } = await supabase.auth.getUser()
 
-    if (error) {
-      console.error('RPC error', error)
-      return { success: false, error: error.message, alternatives: [] }
+    // Prepare RPC parameters (names must exactly match DB)
+    const rpcParams = {
+      p_workspace_type: payload.workspaceType,
+      p_location_id: payload.locationId,
+      p_booking_date: payload.bookingDate,   // 'YYYY-MM-DD'
+      p_start_time: payload.startTime,       // 'HH:MM'
+      p_end_time: payload.endTime,           // 'HH:MM'
+      p_full_name: user ? null : payload.fullName || null,
+      p_email: user ? null : payload.email || null,
+      p_guest_phone: user ? null : payload.phone || null  // <-- added
     }
 
-    if (!data || data.length === 0) {
-      console.log('No rows returned from RPC')
-      return { success: false, alternatives: [] }
-    }
+    const { data, error } = await supabase.rpc('attempt_reservation', rpcParams)
 
-    // Grab the first row
-    const row = data[0]
+    if (error) throw error
 
-    // Parse alternatives JSON safely
-    const alternatives = Array.isArray(row.alternatives)
-      ? row.alternatives
-      : JSON.parse(row.alternatives || '[]')
-
-    // Log alternatives to console
-    console.log('Alternatives array:', alternatives)
+    // data is an array of rows because it's a TABLE return type
+    const result = data[0]
 
     return {
-      success: row.success,
-      reservationId: row.reservation_id || null,
-      workspaceId: row.out_workspace_id || null,
-      holdExpiresAt: row.out_hold_expires_at || null,
-      expiresInSeconds: row.expires_in_seconds || null,
-      alternatives,
+      success: result.success,
+      reservationId: result.reservation_id,
+      workspaceId: result.out_workspace_id,
+      holdExpiresAt: result.out_hold_expires_at,
+      expiresInSeconds: result.expires_in_seconds,   // new field from RPC
+      alternatives: result.alternatives || [],
+      error: null,
     }
   } catch (err) {
-    console.error('Unexpected error', err)
-    return { success: false, error: err.message, alternatives: [] }
+    console.error('Attempt reservation failed', err)
+    return {
+      success: false,
+      error: err.message || 'Reservation failed',
+      alternatives: [],
+      expiresInSeconds: null,
+    }
   }
 }
-
 /**
  * Utility: format alternatives into human-readable array (HH:MM)
  *

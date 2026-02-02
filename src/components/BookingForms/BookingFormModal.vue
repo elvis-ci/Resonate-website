@@ -329,6 +329,7 @@ watch([selectedStartTime, selectedEndTime, selectedDate], () => {
 
 // --- RPC: Attempt Reservation (Write-First) ---
 async function attemptReservationSlot() {
+  // --- Validate Form Completion ---
   if (!isAvailabilityFormComplete.value) {
     validationError.value = true
     availabilityMessage.value = 'Please fill in all required fields before reserving.'
@@ -342,24 +343,29 @@ async function attemptReservationSlot() {
   alternativeSlots.value = []
 
   try {
+    // Map workspace type to DB type
     const dbType = workspaceTypeMap[selectedWorkspaceType.value]
     if (!dbType) throw new Error('Invalid workspace type selected.')
 
-    // Ensure location is passed as bigint
+    // Ensure location is a number
     const locationId = Number(selectedLocation.value)
     if (isNaN(locationId)) throw new Error('Invalid location selected.')
 
+    // Call the reservation service
     const result = await attemptReservation({
-      locationId,
       workspaceType: dbType,
-      bookingDate: selectedDate.value, // 'YYYY-MM-DD'
-      startTime: selectedStartTime.value, // 'HH:MM'
-      endTime: selectedEndTime.value, // 'HH:MM'
+      locationId: locationId,
+      bookingDate: selectedDate.value,
+      startTime: selectedStartTime.value,
+      endTime: selectedEndTime.value,
+      fullName: fullName.value,
+      email: email.value,
+      phone: phone.value,
     })
 
     if (!result.success) {
       availabilityState.value = 'unavailable'
-      if (result.alternatives && result.alternatives.length) {
+      if (result.alternatives?.length) {
         alternativeSlots.value = formatAlternatives(result.alternatives)
         availabilityMessage.value = 'Selected time is taken. See alternatives below.'
       } else {
@@ -368,6 +374,7 @@ async function attemptReservationSlot() {
       return
     }
 
+    // Success: store reservation info
     reservationData.value = {
       reservationId: result.reservationId,
       workspaceId: result.workspaceId,
@@ -380,7 +387,7 @@ async function attemptReservationSlot() {
     // Start countdown timer
     startCountdown(result.holdExpiresAt)
 
-    // Transition to step 2 after a short delay for UX
+    // Transition to Step 2 after a short delay for UX
     setTimeout(() => {
       currentStep.value = 2
     }, 500)
@@ -394,6 +401,7 @@ async function attemptReservationSlot() {
     isReserving.value = false
   }
 }
+
 const officeHoursError = computed(() => {
   if (!selectedStartTime.value || !selectedEndTime.value) return ''
 
@@ -460,16 +468,33 @@ onMounted(async () => {
   } catch (err) {
     loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
-  if (showCloseConfirmation.vlaue === true) {
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        e.preventDefault()
-        e.stopPropagation()
+
+const handleEsc = (e) => {
+    if (e.key !== 'Escape') return
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (reservationData.value && reservationData.value.reservationId) {
+      // Reservation exists
+      if (!showCloseConfirmation.value) {
+        // First press → show confirmation
         showCloseConfirmation.value = true
+      } else {
+        // Second press → hide confirmation without cancelling reservation
+        showCloseConfirmation.value = false
       }
-    })
+    } else {
+      // No reservation → close modal immediately
+      attemptToCloseForm()
+    }
   }
-})
+
+  document.addEventListener('keydown', handleEsc)
+
+  onBeforeUnmount(() => {
+    document.removeEventListener('keydown', handleEsc)
+  })})
 </script>
 
 <template>
