@@ -7,10 +7,23 @@ import {
   formatAlternatives,
   cancelReservationHold,
 } from '@/services/reservationService.js'
-
+import { useGuestOtp } from '@/composables/useGuestOtp'
 const props = defineProps({
   workspaceType: { type: String, required: true },
 })
+
+const { otpLoading, otpSent, otpError, otpCoolDown, requestOtp } = useGuestOtp()
+
+async function handleRequestOtp() {
+  await requestOtp({
+    email: email.value,
+    workspaceType: selectedWorkspaceType.value,
+    locationId: Number(selectedLocation.value),
+    bookingDate: selectedDate.value,
+    startTime: selectedStartTime.value,
+    endTime: selectedEndTime.value,
+  })
+}
 
 const emit = defineEmits(['close', 'reservation-confirmed'])
 const today = new Date().toISOString().split('T')[0]
@@ -31,6 +44,7 @@ const { availableLocations, isLoadingLocations, error, fetchLocations } = useWor
 const fullName = ref('')
 const email = ref('')
 const phone = ref('')
+const otp = ref('')
 
 // --- UI State ---
 const isReserving = ref(false)
@@ -206,16 +220,6 @@ async function confirmCancelReservation() {
   }
 }
 
-function confirmClose() {
-  stopCountdown()
-  confirmCancelReservation()
-}
-
-function goBack() {
-  currentStep.value = 1
-  showCloseConfirmation.value = false
-}
-
 function restartBooking() {
   // Clear all form data
   selectedDate.value = null
@@ -225,6 +229,10 @@ function restartBooking() {
   fullName.value = ''
   email.value = ''
   phone.value = ''
+  otp.value = ''
+  otpSent.value = false
+  otpError.value = ''
+  otpCoolDown.value = 0
 
   // Reset UI states
   availabilityMessage.value = ''
@@ -361,6 +369,7 @@ async function attemptReservationSlot() {
       fullName: fullName.value,
       email: email.value,
       phone: phone.value,
+      otp: otp.value,
     })
 
     if (!result.success) {
@@ -469,7 +478,7 @@ onMounted(async () => {
     loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
 
-const handleEsc = (e) => {
+  const handleEsc = (e) => {
     if (e.key !== 'Escape') return
 
     e.preventDefault()
@@ -491,10 +500,7 @@ const handleEsc = (e) => {
   }
 
   document.addEventListener('keydown', handleEsc)
-
-  onBeforeUnmount(() => {
-    document.removeEventListener('keydown', handleEsc)
-  })})
+})
 </script>
 
 <template>
@@ -692,6 +698,41 @@ const handleEsc = (e) => {
               </div>
             </div>
 
+            <!-- OTP Field -->
+            <div>
+              <label for="otp" class="block text-lg font-semibold mb-1">Enter OTP</label>
+              <div class="">
+                <div class="grid grid-cols-5 gap-3">
+                  <input
+                    type="text"
+                    id="otp"
+                    v-model="otp"
+                    maxlength="6"
+                    pattern="\d{6}"
+                    inputmode="numeric"
+                    class="col-span-3 w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                  />
+                  <button
+                    class="bg-primary text-white col-span-2 text-xs sm:text-base font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="otpCoolDown > 0 || otpLoading"
+                    @click.prevent="handleRequestOtp"
+                  >
+                    <span v-if="otpLoading" class="spinner"></span>
+                    <span>{{ otpLoading ? 'Sending...' : 'Request OTP' }}</span>
+                  </button>
+                </div>
+                <div aria-live="polite">
+                  <p v-if="otpSent" class="text-green-600 text-sm">
+                    OTP sent to your email,
+                    <span v-if="otpCoolDown > 0"> resend in {{ otpCoolDown }} secs</span>
+                  </p>
+                  <p v-if="otpError" class="text-red-500">
+                    {{ otpError }}
+                    <span v-if="otpCoolDown > 0"> (check email or try again in {{ otpCoolDown }}s)</span>
+                  </p>
+                </div>
+              </div>
+            </div>
             <!-- Error / Availability Messages -->
             <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
               <p
@@ -888,7 +929,6 @@ const handleEsc = (e) => {
             v-if="!holdExpired && !reservationCancelled"
             class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6"
           >
-            <!-- Proceed to Payment Button -->
 
             <!-- Cancel Reservation Button -->
             <button
