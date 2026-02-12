@@ -2,6 +2,7 @@
 import { ref, toRef, watch, computed, onBeforeUnmount, onMounted, defineExpose } from 'vue'
 import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
 import { useReservationHold } from '@/composables/useReservationHold'
+import { useBookingForm } from '@/composables/useBookingForm'
 import { useGuestOtp } from '@/composables/useGuestOtp'
 
 const props = defineProps({
@@ -9,6 +10,34 @@ const props = defineProps({
 })
 
 const { otpLoading, otpSent, otpError, otpCoolDown, requestOtp } = useGuestOtp()
+
+// Initialize workspace locations composable first
+const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
+
+// Initialize booking form composable with office hours
+const {
+  selectedDate,
+  selectedStartTime,
+  selectedEndTime,
+  selectedLocation,
+  fullName,
+  email,
+  phone,
+  otp,
+  validationError,
+  timeRangeError,
+  officeHoursError,
+  isAvailabilityFormComplete,
+  resetForm: resetFormData,
+  isValidTimeRange,
+  formattedHelpers: {
+    formatTo12Hour,
+    formatSlot,
+    getSelectedLocationName,
+    getSelectedLocationPrice,
+    getSelectedDateFormatted,
+  },
+} = useBookingForm(availableLocations, '08:00', '18:00')
 
 // Initialize reservation composable - handles all timer and reservation logic
 const {
@@ -31,34 +60,17 @@ const {
 
 const emit = defineEmits(['close', 'reservation-confirmed'])
 const today = new Date().toISOString().split('T')[0]
+const selectedWorkspaceType = toRef(props, 'workspaceType')
 
 // --- Form Steps ---
 const currentStep = ref(1) // 1: Booking Details, 2: Confirmation
 const showCloseConfirmation = ref(false)
-
-// --- Form Fields ---
-const selectedDate = ref(null)
-const selectedStartTime = ref(null)
-const selectedEndTime = ref(null)
-const selectedLocation = ref(null)
-const selectedWorkspaceType = toRef(props, 'workspaceType')
-const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
-
-// --- Contact Info ---
-const fullName = ref('')
-const email = ref('')
-const phone = ref('')
-const otp = ref('')
 
 // --- UI State ---
 const availabilityMessage = ref('')
 const alternativeSlots = ref([])
 const availabilityState = ref(null) // 'available' | 'unavailable' | 'selected'
 const loadError = ref(null) // Error loading locations
-
-// --- Validation ---
-const validationError = ref(false)
-const timeRangeError = ref(false)
 
 // Office hours
 const OFFICE_START = '08:00'
@@ -75,61 +87,11 @@ async function handleRequestOtp() {
   })
 }
 
-function formatTo12Hour(time) {
-  const [hour, minute] = time.split(':').map(Number)
-  const period = hour >= 12 ? 'PM' : 'AM'
-  const displayHour = hour % 12 || 12
-  return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
-}
-
-function formatSlot(slot) {
-  return `${formatTo12Hour(slot.start_time)} – ${formatTo12Hour(slot.end_time)}`
-}
-
 function selectAlternativeSlot(slot) {
   selectedStartTime.value = slot.start_time
   selectedEndTime.value = slot.end_time
   availabilityState.value = 'selected'
   availabilityMessage.value = 'New time slot selected'
-}
-
-// Validate time range
-function isValidTimeRange(start, end) {
-  if (!start || !end) return false
-  const [sh, sm] = start.split(':').map(Number)
-  const [eh, em] = end.split(':').map(Number)
-  return eh > sh || (eh === sh && em > sm)
-}
-
-function getSelectedLocationName() {
-  if (!selectedLocation.value) return ''
-
-  const location = availableLocations.value.find(
-    (loc) => loc.location_id === selectedLocation.value,
-  )
-
-  return location ? `${location.location} - ${location.city}` : ''
-}
-
-function getSelectedLocationPrice() {
-  if (!selectedLocation.value) return 0
-
-  const location = availableLocations.value.find(
-    (loc) => loc.location_id === selectedLocation.value,
-  )
-
-  return location?.min_booking_price ?? 0
-}
-
-function getSelectedDateFormatted() {
-  if (!selectedDate.value) return ''
-  const date = new Date(selectedDate.value)
-  return date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
 }
 
 function attemptToCloseForm() {
@@ -166,24 +128,12 @@ async function confirmCancelReservation() {
 }
 
 function restartBooking() {
-  // Clear all form data
-  selectedDate.value = null
-  selectedStartTime.value = null
-  selectedEndTime.value = null
-  selectedLocation.value = null
-  fullName.value = ''
-  email.value = ''
-  phone.value = ''
-  otp.value = ''
-  otpSent.value = false
-  otpError.value = ''
-  otpCoolDown.value = 0
+  // Reset form fields via composable
+  resetFormData({ otpSent, otpError, otpCoolDown })
 
   // Reset UI states
   availabilityMessage.value = ''
   availabilityState.value = null
-  validationError.value = false
-  timeRangeError.value = false
   alternativeSlots.value = []
   loadError.value = null
 
@@ -240,40 +190,11 @@ const sortedAlternativeSlots = computed(() =>
   [...alternativeSlots.value].sort((a, b) => a.start_time.localeCompare(b.start_time)),
 )
 
-const isAvailabilityFormComplete = computed(
-  () =>
-    selectedLocation.value &&
-    selectedDate.value &&
-    selectedStartTime.value &&
-    selectedEndTime.value &&
-    !timeRangeError.value &&
-    !officeHoursError.value &&
-    fullName.value.trim() &&
-    email.value.trim() &&
-    phone.value.trim(),
-)
-
 const hasError = computed(
   () => timeRangeError.value || officeClosedMessage.value || validationError.value,
 )
 
 const hasLoadError = computed(() => loadError.value !== null)
-
-const officeHoursError = computed(() => {
-  if (!selectedStartTime.value || !selectedEndTime.value) return ''
-
-  const startHour = Number(selectedStartTime.value.split(':')[0])
-  const endHour = Number(selectedEndTime.value.split(':')[0])
-
-  const officeStart = Number(OFFICE_START.split(':')[0])
-  const officeEnd = Number(OFFICE_END.split(':')[0])
-
-  if (startHour < officeStart || endHour > officeEnd) {
-    return `Spaces are only available from ${OFFICE_START} to ${OFFICE_END}`
-  }
-
-  return ''
-})
 
 // --- Watchers ---
 watch([selectedStartTime, selectedEndTime, selectedDate], () => {
