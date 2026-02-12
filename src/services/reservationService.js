@@ -23,23 +23,28 @@ export async function attemptReservation(payload) {
     // Get logged-in user (if any)
     const { data: { user } = {} } = await supabase.auth.getUser()
 
-    // Prepare RPC parameters (names must exactly match DB)
+    // Prepare RPC parameters (names must match DB exactly)
     const rpcParams = {
       p_workspace_type: payload.workspaceType,
       p_location_id: payload.locationId,
-      p_booking_date: payload.bookingDate,   // 'YYYY-MM-DD'
-      p_start_time: payload.startTime,       // 'HH:MM'
-      p_end_time: payload.endTime,           // 'HH:MM'
+      p_booking_date: payload.bookingDate, // 'YYYY-MM-DD'
+      p_start_time: payload.startTime, // 'HH:MM'
+      p_end_time: payload.endTime, // 'HH:MM'
       p_full_name: user ? null : payload.fullName || null,
       p_email: user ? null : payload.email || null,
-      p_guest_phone: user ? null : payload.phone || null  // <-- added
+      p_guest_phone: user ? null : payload.phone || null,
+      p_otp: user ? null : String(payload.otp || ''),
     }
 
-    const { data, error } = await supabase.rpc('attempt_reservation', rpcParams)
+    // Decide which RPC to call
+    const rpcName = user ? 'attempt_reservation' : 'attempt_reservation_with_otp'
+
+    const { data, error } = await supabase.rpc(rpcName, rpcParams)
+console.log(rpcParams)
 
     if (error) throw error
 
-    // data is an array of rows because it's a TABLE return type
+    // data is an array because TABLE return type
     const result = data[0]
 
     return {
@@ -47,7 +52,7 @@ export async function attemptReservation(payload) {
       reservationId: result.reservation_id,
       workspaceId: result.out_workspace_id,
       holdExpiresAt: result.out_hold_expires_at,
-      expiresInSeconds: result.expires_in_seconds,   // new field from RPC
+      expiresInSeconds: result.expires_in_seconds,
       alternatives: result.alternatives || [],
       error: null,
     }
@@ -119,6 +124,7 @@ export function isReservationExpired(holdExpiresAt) {
  *   error?: string
  * }
  */
+
 export async function cancelReservationHold(reservationId) {
   try {
     const { data, error } = await supabase.rpc('cancel_reservation', {
