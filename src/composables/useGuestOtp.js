@@ -23,10 +23,12 @@ export function useGuestOtp() {
         otpCoolDown.value--
       } else {
         otpCoolDown.value = 0
-        if (interval) clearInterval(interval)
-        interval = null
+        if (interval) {
+          clearInterval(interval)
+          interval = null
+        }
 
-        // Automatically clear rate-limit error
+        // Clear rate-limit error automatically
         if (otpError.value && otpError.value.includes('OTP recently sent')) {
           otpError.value = null
         }
@@ -34,14 +36,7 @@ export function useGuestOtp() {
     }, 1000)
   }
 
-  async function requestOtp({
-    email,
-    workspaceType,
-    locationId,
-    bookingDate,
-    startTime,
-    endTime,
-  }) {
+  async function requestOtp({ email, workspaceType, locationId, bookingDate }) {
     if (otpLoading.value) return
     if (otpCoolDown.value > 0) return
 
@@ -50,6 +45,7 @@ export function useGuestOtp() {
     otpSent.value = false
 
     try {
+      // Map workspace type to normalized value for backend
       const mappedWorkspaceType = workspaceTypeMap[workspaceType]
       if (!mappedWorkspaceType) throw new Error('Invalid workspace type')
 
@@ -58,20 +54,14 @@ export function useGuestOtp() {
         workspaceType: mappedWorkspaceType,
         locationId,
         bookingDate,
-        startTime,
-        endTime,
       })
 
       if (result.success) {
         otpSent.value = true
-        startCooldown(result.cooldown || 60)
+        startCooldown(result.cooldown ?? 60)
       } else {
         otpError.value = result.error || 'Failed to send OTP'
-
-        if (result.retryAfter) {
-          startCooldown(result.retryAfter)
-          otpError.value = `${result.error} `
-        }
+        if (result.retryAfter) startCooldown(result.retryAfter)
       }
     } catch (err) {
       otpError.value = err?.message || 'Failed to send OTP. Try again or contact support'
