@@ -45,7 +45,8 @@ const {
   cancelHold,
   restartHold,
   handlePaymentStart: composableHandlePaymentStart,
-  cleanup,
+  // cleanup,
+  restoreFromStorage,
   reservationData,
   timeRemaining,
   holdExpired,
@@ -53,6 +54,10 @@ const {
   isPaymentStarted,
   isReserving,
   isCancelling,
+  reservationError,
+  alternativeSlots,
+  availabilityState,
+  availabilityMessage,
   formatTimeRemaining,
   holdCountdownClass,
   HOLD_DURATION_MINUTES,
@@ -67,9 +72,6 @@ const currentStep = ref(1) // 1: Booking Details, 2: Confirmation
 const showCloseConfirmation = ref(false)
 
 // --- UI State ---
-const availabilityMessage = ref('')
-const alternativeSlots = ref([])
-const availabilityState = ref(null) // 'available' | 'unavailable' | 'selected'
 const loadError = ref(null) // Error loading locations
 
 // Office hours
@@ -82,16 +84,14 @@ async function handleRequestOtp() {
     workspaceType: selectedWorkspaceType.value,
     locationId: Number(selectedLocation.value),
     bookingDate: selectedDate.value,
-    startTime: selectedStartTime.value,
-    endTime: selectedEndTime.value,
   })
 }
 
 function selectAlternativeSlot(slot) {
   selectedStartTime.value = slot.start_time
   selectedEndTime.value = slot.end_time
-  availabilityState.value = 'selected'
-  availabilityMessage.value = 'New time slot selected'
+  availabilityState.value = null
+  reservationError.value = null
 }
 
 function attemptToCloseForm() {
@@ -129,6 +129,7 @@ async function confirmCancelReservation() {
 
 function restartBooking() {
   // Reset form fields via composable
+  localStorage.removeItem('activeReservation')
   resetFormData({ otpSent, otpError, otpCoolDown })
 
   // Reset UI states
@@ -205,66 +206,38 @@ watch([selectedStartTime, selectedEndTime, selectedDate], () => {
 
 // --- RPC: Attempt Reservation (Write-First) ---
 async function attemptReservationSlot() {
+  currentStep.value = 1
   // --- Validate Form Completion ---
   if (!isAvailabilityFormComplete.value) {
-    validationError.value = true
-    availabilityMessage.value = 'Please fill in all required fields before reserving.'
+    validationError.value = 'Please fill required fields.'
     return
   }
+  // Call the reservation composable
+  await reserveSlot({
+    workspaceType: selectedWorkspaceType.value,
+    locationId: Number(selectedLocation.value),
+    bookingDate: selectedDate.value,
+    startTime: selectedStartTime.value,
+    endTime: selectedEndTime.value,
+    fullName: fullName.value,
+    email: email.value,
+    phone: phone.value,
+    otp: otp.value,
+  })
 
-  validationError.value = false
-  availabilityMessage.value = ''
-  availabilityState.value = null
-  alternativeSlots.value = []
+  if (reservationError.value) return
+  
+  console.log('availability state:', availabilityState.value)
 
-  try {
-    // Call the reservation composable
-    const result = await reserveSlot({
-      workspaceType: selectedWorkspaceType.value,
-      locationId: Number(selectedLocation.value),
-      bookingDate: selectedDate.value,
-      startTime: selectedStartTime.value,
-      endTime: selectedEndTime.value,
-      fullName: fullName.value,
-      email: email.value,
-      phone: phone.value,
-      otp: otp.value,
-    })
+  if (availabilityState.value === 'unavailable') return
 
-    if (!result.success) {
-      availabilityState.value = 'unavailable'
-      if (result.alternatives?.length) {
-        alternativeSlots.value = result.alternatives
-        availabilityMessage.value = 'Selected time is taken. See alternatives below.'
-      } else {
-        availabilityMessage.value = result.error || 'Slot unavailable. Please choose another time.'
-      }
-      return
-    }
+  // Transition to Step 2 after a short delay for UX
+  setTimeout(() => {
+    currentStep.value = 2
+  }, 500)
 
-    // Success
-    availabilityState.value = 'available'
-    availabilityMessage.value = 'Reservation successful! Proceeding to confirmation...'
-
-    // Transition to Step 2 after a short delay for UX
-    setTimeout(() => {
-      currentStep.value = 2
-    }, 500)
-
-    emit('reservation-confirmed', reservationData.value)
-  } catch (err) {
-    console.error('Reservation attempt failed', err)
-    availabilityState.value = 'unavailable'
-    availabilityMessage.value = err.message || 'Failed to reserve slot. Try again.'
-  }
+  emit('reservation-confirmed', reservationData.value)
 }
-
-// --- Cleanup ---
-onBeforeUnmount(async () => {
-  await cleanup()
-  availableLocations.value = []
-  isLoadingLocations.value = false
-})
 
 // --- Expose methods for parent component ---
 defineExpose({
@@ -283,16 +256,33 @@ async function retryLoadLocations() {
     loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
 }
-
 onMounted(async () => {
   availableLocations.value = []
+  console.log('is hold expired?:', holdExpired)
+
   try {
+    await restoreFromStorage(selectedWorkspaceType.value)
+
+    if (reservationData.value) {
+      // 👇 THIS is what you're missing
+      fullName.value = reservationData.value.fullName
+      email.value = reservationData.value.email
+      phone.value = reservationData.value.phone
+      selectedDate.value = reservationData.value.bookingDate
+      selectedStartTime.value = reservationData.value.startTime
+      selectedEndTime.value = reservationData.value.endTime
+
+      currentStep.value = 2
+      return
+    }
+
     await fetchLocations(selectedWorkspaceType.value)
+
     if (error.value) {
       loadError.value = 'Failed to load locations. Please try again.'
     }
   } catch (err) {
-    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+    loadError.value = err?.message || 'Failed to initialize booking. Please try again.'
   }
 
   const handleEsc = (e) => {
@@ -301,17 +291,9 @@ onMounted(async () => {
     e.preventDefault()
     e.stopPropagation()
 
-    if (reservationData.value && reservationData.value.reservationId) {
-      // Reservation exists
-      if (!showCloseConfirmation.value) {
-        // First press → show confirmation
-        showCloseConfirmation.value = true
-      } else {
-        // Second press → hide confirmation without cancelling reservation
-        showCloseConfirmation.value = false
-      }
+    if (reservationData.value?.reservationId) {
+      showCloseConfirmation.value = !showCloseConfirmation.value
     } else {
-      // No reservation → close modal immediately
       attemptToCloseForm()
     }
   }
@@ -360,7 +342,7 @@ onMounted(async () => {
         <h2 class="mb-8 text-center">{{ selectedWorkspaceType }} Booking Form</h2>
 
         <!-- Load Error State -->
-        <div v-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded-lg p-6 mb-6">
+        <div v-if="hasLoadError" class="bg-red-100 border-2 border-red-300 rounded-lg p-6 mb-6">
           <p class="text-center text-red-800 font-semibold mb-3 text-lg">
             ⚠ Unable to Load Locations
           </p>
@@ -557,15 +539,15 @@ onMounted(async () => {
             <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
               <p
                 v-if="validationError"
-                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
-                ⚠ Please fill in all required fields before checking availability.
+                ⚠ Please fill in all required fields
               </p>
 
               <p
                 v-else-if="timeRangeError"
-                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
                 Enter a valid time range between 08:00 and 18:00.
@@ -573,7 +555,7 @@ onMounted(async () => {
 
               <p
                 v-else-if="officeHoursError"
-                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                class="font-semibold text-green-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
                 ⚠ {{ officeHoursError }}
@@ -584,15 +566,22 @@ onMounted(async () => {
                 class="font-semibold text-green-600 bg-green-50 p-3 rounded"
                 role="status"
               >
-                ✓ Selected time is available.
+                ✓ {{ availabilityMessage }}
+              </p>
+              <p
+                v-else-if="availabilityState === 'unavailable'"
+                class="font-semibold text-green-600 bg-red-100 p-3 rounded"
+                role="status"
+              >
+                ✓ {{ availabilityMessage }}
               </p>
 
               <p
-                v-else-if="availabilityState === 'unavailable'"
-                class="font-semibold text-red-600 bg-red-50 p-3 rounded"
+                v-else-if="reservationError"
+                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="status"
               >
-                ✗ Selected time is already taken.
+                ✗ {{ reservationError }}
               </p>
             </div>
 
@@ -635,37 +624,9 @@ onMounted(async () => {
 
         <div class="text-text space-y-6 pt-4">
           <!-- Hold Countdown Timer -->
-          <div
-            v-if="!holdExpired && !reservationCancelled"
-            class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6"
-          >
-            <p class="text-center text-yellow-900 font-semibold mb-2">
-              ⏱ Your Time is Temporarily Reserved
-            </p>
-            <p class="text-center text-yellow-800 text-sm mb-4">
-              Your selected time slot has been held for {{ HOLD_DURATION_MINUTES }} minutes.
-              Complete your payment now to secure the booking.
-            </p>
-            <div class="text-center mb-4">
-              <div :class="['text-5xl font-bold font-mono', holdCountdownClass]">
-                {{ formatTimeRemaining() }}
-              </div>
-              <p class="text-yellow-700 text-xs mt-2">
-                <span
-                  v-if="timeRemaining && timeRemaining.minutes * 60 + timeRemaining.seconds < 300"
-                  class="text-red-600 font-semibold"
-                >
-                  ⚠ Hurry! Time running out
-                </span>
-              </p>
-            </div>
-          </div>
 
           <!-- Hold Expired UI -->
-          <div
-            v-else-if="!reservationCancelled"
-            class="bg-red-50 border-2 border-red-300 rounded-lg p-6"
-          >
+          <div v-if="holdExpired" class="bg-red-100 border-2 border-red-300 rounded-lg p-6">
             <p class="text-center text-red-800 font-semibold mb-2 text-lg">
               ✗ Reservation Hold Expired
             </p>
@@ -699,11 +660,31 @@ onMounted(async () => {
             </div>
           </div>
 
+          <div v-else class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
+            <p class="text-center text-yellow-900 font-semibold mb-2">
+              ⏱ Your Time is Temporarily Reserved
+            </p>
+            <p class="text-center text-yellow-800 text-sm mb-4">
+              Your selected time slot has been held for {{ HOLD_DURATION_MINUTES }} minutes.
+              Complete your payment now to complete your booking.
+            </p>
+            <div class="text-center mb-4">
+              <div :class="['text-5xl font-bold font-mono', holdCountdownClass]">
+                {{ formatTimeRemaining() }}
+              </div>
+              <p class="text-yellow-700 text-xs mt-2">
+                <span
+                  v-if="timeRemaining && timeRemaining.minutes * 60 + timeRemaining.seconds < 300"
+                  class="text-red-600 font-semibold"
+                >
+                  ⚠ Hurry! Time running out
+                </span>
+              </p>
+            </div>
+          </div>
+
           <!-- Booking Summary (Hidden when expired or cancelled) -->
-          <div
-            v-if="!holdExpired && !reservationCancelled"
-            class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6"
-          >
+          <div v-if="reservationData" class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6">
             <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
