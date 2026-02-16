@@ -1,72 +1,49 @@
 import { supabase } from '@/lib/supabaseClient'
 
 /**
- * Attempt to reserve a workspace
- *
- * @param {number} locationId
- * @param {string} workspaceType
- * @param {string} bookingDate - 'YYYY-MM-DD'
- * @param {string} startTime - 'HH:MM'
- * @param {string} endTime - 'HH:MM'
- * @returns {Promise<Object>} {
- *   success: boolean,
- *   reservationId?: string,
- *   workspaceId?: string,
- *   holdExpiresAt?: string,
- *   expiresInSeconds?: number,
- *   alternatives?: Array<{ start_time: string, end_time: string }>,
- *   error?: string
- * }
+ * Attempt to reserve a workspace (guest or logged-in user)
+ * Calls the correct RPC depending on authentication
  */
 export async function attemptReservation(payload) {
-  try {
-    // Get logged-in user (if any)
-    const { data: { user } = {} } = await supabase.auth.getUser()
+  // Get logged-in user (if any)
+  const { data: { user } = {} } = await supabase.auth.getUser()
 
-    // Prepare RPC parameters (names must exactly match DB)
-    const rpcParams = {
-      p_workspace_type: payload.workspaceType,
-      p_location_id: payload.locationId,
-      p_booking_date: payload.bookingDate,   // 'YYYY-MM-DD'
-      p_start_time: payload.startTime,       // 'HH:MM'
-      p_end_time: payload.endTime,           // 'HH:MM'
-      p_full_name: user ? null : payload.fullName || null,
-      p_email: user ? null : payload.email || null,
-      p_guest_phone: user ? null : payload.phone || null  // <-- added
-    }
+  // Prepare RPC parameters (names & types must match DB exactly)
+  const rpcParams = {
+    p_workspace_type: payload.workspaceType,
+    p_location_id: Number(payload.locationId),
+    p_booking_date: payload.bookingDate, // 'YYYY-MM-DD' string
+    p_start_time: payload.startTime + ':00', // 'HH:MM:SS' string
+    p_end_time: payload.endTime + ':00', // 'HH:MM:SS' string
+    p_full_name: user ? null : payload.fullName || null,
+    p_email: user ? null : payload.email || null,
+    p_guest_phone: user ? null : payload.phone || null,
+    p_otp: user ? null : String(payload.otp || ''),
+  }
 
-    const { data, error } = await supabase.rpc('attempt_reservation', rpcParams)
+  const rpcName = user ? 'attempt_reservation' : 'attempt_reservation_with_otp'
 
-    if (error) throw error
+  const { data, error } = await supabase.rpc(rpcName, rpcParams)
 
-    // data is an array of rows because it's a TABLE return type
-    const result = data[0]
+  if (error) throw error
+      console.log("reservation result:", data)
+      console.log("reservation error:", error)
 
-    return {
-      success: result.success,
-      reservationId: result.reservation_id,
-      workspaceId: result.out_workspace_id,
-      holdExpiresAt: result.out_hold_expires_at,
-      expiresInSeconds: result.expires_in_seconds,   // new field from RPC
-      alternatives: result.alternatives || [],
-      error: null,
-    }
-  } catch (err) {
-    console.error('Attempt reservation failed', err)
-    return {
-      success: false,
-      error: err.message || 'Reservation failed',
-      alternatives: [],
-      expiresInSeconds: null,
-    }
+  const result = data[0]
+
+  return {
+    success: result.success,
+    reservationId: result.reservation_id,
+    workspaceId: result.out_workspace_id,
+    holdExpiresAt: result.out_hold_expires_at,
+    expiresInSeconds: result.expires_in_seconds,
+    alternatives: result.alternatives || [],
+    error: null,
   }
 }
+
 /**
- * Utility: format alternatives into human-readable array (HH:MM)
- *
- * @param {Array} alternatives
- * @param {boolean} to12Hour - if true, converts to 12-hour format
- * @returns {Array<{start_time: string, end_time: string}>}
+ * Format alternative slots into HH:MM or 12-hour format
  */
 export function formatAlternatives(alternatives, to12Hour = false) {
   if (!alternatives || !Array.isArray(alternatives)) return []
@@ -81,16 +58,10 @@ export function formatAlternatives(alternatives, to12Hour = false) {
         end_time: formatTo12Hour(end),
       }
     }
-
     return { start_time: start, end_time: end }
   })
 }
 
-/**
- * Convert 'HH:MM' to 12-hour format
- * @param {string} time
- * @returns {string} e.g., '2:00 PM'
- */
 function formatTo12Hour(time) {
   const [hour, minute] = time.split(':').map(Number)
   const period = hour >= 12 ? 'PM' : 'AM'
@@ -98,26 +69,12 @@ function formatTo12Hour(time) {
   return `${displayHour}:${minute.toString().padStart(2, '0')} ${period}`
 }
 
-/**
- * Check if a reservation has expired
- *
- * @param {string} holdExpiresAt - timestamp string
- * @returns {boolean}
- */
 export function isReservationExpired(holdExpiresAt) {
   return new Date() > new Date(holdExpiresAt)
 }
 
 /**
- * Cancel a reservation
- *
- * @param {string} reservationId - UUID of the reservation
- * @returns {Promise<Object>} {
- *   success: boolean,
- *   finalStatus?: string ('cancelled', 'expired', 'consumed', etc.),
- *   message?: string,
- *   error?: string
- * }
+ * Cancel a reservation hold
  */
 export async function cancelReservationHold(reservationId) {
   try {
@@ -131,17 +88,10 @@ export async function cancelReservationHold(reservationId) {
     }
 
     if (!data || data.length === 0) {
-      console.log('No response from cancel_reservation RPC')
       return { success: false, error: 'No response from server' }
     }
 
     const row = data[0]
-    console.log('Reservation cancellation result:', {
-      success: row.success,
-      finalStatus: row.final_status,
-      message: row.message,
-    })
-
     return {
       success: row.success,
       finalStatus: row.final_status,
@@ -151,4 +101,19 @@ export async function cancelReservationHold(reservationId) {
     console.error('Unexpected error cancelling reservation', err)
     return { success: false, error: err.message }
   }
+}
+
+/**
+ * Restore a pending reservation from localStorage
+ * Validates saved data structure, checks expiration, and restores user to Step 2
+ * @returns {Promise<{success: boolean, message?: string}>}
+ */
+export async function restoreReservation(reservationId) {
+  const { data, error } = await supabase.rpc('get_reservation_details', {
+    p_reservation_id: reservationId,
+  })
+
+  if (error) throw error
+
+  return data // either object or null
 }
