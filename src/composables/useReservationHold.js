@@ -3,6 +3,7 @@ import {
   attemptReservation,
   formatAlternatives,
   cancelReservationHold,
+  restoreReservation,
 } from '@/services/reservationService.js'
 import { workspaceTypeMap } from '@/utils/workspaceTypeMap'
 
@@ -12,9 +13,14 @@ export function useReservationHold(workspaceType) {
   const isReserving = ref(false)
   const isCancelling = ref(false)
   const isPaymentStarted = ref(false)
+  const reservationError = ref(null)
+  const cancellationError = ref(null)
+  const alternativeSlots = ref([])
+  const availabilityState = ref(null)
+  const availabilityMessage = ref('')
 
   // --- Countdown Timer State ---
-  const timeRemaining = ref(0)
+  const timeRemaining = ref(null)
   const holdExpired = ref(false)
   const countdownInterval = ref(null)
   const reservationCancelled = ref(false)
@@ -40,7 +46,7 @@ export function useReservationHold(workspaceType) {
       const difference = expireTime - now
 
       if (difference <= 0) {
-        timeRemaining.value = 0
+        timeRemaining.value = null
         holdExpired.value = true
         clearInterval(countdownInterval.value)
         return
@@ -70,6 +76,11 @@ export function useReservationHold(workspaceType) {
 
   // --- Reservation Functions ---
   async function reserveSlot(payload) {
+    reservationError.value = null
+    alternativeSlots.value = []
+    availabilityState.value = null
+    availabilityMessage.value = ''
+
     // Validate payload
     if (
       !payload.workspaceType ||
@@ -81,19 +92,25 @@ export function useReservationHold(workspaceType) {
       !payload.email ||
       !payload.phone
     ) {
-      throw new Error('Missing required reservation fields')
+      reservationError.value = 'Missing required fields'
+      return
     }
 
     isReserving.value = true
-
     try {
       // Map workspace type to DB type
       const dbType = workspaceTypeMap[payload.workspaceType]
-      if (!dbType) throw new Error('Invalid workspace type selected.')
+      if (!dbType) {
+        reservationError.value = 'Invalid workspace type selected.'
+        return
+      }
 
       // Ensure location is a number
       const locationId = Number(payload.locationId)
-      if (isNaN(locationId)) throw new Error('Invalid location selected.')
+      if (isNaN(locationId)) {
+        reservationError.value = 'Invalid location selected.'
+        return
+      }
 
       // Call the reservation service
       const result = await attemptReservation({
@@ -109,34 +126,112 @@ export function useReservationHold(workspaceType) {
       })
 
       if (!result.success) {
-        return {
-          success: false,
-          error: result.error || 'Slot unavailable. Please choose another time.',
-          alternatives: result.alternatives ? formatAlternatives(result.alternatives) : [],
-        }
+        availabilityState.value = 'unavailable'
+        availabilityMessage.value =
+          'Selected Time is taken, select from available alternative below'
+        alternativeSlots.value = formatAlternatives(result.alternatives)
+        return
       }
 
       // Success: store reservation info and start countdown
+      availabilityState.value = 'available'
+      availabilityMessage.value = 'space is available, proceeding to confirmation'
       reservationData.value = {
         reservationId: result.reservationId,
         workspaceId: result.workspaceId,
         holdExpiresAt: result.holdExpiresAt,
       }
 
+      // Persist minimal restore data
+      localStorage.setItem(
+        'activeReservation',
+        JSON.stringify({
+          reservation_id: result.reservationId,
+          workspace_type: payload.workspaceType,
+        }),
+      )
+
       // Start countdown timer
       startCountdown(result.holdExpiresAt)
 
-      return {
-        success: true,
-        reservationId: result.reservationId,
-        workspaceId: result.workspaceId,
-        holdExpiresAt: result.holdExpiresAt,
-      }
+      // return {
+      //   success: true,
+      //   reservationId: result.reservationId,
+      //   workspaceId: result.workspaceId,
+      //   holdExpiresAt: result.holdExpiresAt,
+      // }
     } catch (err) {
       console.error('Reservation attempt failed', err)
-      throw err
+      availabilityState.value = null
+      availabilityMessage.value = ''
+      reservationError.value = err.message
     } finally {
       isReserving.value = false
+    }
+  }
+
+  async function restoreFromStorage(workspaceType) {
+    console.log('checking for local storage reservation')
+
+    const savedRaw = localStorage.getItem('activeReservation')
+
+    if (!savedRaw) {
+      console.log('no saved reservation found')
+      return
+    }
+
+    const saved = JSON.parse(savedRaw)
+
+    if (saved.workspace_type !== workspaceType) {
+      console.log('workspace type mismatch')
+      return
+    }
+
+    try {
+      const result = await restoreReservation(saved.reservation_id)
+
+      if (!result) {
+        // Reservation doesn't exist or invalid status
+        localStorage.removeItem('activeReservation')
+        return
+      }
+
+      console.log(result)
+      // Always populate reservation data if it exists
+      reservationData.value = {
+        reservationId: result.id,
+        workspaceId: result.workspace_id,
+        bookingDate: result.booking_date,
+        startTime: result.start_time,
+        endTime: result.end_time,
+        holdExpiresAt: result.hold_expires_at,
+        fullName: result.full_name,
+        email: result.email,
+        phone: result.guest_phone,
+        status: result.status,
+      }
+
+      // Handle status logic
+      if (result.status === 'expired') {
+        holdExpired.value = true
+        reservationCancelled.value = false
+        console.log('expired block:', result.status)
+        return
+      }
+
+      if (result.status === 'pending' || result.status === 'payment_started') {
+        holdExpired.value = false
+        reservationCancelled.value = false
+        console.log('pending block:', result.status)
+
+        startCountdown(result.hold_expires_at)
+        return
+      }
+
+      // Any other unexpected status
+      // localStorage.removeItem('activeReservation')
+    } catch (err) {
+      console.error('Failed to restore reservation', err)
     }
   }
 
@@ -155,14 +250,12 @@ export function useReservationHold(workspaceType) {
       // Stop countdown and mark as cancelled
       stopCountdown()
       reservationCancelled.value = true
+      localStorage.removeItem('activeReservation')
 
       return result
     } catch (err) {
       console.error('Error cancelling reservation:', err)
-      // Still show cancelled state on error
-      stopCountdown()
-      reservationCancelled.value = true
-      throw err
+      cancellationError.value = err.message
     } finally {
       isCancelling.value = false
     }
@@ -175,29 +268,29 @@ export function useReservationHold(workspaceType) {
   function restartHold() {
     // Clear all timer and reservation data
     stopCountdown()
-    timeRemaining.value = 0
+    timeRemaining.value = null
     holdExpired.value = false
     isPaymentStarted.value = false
     reservationCancelled.value = false
     reservationData.value = null
   }
 
-  function cleanup() {
-    stopCountdown()
+  // function cleanup() {
+  //   stopCountdown()
 
-    // Auto-cancel active reservation (safety net)
-    if (
-      reservationData.value &&
-      reservationData.value.reservationId &&
-      !reservationCancelled.value &&
-      !holdExpired.value &&
-      !isPaymentStarted.value
-    ) {
-      return cancelReservationHold(reservationData.value.reservationId).catch((err) => {
-        console.warn('Failed to auto-cancel reservation on cleanup', err)
-      })
-    }
-  }
+  //   // Auto-cancel active reservation (safety net)
+  //   if (
+  //     reservationData.value &&
+  //     reservationData.value.reservationId &&
+  //     !reservationCancelled.value &&
+  //     !holdExpired.value &&
+  //     !isPaymentStarted.value
+  //   ) {
+  //     return cancelReservationHold(reservationData.value.reservationId).catch((err) => {
+  //       console.warn('Failed to auto-cancel reservation on cleanup', err)
+  //     })
+  //   }
+  // }
 
   // --- Computed Properties ---
   const holdCountdownClass = computed(() => {
@@ -216,7 +309,8 @@ export function useReservationHold(workspaceType) {
     cancelHold,
     restartHold,
     handlePaymentStart,
-    cleanup,
+    // cleanup,
+    restoreFromStorage,
 
     // State - Reactive refs
     reservationData,
@@ -226,7 +320,10 @@ export function useReservationHold(workspaceType) {
     isPaymentStarted,
     isReserving,
     isCancelling,
-
+    reservationError,
+    alternativeSlots,
+    availabilityState,
+    availabilityMessage,
     // Utilities
     formatTimeRemaining,
     holdCountdownClass,
