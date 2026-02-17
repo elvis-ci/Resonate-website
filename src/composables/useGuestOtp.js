@@ -1,14 +1,10 @@
 // import { ref, onUnmounted } from 'vue'
 // import { sendGuestOtp } from '@/services/guestOtpService'
-import { workspaceTypeMap } from '@/utils/workspaceTypeMap'
+// import { workspaceTypeMap } from '@/utils/workspaceTypeMap'
 import { ref, onUnmounted } from 'vue'
-import { createClient } from '@supabase/supabase-js'
 import { workspaceTypeMap } from '@/utils/workspaceTypeMap'
 
-const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL,
-  import.meta.env.VITE_SUPABASE_ANON_KEY,
-)
+import { supabase } from '@/lib/supabaseClient'
 
 export function useGuestOtp() {
   const otpLoading = ref(false)
