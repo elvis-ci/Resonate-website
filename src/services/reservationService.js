@@ -2,34 +2,59 @@ import { supabase } from '@/lib/supabaseClient'
 
 /**
  * Attempt to reserve a workspace (guest or logged-in user)
- * Calls the correct RPC depending on authentication
+ * Checks active session first for guest, otherwise verifies OTP
  */
-export async function attemptReservation(payload) {
-  // Get logged-in user (if any)
-  const { data: { user } = {} } = await supabase.auth.getUser()
 
-  // Prepare RPC parameters (names & types must match DB exactly)
+// this attempt reservation fucntion uses supabase otp and is only meant for teh mvp. it will be removed. the relevant rpc is stored in a .txt file in the api folder
+export async function attemptReservation(payload) {
+  // Get current session and user
+  const {
+    data: { session, user },
+  } = await supabase.auth.getSession()
+
+  let guestSession = null
+
+  // Guest check: if no logged-in user
+  if (!user) {
+    if (!session) {
+      // No session → must verify OTP
+      if (!payload.otp || !payload.email) {
+        throw new Error('OTP and email are required for guests')
+      }
+
+      const { data: verifyData, error: verifyError } = await supabase.auth.verifyOtp({
+        email: payload.email,
+        token: payload.otp,
+        type: 'email',
+      })
+
+      if (verifyError) throw verifyError;
+      if (!verifyData.session) throw new Error('OTP verification failed')
+
+      guestSession = verifyData.session
+    } else {
+      // Session exists → use existing session, skip OTP
+      guestSession = session
+    }
+  }
+
+  // Prepare RPC parameters
   const rpcParams = {
     p_workspace_type: payload.workspaceType,
     p_location_id: Number(payload.locationId),
-    p_booking_date: payload.bookingDate, // 'YYYY-MM-DD' string
-    p_start_time: payload.startTime + ':00', // 'HH:MM:SS' string
-    p_end_time: payload.endTime + ':00', // 'HH:MM:SS' string
-    p_full_name: user ? null : payload.fullName || null,
-    p_email: user ? null : payload.email || null,
-    p_guest_phone: user ? null : payload.phone || null,
-    p_otp: user ? null : String(payload.otp || ''),
+    p_booking_date: payload.bookingDate,
+    p_start_time: payload.startTime + ':00',
+    p_end_time: payload.endTime + ':00',
+    p_full_name: payload.fullName || null,
+    p_email: payload.email || null,
+    p_guest_phone: payload.phone || null,
   }
 
-  const rpcName = user ? 'attempt_reservation' : 'attempt_reservation_with_otp'
+  // Call the unified RPC
+  const { data: rpcData, error: rpcError } = await supabase.rpc('attempt_reservation', rpcParams)
+  if (rpcError) throw rpcError
 
-  const { data, error } = await supabase.rpc(rpcName, rpcParams)
-
-  if (error) throw error
-      console.log("reservation result:", data)
-      console.log("reservation error:", error)
-
-  const result = data[0]
+  const result = rpcData[0]
 
   return {
     success: result.success,
@@ -39,8 +64,48 @@ export async function attemptReservation(payload) {
     expiresInSeconds: result.expires_in_seconds,
     alternatives: result.alternatives || [],
     error: null,
+    session: guestSession, // return session so alternative clicks can skip OTP
   }
 }
+
+// the commented attempReservation function works with the production grade otp verification. it will be integrated when the project acquires a domain
+// export async function attemptReservation(payload) {
+//   // Get logged-in user (if any)
+//   const { data: { user } = {} } = await supabase.auth.getUser()
+
+//   // Prepare RPC parameters (names & types must match DB exactly)
+//   const rpcParams = {
+//     p_workspace_type: payload.workspaceType,
+//     p_location_id: Number(payload.locationId),
+//     p_booking_date: payload.bookingDate, // 'YYYY-MM-DD' string
+//     p_start_time: payload.startTime + ':00', // 'HH:MM:SS' string
+//     p_end_time: payload.endTime + ':00', // 'HH:MM:SS' string
+//     p_full_name: user ? null : payload.fullName || null,
+//     p_email: user ? null : payload.email || null,
+//     p_guest_phone: user ? null : payload.phone || null,
+//     p_otp: user ? null : String(payload.otp || ''),
+//   }
+
+//   const rpcName = user ? 'attempt_reservation' : 'attempt_reservation_with_otp'
+
+//   const { data, error } = await supabase.rpc(rpcName, rpcParams)
+
+//   if (error) throw error
+//       console.log("reservation result:", data)
+//       console.log("reservation error:", error)
+
+//   const result = data[0]
+
+//   return {
+//     success: result.success,
+//     reservationId: result.reservation_id,
+//     workspaceId: result.out_workspace_id,
+//     holdExpiresAt: result.out_hold_expires_at,
+//     expiresInSeconds: result.expires_in_seconds,
+//     alternatives: result.alternatives || [],
+//     error: null,
+//   }
+// }
 
 /**
  * Format alternative slots into HH:MM or 12-hour format
