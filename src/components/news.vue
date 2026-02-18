@@ -21,7 +21,8 @@
           {{ article.excerpt }}
         </p>
         <RouterLink
-          :to="article.link"
+
+          to="community/events"
           class="text-primary-text font-semibold hover:text-primary-hover transition-colors"
         >
           Read More →
