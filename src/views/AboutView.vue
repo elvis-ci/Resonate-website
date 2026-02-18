@@ -4,40 +4,24 @@ import { ref, defineAsyncComponent } from 'vue'
 /* ---------------------------
    Lazy-loaded icons (critical)
 ---------------------------- */
-const WheelchairAccessibility = defineAsyncComponent(() =>
-  import('vue-material-design-icons/WheelchairAccessibility.vue')
+const WheelchairAccessibility = defineAsyncComponent(
+  () => import('vue-material-design-icons/WheelchairAccessibility.vue'),
 )
-const Elevator = defineAsyncComponent(() =>
-  import('vue-material-design-icons/Elevator.vue')
+const Elevator = defineAsyncComponent(() => import('vue-material-design-icons/Elevator.vue'))
+const VolumeHigh = defineAsyncComponent(() => import('vue-material-design-icons/VolumeHigh.vue'))
+const LightbulbOn = defineAsyncComponent(() => import('vue-material-design-icons/LightbulbOn.vue'))
+const SignDirection = defineAsyncComponent(
+  () => import('vue-material-design-icons/SignDirection.vue'),
 )
-const VolumeHigh = defineAsyncComponent(() =>
-  import('vue-material-design-icons/VolumeHigh.vue')
-)
-const LightbulbOn = defineAsyncComponent(() =>
-  import('vue-material-design-icons/LightbulbOn.vue')
-)
-const SignDirection = defineAsyncComponent(() =>
-  import('vue-material-design-icons/SignDirection.vue')
-)
-const DoorOpen = defineAsyncComponent(() =>
-  import('vue-material-design-icons/DoorOpen.vue')
-)
-const Desk = defineAsyncComponent(() =>
-  import('vue-material-design-icons/Desk.vue')
-)
-const Eye = defineAsyncComponent(() =>
-  import('vue-material-design-icons/Eye.vue')
-)
-const PlayIcon = defineAsyncComponent(() =>
-  import('vue-material-design-icons/Play.vue')
-)
+const DoorOpen = defineAsyncComponent(() => import('vue-material-design-icons/DoorOpen.vue'))
+const Desk = defineAsyncComponent(() => import('vue-material-design-icons/Desk.vue'))
+const Eye = defineAsyncComponent(() => import('vue-material-design-icons/Eye.vue'))
+const PlayIcon = defineAsyncComponent(() => import('vue-material-design-icons/Play.vue'))
 
 /* ---------------------------
    Lazy-loaded modal
 ---------------------------- */
-const VideoModal = defineAsyncComponent(() =>
-  import('@/components/videoModal.vue')
-)
+const VideoModal = defineAsyncComponent(() => import('@/components/videoModal.vue'))
 
 /* ---------------------------
    State
@@ -110,12 +94,15 @@ const features = [
   <main id="maincontent">
     <!-- Hero -->
     <section
-      class="relative py-10 sm:py-16 md:py-20 bg-linear-to-b from-primary/20 to-primary/0 text-center"
+      class="relative py-10 sm:py-16  bg-linear-to-b from-primary/20 to-primary/0 text-center"
     >
-      <div class="container">
-        <h1 class="main-heading text-heading mb-4">About Us</h1>
-        <p class="max-w-2xl mx-auto">
-          Learn more about Reboot and our mission to create the perfect coworking space
+      <div class="container text-center">
+        <h1 class="main-heading text-heading mb-6">Where Focus Meets Freedom</h1>
+        <p class="max-w-2xl mx-auto text-lg leading-relaxed">
+          Reboot is more than a coworking space. It’s a thoughtfully designed environment built for
+          creators, founders, and teams who value clarity, productivity, and community. We believe
+          great work happens when space inspires focus, collaboration feels natural, and every
+          detail supports momentum.
         </p>
       </div>
     </section>
@@ -183,16 +170,12 @@ const features = [
             <div class="space-y-4">
               <div class="bg-card-bg2 border-l-4 border-primary p-6 rounded shadow-sm">
                 <h3 class="mb-2">Mission</h3>
-                <p>
-                  To provide affordable, accessible, and inspiring coworking spaces.
-                </p>
+                <p>To provide affordable, accessible, and inspiring coworking spaces.</p>
               </div>
 
               <div class="bg-card-bg2 border-l-4 border-alternate p-6 rounded shadow-sm">
                 <h3 class="mb-2">Vision</h3>
-                <p>
-                  A world where opportunity is not limited by location or circumstance.
-                </p>
+                <p>A world where opportunity is not limited by location or circumstance.</p>
               </div>
             </div>
           </div>
@@ -212,12 +195,8 @@ const features = [
     <section class="bg-alt-bbg">
       <div class="container px-4">
         <div class="text-center mb-12">
-          <h2 class="mb-4">
-            Why Choose <span class="text-primary-text font-bold">Reboot</span>
-          </h2>
-          <p class="max-w-2xl mx-auto">
-            Designed for productivity, comfort, and inclusion.
-          </p>
+          <h2 class="mb-4">Why Choose <span class="text-primary-text font-bold">Reboot</span></h2>
+          <p class="max-w-2xl mx-auto">Designed for productivity, comfort, and inclusion.</p>
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -244,9 +223,7 @@ const features = [
       <div class="container px-4">
         <div class="text-center mb-12">
           <h2 class="mb-4">Meet Our Team</h2>
-          <p class="max-w-2xl mx-auto">
-            Professionals dedicated to the best coworking experience.
-          </p>
+          <p class="max-w-2xl mx-auto">Professionals dedicated to the best coworking experience.</p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -273,13 +250,16 @@ const features = [
     <section class="py-12 md:py-20 bg-linear-to-t from-primary/20 to-primary/0">
       <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="mb-4">For Partnership and Inquiries</h2>
-        <p class="text-sm text-muted mb-6">
-          Feel free to reach out — we’d love to hear from you.
-        </p>
+        <p class="text-sm text-muted mb-6">Feel free to reach out — we’d love to hear from you.</p>
 
         <form class="grid grid-cols-1 md:grid-cols-2 gap-4 text-start">
           <input required placeholder="Your Name" class="border rounded-md px-3 py-2" />
-          <input required type="email" placeholder="Your Email" class="border rounded-md px-3 py-2" />
+          <input
+            required
+            type="email"
+            placeholder="Your Email"
+            class="border rounded-md px-3 py-2"
+          />
           <textarea
             required
             rows="4"
