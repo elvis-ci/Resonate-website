@@ -41,11 +41,11 @@ const space = ref({
     Lagos: {
       areas: ['Victoria Island', 'Yaba', 'Ikeja'],
       images: [
-        '/images/coworking/private-office-1.webp',
-        '/images/coworking/private-office-2.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
+        '/images/coworking/shared_workspace 1.png',
+        '/images/coworking/shared_workspace 2.png',
+        '/images/coworking/shared_workspace 3.jpg',
+        '/images/coworking/shared_workspace 1.png',
+        '/images/coworking/shared_workspace 3.jpg',
       ],
       reviews: [
         {
@@ -275,7 +275,6 @@ onMounted(async () => {
                   {{ currentDbLocation.total_units }} spaces available
                 </span>
               </p>
-              <button class="secondary w-full mt-4">Make Reservation</button>
               <button class="primary w-full mt-4" @click="openBooking(workspaceType)">
                 Book Now
               </button>
@@ -321,7 +320,7 @@ onMounted(async () => {
           :space-between="16"
           :centered-slides="true"
           :loop="true"
-          :autoplay="{ delay: 4000, disableOnInteraction: false }"
+          :autoplay="{ delay: 4000, disableOnInteraction: true }"
           :breakpoints="{
             640: { slidesPerView: 1.5 },
             768: { slidesPerView: 2 },
