@@ -9,7 +9,7 @@ const workspaces = [
     title: 'Shared Workspace',
     description:
       'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/shared_workspace 2.png',
     alt: 'Shared Workspace',
     pricing: 3000,
     features: [
@@ -24,7 +24,7 @@ const workspaces = [
     title: 'Private Office Suite',
     description:
       'Ideal for small teams, startups, or client meetings. Our private office suites offer complete privacy, professional ambiance, and full control of your workspace.',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/private_office 3.png',
     alt: 'Private Office Suite',
     pricing: 13000,
     features: [
@@ -40,7 +40,7 @@ const workspaces = [
     title: 'Team Collaboration Room',
     description:
       'Designed for collaborative work sessions and intensive team projects. These rooms accommodate 4–8 people and include all the tools needed for productive teamwork.',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/team_room 2.png',
     alt: 'Team Collaboration Room',
     pricing: 7800,
     features: [
@@ -55,7 +55,7 @@ const workspaces = [
     title: 'Executive Conference Room',
     description:
       'Impress clients and stakeholders with our premium conference rooms, designed for professional meetings and presentations with seating for up to 16 people.',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/executive 1.png',
     alt: 'Executive Conference Room',
     pricing: 19500,
     features: [
@@ -71,7 +71,7 @@ const workspaces = [
     title: 'Event & Seminar Hall',
     description:
       'Host large events, workshops, and seminars in our fully-equipped halls. Ideal for training sessions, conferences, and community gatherings.',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/seminar 1.png',
     alt: 'Event & Seminar Hall',
     pricing: 32500,
     features: [
