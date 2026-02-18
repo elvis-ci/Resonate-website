@@ -161,7 +161,7 @@ section.heading{
 }
 /* section */
 section.hero {
-  @apply relative my-0 py-0 w-full h-[100dvh] text-white;
+  @apply relative my-0 py-0 w-full h-[70dvh] lg:h-full xl:h-[100dvh] text-white;
 }
 
 /* fixes max width on section content */
