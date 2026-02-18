@@ -87,7 +87,7 @@ onMounted(() => {
               affordable price.
             </p>
             <div class="mt-10">
-              <RouterLink to="/bookings" class="primary" style="padding-block: 15px"
+              <RouterLink to="/workspaces/categories-workspace" class="primary" style="padding-block: 15px"
                 >Space Pricing</RouterLink
               >
             </div>
