@@ -28,11 +28,11 @@ const space = ref({
     Lagos: {
       areas: ['Victoria Island', 'Yaba', 'Ikeja'],
       images: [
-        '/images/coworking/private-office-1.webp',
-        '/images/coworking/private-office-2.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
+        '/images/coworking/private-office 1.png',
+        '/images/coworking/private-office 2.png',
+        '/images/coworking/private-office 3.png',
+        '/images/coworking/private-office 1.png',
+        '/images/coworking/private-office 2.png',
       ],
       reviews: [
         {
