@@ -177,7 +177,7 @@ onUnmounted(() => {
   </ul>
 </li>
       </ul>
-      <RouterLink to="/bookings" class="primary hidden lg:inline-block"> Bookings</RouterLink>
+      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
       <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
