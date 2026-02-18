@@ -180,17 +180,21 @@ onMounted(() => {
     :class="index % 2 === 0 ? 'bg-alt-bg' : ''"
   >
     <div class="container px-4">
-      <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center lg:py-12">
         <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
-          <h2 class="mb-4">{{ workspace.title }}</h2>
+          <h2 class="mb-4 text-center lg:text-start">{{ workspace.title }}</h2>
+          <div class="md:hidden mb-4">
+            <img
+              :src="workspace.image"
+              :alt="workspace.alt"
+              class="w-full rounded-lg shadow-lg"
+            />
+          </div>
+
           <p>
             <span class="font-bold text-primary">Pricing</span>: from
             {{ formatNaira(workspace.pricing) }} per hour
           </p>
-
-          <div class="md:hidden mb-4">
-            <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
-          </div>
 
           <p class="mb-4">{{ workspace.description }}</p>
 
@@ -213,7 +217,7 @@ onMounted(() => {
         </div>
 
         <div class="hidden md:block">
-          <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
+          <img :src="workspace.image" :alt="workspace.alt" class="w-full max-h-[70vh] rounded-lg shadow-lg" />
         </div>
       </div>
     </div>
