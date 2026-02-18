@@ -320,7 +320,7 @@ onMounted(async () => {
           :space-between="16"
           :centered-slides="true"
           :loop="true"
-          :autoplay="{ delay: 4000, disableOnInteraction: true }"
+          :autoplay="{ delay: 4000, disableOnInteraction: false }"
           :breakpoints="{
             640: { slidesPerView: 1.5 },
             768: { slidesPerView: 2 },
