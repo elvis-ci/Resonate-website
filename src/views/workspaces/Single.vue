@@ -275,6 +275,7 @@ onMounted(async () => {
                   {{ currentDbLocation.total_units }} spaces available
                 </span>
               </p>
+              <button class="secondary w-full mt-4">Make Reservation</button>
               <button class="primary w-full mt-4" @click="openBooking(workspaceType)">
                 Book Now
               </button>
