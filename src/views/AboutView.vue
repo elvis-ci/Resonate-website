@@ -198,13 +198,11 @@ const features = [
           </div>
 
           <img
-            src="/images/coworking/about.webp"
+            src="/images/coworking/reception.jpeg"
             alt="Mission and Vision"
-            width="800"
-            height="600"
             loading="lazy"
             decoding="async"
-            class="w-full rounded-lg shadow-lg md:order-2"
+            class="w-full h-full rounded-lg shadow-lg md:order-2"
           />
         </div>
       </div>

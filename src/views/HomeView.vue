@@ -104,7 +104,7 @@ onMounted(() => {
           <!-- Image column -->
           <div class="w-full md:w-6/12 lg:w-6/12">
             <img
-              src="/images/coworking/about.webp"
+              src="/images/coworking/shared_workspace 2.png"
               class="w-[90%] rounded"
               alt=""
               loading="lazy"
