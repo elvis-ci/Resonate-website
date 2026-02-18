@@ -66,20 +66,16 @@ onMounted(() => {
     <!-- Hero Start -->
     <section class="hero">
       <div
-        class="relative flex items-center justify-center h-full"
+        class="relative flex items-center justify-center h-full pt-20 lg:pt-0 pb-10 lg:pb-0"
         :style="{
           'background-image': 'url(/images/coworking/bg01.webp)',
           'background-size': 'cover',
           'background-position': 'contain',
         }"
       >
-        <div class="absolute inset-0 bg-[rgba(60,72,88,0.7)] h-full"></div>
+        <div class="absolute inset-0 bg-[rgba(19,22,26,0.7)] h-full"></div>
         <div class="relative container h-full text-center flex items-center justify-center">
           <div class="text-white">
-            <p class="white mb-4">
-              Your private, accessible, and inspiring workspace starts at
-              <span class="text-green-500 font-bold">$19/day</span>
-            </p>
             <h1 class="main-heading">Boost Productivity in Comfort & Privacy</h1>
             <p class="white mt-4 max-w-2xl mx-auto">
               Discover a coworking space designed to keep you focused, creative, and connected.
@@ -116,13 +112,13 @@ onMounted(() => {
           <!-- Text column -->
           <div class="w-full md:w-6/12 lg:w-6/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
             <div class="lg:ml-4">
-              <h2 class="">The Resonate Community</h2>
+              <h2 class="">The Reboot Community</h2>
 
               <p class="">
                 Start working with
-                <span class="text-primary-text font-bold">Resonate</span>, a coworking community
+                <span class="text-primary-text font-bold">Reboot</span>, a coworking community
                 designed to help ideas grow and people thrive. Whether you need a quiet space to
-                focus or a collaborative environment to connect, Resonate offers flexible,
+                focus or a collaborative environment to connect, Reboot offers flexible,
                 accessible workspaces that support productivity—without the premium price tag.
               </p>
 
@@ -140,7 +136,7 @@ onMounted(() => {
           <h2 class="">Your Comfort Is Our Priority</h2>
           <p class="">
             Build your best workday at
-            <span class="text-primary-text font-bold">Resonate</span> — a coworking space
+            <span class="text-primary-text font-bold">Reboot</span> — a coworking space
             thoughtfully designed for comfort, focus, and connection.
           </p>
         </div>
@@ -181,7 +177,7 @@ onMounted(() => {
           <h2 class="">What Our Coworkers have to say</h2>
           <p class="">
             Start working with
-            <span class="text-primary-text font-bold">Resonate</span>
+            <span class="text-primary-text font-bold">Reboot</span>
           </p>
         </div>
         <Testimonial />
@@ -251,7 +247,7 @@ onMounted(() => {
             <h2 class="white">We are Built for Business – Explore Us Today!</h2>
             <p class="white mb-6">
               Start working with
-              <span class="text-secondary font-bold">Resonate</span> that can provide everything you
+              <span class="text-secondary font-bold">Reboot</span> that can provide everything you
               need to generate awareness, drive traffic, connect.
             </p>
 
@@ -263,7 +259,7 @@ onMounted(() => {
               </button> -->
 
               <button
-                aria-label="Play Video of Resonate Coworking Space"
+                aria-label="Play Video of Reboot Coworking Space"
                 @click="showModal = true"
                 class="bg-white text-primary flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 transition"
               >

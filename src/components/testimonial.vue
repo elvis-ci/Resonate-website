@@ -30,7 +30,7 @@ const testimonialData = ref([
     id: 1,
     profile: 'images/coworking/about.webp',
     message:
-      "Resonate has completely changed how I work. The environment is calm, well-designed, and genuinely inclusive. I don't feel like accessibility was added as an afterthought — it's clearly built into every part of the space.",
+      "Reboot has completely changed how I work. The environment is calm, well-designed, and genuinely inclusive. I don't feel like accessibility was added as an afterthought — it's clearly built into every part of the space.",
     name: 'Thomas Israel',
     designation: 'Virtual Assistant',
   },
@@ -46,7 +46,7 @@ const testimonialData = ref([
     id: 3,
     profile: 'images/coworking/about.webp',
     message:
-      "What stood out to me at Resonate was the attention to detail. Quiet rooms, good lighting, accessible restrooms, and staff who actually understand inclusive design. It's one of the few coworking spaces where I can focus without unnecessary barriers.",
+      "What stood out to me at Reboot was the attention to detail. Quiet rooms, good lighting, accessible restrooms, and staff who actually understand inclusive design. It's one of the few coworking spaces where I can focus without unnecessary barriers.",
     name: 'Carl Oliver',
     designation: 'UX Designer',
   },

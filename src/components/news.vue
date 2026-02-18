@@ -39,7 +39,7 @@ import { RouterLink } from 'vue-router'
 const newsArticles = ref([
   {
     id: 1,
-    title: 'New Accessibility Features Launch at Resonate',
+    title: 'New Accessibility Features Launch at Reboot',
     excerpt:
       'We are excited to announce the launch of our enhanced accessibility features designed to make coworking more inclusive for everyone.',
     category: 'Announcements',
@@ -50,7 +50,7 @@ const newsArticles = ref([
     id: 2,
     title: 'Community Spotlight: Success Stories from Our Members',
     excerpt:
-      'Meet the inspiring entrepreneurs and professionals who have built thriving businesses from their workspace at Resonate.',
+      'Meet the inspiring entrepreneurs and professionals who have built thriving businesses from their workspace at Reboot.',
     category: 'Community',
     image: '/images/coworking/about.webp',
     link: '/',

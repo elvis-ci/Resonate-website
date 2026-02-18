@@ -35,38 +35,38 @@ const subscribe = (e) => {
       <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
         <!-- About / Social -->
         <div>
-          <RouterLink to="/" class="text-xl white font-bold">Resonate</RouterLink>
+          <RouterLink to="/" class="text-xl white font-bold">Reboot</RouterLink>
 
           <p class="white my-3">
-            Start working with <span class="text-primary-text font-bold">Resonate</span> that can
+            Start working with <span class="text-primary-text font-bold">Reboot</span> that can
             provide everything you need to generate awareness, drive traffic, connect.
           </p>
           <div class="flex space-x-3 mt-4">
             <a
               href="#"
               class="text-gray-400 hover:text-primary transition duration-300"
-              aria-label="Visit Resonate on Facebook"
+              aria-label="Visit Reboot on Facebook"
             >
               <FacebookIcon class="w-5 h-5" />
             </a>
             <a
               href="#"
               class="text-gray-400 hover:text-primary transition duration-300"
-              aria-label="Visit Resonate on Instagram"
+              aria-label="Visit Reboot on Instagram"
             >
               <InstagramIcon class="w-5 h-5" />
             </a>
             <a
               href="#"
               class="text-gray-400 hover:text-primary transition duration-300"
-              aria-label="Visit Resonate on Twitter"
+              aria-label="Visit Reboot on Twitter"
             >
               <TwitterIcon class="w-5 h-5" />
             </a>
             <a
               href="#"
               class="text-gray-400 hover:text-primary transition duration-300"
-              aria-label="Visit Resonate on LinkedIn"
+              aria-label="Visit Reboot on LinkedIn"
             >
               <LinkedinIcon class="w-5 h-5" />
             </a>
@@ -162,7 +162,7 @@ const subscribe = (e) => {
     <!-- Footer Bottom -->
     <div class="bg-gray-800 py-4 pb-[env(safe-area-inset-bottom)]">
       <div class="container mx-auto px-4 text-center text-gray-400 text-sm">
-        © {{ currentYear }} Resonate. All Rights Reserved.
+        © {{ currentYear }} Reboot. All Rights Reserved.
       </div>
     </div>
   </footer>

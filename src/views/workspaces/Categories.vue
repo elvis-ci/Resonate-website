@@ -8,7 +8,7 @@ const workspaces = [
   {
     title: 'Shared Workspace',
     description:
-      'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Resonate amenities.',
+      'Perfect for freelancers, consultants, and remote workers. Each workspace includes high-speed internet, comfortable ergonomic seating, adjustable desks and lighting, and access to all Reboot amenities.',
     image: '/images/coworking/shared_workspace 2.png',
     alt: 'Shared Workspace',
     pricing: 3000,
@@ -228,7 +228,7 @@ onMounted(() => {
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
       <p class="text-lg mb-8 opacity-90">
-        Book a tour today and discover why Resonate is the best coworking solution for your needs.
+        Book a tour today and discover why Reboot is the best coworking solution for your needs.
       </p>
       <RouterLink to="/workspaces" class="inline-block primary"> Book a Tour </RouterLink>
     </div>

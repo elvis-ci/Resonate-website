@@ -115,7 +115,7 @@ const features = [
       <div class="container">
         <h1 class="main-heading text-heading mb-4">About Us</h1>
         <p class="max-w-2xl mx-auto">
-          Learn more about Resonate and our mission to create the perfect coworking space
+          Learn more about Reboot and our mission to create the perfect coworking space
         </p>
       </div>
     </section>
@@ -128,7 +128,7 @@ const features = [
           <div class="relative group">
             <img
               src="/images/coworking/about.webp"
-              alt="About Resonate"
+              alt="About Reboot"
               width="800"
               height="600"
               decoding="async"
@@ -137,7 +137,7 @@ const features = [
             />
 
             <button
-              aria-label="Play Resonate introduction video"
+              aria-label="Play Reboot introduction video"
               @click="showModal = true"
               class="absolute inset-0 flex items-center justify-center bg-black/40 rounded-lg"
             >
@@ -161,7 +161,7 @@ const features = [
           <div>
             <h2 class="mb-4">Our Story</h2>
             <p class="mb-4">
-              <span class="text-primary-text font-bold">Resonate</span> was born from a vision to
+              <span class="text-primary-text font-bold">Reboot</span> was born from a vision to
               create a coworking space that truly understands modern professionals.
             </p>
             <p>
@@ -213,7 +213,7 @@ const features = [
       <div class="container px-4">
         <div class="text-center mb-12">
           <h2 class="mb-4">
-            Why Choose <span class="text-primary-text font-bold">Resonate</span>
+            Why Choose <span class="text-primary-text font-bold">Reboot</span>
           </h2>
           <p class="max-w-2xl mx-auto">
             Designed for productivity, comfort, and inclusion.
