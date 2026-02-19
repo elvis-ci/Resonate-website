@@ -329,7 +329,7 @@ onUnmounted(() => {
           Register for our events and connect with industry leaders and professionals.
         </p>
         <button
-          class="bg-white text-[#a05a00] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+          class="primary rounded-lg font-semibold hover:bg-gray-100 transition"
         >
           View All Events
         </button>
