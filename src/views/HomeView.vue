@@ -83,7 +83,10 @@ onMounted(() => {
               affordable price.
             </p>
             <div class="mt-10">
-              <RouterLink to="/workspaces/categories-workspace" class="primary" style="padding-block: 15px"
+              <RouterLink
+                to="/workspaces/categories-workspace"
+                class="primary"
+                style="padding-block: 15px"
                 >Space Pricing</RouterLink
               >
             </div>
@@ -100,7 +103,7 @@ onMounted(() => {
           <!-- Image column -->
           <div class="w-full md:w-6/12 lg:w-6/12">
             <img
-              src="/images/coworking/shared_workspace 2.png"
+              src="/images/coworking/community.jpeg"
               class="w-[90%] rounded"
               alt=""
               loading="lazy"
@@ -118,8 +121,8 @@ onMounted(() => {
                 Start working with
                 <span class="text-primary-text font-bold">Reboot</span>, a coworking community
                 designed to help ideas grow and people thrive. Whether you need a quiet space to
-                focus or a collaborative environment to connect, Reboot offers flexible,
-                accessible workspaces that support productivity—without the premium price tag.
+                focus or a collaborative environment to connect, Reboot offers flexible, accessible
+                workspaces that support productivity—without the premium price tag.
               </p>
 
               <!-- <RouterLink to="/workspaces" class="primary"> Join Now </RouterLink> -->
@@ -136,8 +139,8 @@ onMounted(() => {
           <h2 class="">Your Comfort Is Our Priority</h2>
           <p class="">
             Build your best workday at
-            <span class="text-primary-text font-bold">Reboot</span> — a coworking space
-            thoughtfully designed for comfort, focus, and connection.
+            <span class="text-primary-text font-bold">Reboot</span> — a coworking space thoughtfully
+            designed for comfort, focus, and connection.
           </p>
         </div>
 
@@ -170,20 +173,6 @@ onMounted(() => {
       </template>
     </Suspense>
 
-    <!-- Testimonials -->
-    <section class="bg-alt-bg">
-      <div class="container">
-        <div class="text-center mb-12">
-          <h2 class="">What Our Coworkers have to say</h2>
-          <p class="">
-            Start working with
-            <span class="text-primary-text font-bold">Reboot</span>
-          </p>
-        </div>
-        <Testimonial />
-      </div>
-    </section>
-
     <!-- Blog -->
     <section class="">
       <div class="container">
@@ -204,8 +193,22 @@ onMounted(() => {
       </div>
     </section>
 
+    <!-- Testimonials -->
+    <section class="bg-alt-bg">
+      <div class="container">
+        <div class="text-center mb-12">
+          <h2 class="">What Our Coworkers have to say</h2>
+          <p class="">
+            Start working with
+            <span class="text-primary-text font-bold">Reboot</span>
+          </p>
+        </div>
+        <Testimonial />
+      </div>
+    </section>
+
     <!-- Partners -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
+    <!-- <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
       <div>
         <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
           Trusted by over 100+ companies NationWide
@@ -220,19 +223,10 @@ onMounted(() => {
                 loading="lazy"
               />
             </div>
-            <!-- Repeat logos to make seamless loop -->
-            <!-- <div v-for="logo in 2" :key="'logo2-' + logo" class="flex-shrink-0">
-              <img
-                src="/images/coworking/about.webp"
-                class="h-40 w-40 sm:h-56 sm:w-56 md:h-64 md:w-64 object-contain"
-                alt=""
-                loading="lazy"
-              />
-            </div> -->
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
 
     <!-- Start Form -->
     <section
