@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 // -----------------------------
@@ -116,10 +116,25 @@ const handleKeydown = (e) => {
   }
 }
 
+const theme = ref('light')
+
 onMounted(() => {
+  const savedTheme = localStorage.getItem('theme')
+  theme.value = savedTheme || 'light'
+  document.documentElement.setAttribute('data-theme', theme.value)
+
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('keydown', handleKeydown)
 })
+
+watch(theme, (newTheme) => {
+  document.documentElement.setAttribute('data-theme', newTheme)
+  localStorage.setItem('theme', newTheme)
+})
+
+function toggleMode(){
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
+}
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -178,7 +193,15 @@ onUnmounted(() => {
 </li>
       </ul>
       <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
-      <!-- Mobile Toggle -->
+ <button
+    type="button"
+    @click.prevent="toggleMode"
+    class="theme-toggle"
+  >
+    <span class="icon left">☀️</span>
+    <span class="slider" :class="theme"></span>
+    <span class="icon right">🌙</span>
+  </button>      <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
           type="button"
@@ -415,4 +438,43 @@ header {
 .nav-hidden {
   transform: translateY(-100%);
 }
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 60px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  background-color: var(--toggle-bg, #f0f0f0);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.icon {
+  font-size: 16px;
+  z-index: 2;
+}
+
+.slider {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 26px;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: transform 0.3s;
+  z-index: 1;
+}
+
+/* Move the slider based on theme */
+.slider.light {
+  transform: translateX(0);
+}
+.slider.dark {
+  transform: translateX(30px);
+}
+
 </style>
