@@ -176,8 +176,8 @@ import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue'
               <EmailIcon class="mb-2 text-primary" size="36" />
               <h3 class="mb-2 font-semibold text-text">Email Us</h3>
             </div>
-            <a class="text-primary font-bold" href="mailto:support@resonate.org">
-              support@resonate.org
+            <a class="text-primary font-bold" href="mailto:support@reboot.org">
+              support@reboot.org
             </a>
           </div>
 
@@ -188,7 +188,7 @@ import MapMarkerIcon from 'vue-material-design-icons/MapMarker.vue'
               <h3 class="mb-2 font-semibold text-text">Visit Us</h3>
             </div>
 
-            <p>Resonate Hub, Victoria Island, Lagos</p>
+            <p>Reboot Hub, Victoria Island, Lagos</p>
           </div>
         </div>
       </div>

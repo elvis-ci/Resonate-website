@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'swiper/css'
 import 'swiper/css/navigation'
@@ -7,19 +7,14 @@ import 'swiper/css/pagination'
 import 'swiper/css/autoplay'
 import SwiperCore from 'swiper'
 import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules'
+import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
+import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
+import { formatNaira } from '@/utils/currency'
 
 SwiperCore.use([Navigation, Pagination, Autoplay, EffectCoverflow])
 
-const locations = computed(() => {
-  return Object.entries(space.value.locations).flatMap(([city, cityData]) =>
-    cityData.areas.map((area) => `${area} - ${city.replace('_', ' ')}`),
-  )
-})
-
-const selectedLocation = ref('')
-
 const space = ref({
-  name: 'General Space',
+  name: 'Shared Workspace',
   pricePerDay: 15000,
   highlights: {
     capacity: '1 person',
@@ -46,11 +41,11 @@ const space = ref({
     Lagos: {
       areas: ['Victoria Island', 'Yaba', 'Ikeja'],
       images: [
-        '/images/coworking/private-office-1.webp',
-        '/images/coworking/private-office-2.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
+        '/images/coworking/shared_workspace 1.png',
+        '/images/coworking/shared_workspace 2.png',
+        '/images/coworking/shared_workspace 3.jpg',
+        '/images/coworking/shared_workspace 1.png',
+        '/images/coworking/shared_workspace 3.jpg',
       ],
       reviews: [
         {
@@ -59,78 +54,8 @@ const space = ref({
           rating: 5,
           comment: 'Very accessible and quiet. Staff were helpful.',
         },
-        {
-          id: 2,
-          name: 'Tunde',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
-        {
-          id: 3,
-          name: 'Ikenna',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
-      ],
-    },
-    Abuja: {
-      areas: ['Central'],
-      images: [
-        '/images/coworking/private-office-1.webp',
-        '/images/coworking/private-office-2.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-      ],
-      reviews: [
-        {
-          id: 1,
-          name: 'Amina',
-          rating: 5,
-          comment: 'Very accessible and quiet. Staff were helpful.',
-        },
-        {
-          id: 2,
-          name: 'Tunde',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
-        {
-          id: 3,
-          name: 'Ikenna',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
-      ],
-    },
-    Port_Harcourt: {
-      areas: ['GRA'],
-      images: [
-        '/images/coworking/private-office-1.webp',
-        '/images/coworking/private-office-2.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-        '/images/coworking/private-office-3.webp',
-      ],
-      reviews: [
-        {
-          id: 1,
-          name: 'Amina',
-          rating: 5,
-          comment: 'Very accessible and quiet. Staff were helpful.',
-        },
-        {
-          id: 2,
-          name: 'Tunde',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
-        {
-          id: 3,
-          name: 'Tony',
-          rating: 4,
-          comment: 'Great workspace, fast internet.',
-        },
+        { id: 2, name: 'Tunde', rating: 4, comment: 'Great workspace, fast internet.' },
+        { id: 3, name: 'Ikenna', rating: 4, comment: 'Great workspace, fast internet.' },
       ],
     },
   },
@@ -158,19 +83,18 @@ const space = ref({
   ],
 })
 
-const currentLocationData = computed(() => {
-  const [area, city] = selectedLocation.value.split(' - ')
-  return space.value.locations[city.replace(' ', '_')]
-})
-const currentReviews = computed(() => currentLocationData.value.reviews)
+const workspaceType = computed(() => space.value.name)
 
-const averageRating = computed(() => {
-  const reviews = currentReviews.value
-  const total = reviews.reduce((sum, r) => sum + r.rating, 0)
-  return (total / reviews.length).toFixed(1)
-})
+const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
+const loadError = ref(null)
 
-const formattedPrice = computed(() => `₦${space.value.pricePerDay.toLocaleString()} / day`)
+const availableAt = computed(() => availableLocations.value.map((l) => `${l.location}`))
+const locations = computed(() => availableLocations.value.map((l) => `${l.location} - ${l.city}`))
+
+/* -----------------------------
+   Selected location
+-------------------------------- */
+const selectedLocation = ref('')
 
 watch(
   locations,
@@ -181,6 +105,85 @@ watch(
   },
   { immediate: true },
 )
+
+/* -----------------------------
+   DB truth for selected location
+-------------------------------- */
+const currentDbLocation = computed(() => {
+  if (!selectedLocation.value) return null
+
+  const [location, city] = selectedLocation.value.split(' - ')
+
+  return availableLocations.value.find((l) => l.location === location && l.city === city) ?? null
+})
+
+/* -----------------------------
+   Mock UI data (images/reviews)
+-------------------------------- */
+const currentLocationData = computed(() => {
+  if (!selectedLocation.value) return null
+
+  const [, city] = selectedLocation.value.split(' - ')
+  if (!city) return null
+
+  return space.value.locations[city.replace(' ', '_')] ?? null
+})
+
+const currentReviews = computed(() => currentLocationData.value?.reviews ?? [])
+
+const averageRating = computed(() => {
+  if (!currentReviews.value.length) return '0.0'
+  const total = currentReviews.value.reduce((sum, r) => sum + r.rating, 0)
+  return (total / currentReviews.value.length).toFixed(1)
+})
+
+const bookingDialog = ref(null)
+const bookingFormRef = ref(null)
+const selectedWorkspace = ref('')
+
+const hasLoadError = computed(() => loadError.value !== null)
+
+const openBooking = (workspaceTitle) => {
+  selectedWorkspace.value = workspaceTitle
+  bookingDialog.value.showModal()
+}
+
+const closeBooking = () => {
+  bookingDialog.value.close()
+  selectedWorkspace.value = ''
+}
+
+const handleBackdropClick = () => {
+  if (bookingFormRef.value) {
+    bookingFormRef.value.attemptToCloseForm()
+  }
+}
+
+async function retryLoadLocations() {
+  loadError.value = null
+  try {
+    await fetchLocations(workspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+  }
+}
+
+/* -----------------------------
+   Fetch on mount
+-------------------------------- */
+onMounted(async () => {
+  try {
+    await fetchLocations(workspaceType.value)
+    if (error.value) {
+      loadError.value = 'Failed to load locations. Please try again.'
+    }
+  } catch (err) {
+    loadError.value = err?.message || 'Failed to load locations. Please try again.'
+  }
+})
 </script>
 
 <template>
@@ -189,30 +192,46 @@ watch(
     <section class="heading">
       <div class="container">
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-8">
-          <!-- Text Content -->
           <div class="max-w-2xl">
             <h1 class="main-heading text-heading mb-4">
               {{ space.name }}
             </h1>
 
-            <p class="flex flex-wrap gap-x-4 gap-y-1 mb-4">
-              <span>Capacity: {{ space.highlights.capacity }}</span>
-              <span>Best for: Focused work</span>
-              <span>Noise level: Quiet</span>
-            </p>
+            <div class="mb-4">
+              <p class="flex flex-wrap gap-x-4 tight">
+                <span>Capacity: {{ space.highlights.capacity }}</span>
+              </p>
+              <p class="flex flex-wrap gap-x-4 tight">
+                <span>Best for: Focused work</span>
+              </p>
+              <p class="flex flex-wrap gap-x-4 tight">
+                <span>Noise level: Moderate</span>
+              </p>
+            </div>
 
-            <p class="">
-              Available in (
-              <span v-for="(loc, i) in locations" :key="loc">
-                {{ loc }}<span v-if="i < locations.length - 1">, </span>
-              </span>
-              )
-            </p>
-
-            <!-- Location Selector -->
+            <div>
+              <p class="tight">Available in Lagos at:</p>
+              <ul class="flex flex-wrap">
+                <li v-for="(loc, i) in availableAt" :key="loc" class="inline">
+                  <p class="tight">
+                    {{ loc }}<span v-if="i < availableAt.length - 1">,&nbsp;</span>
+                  </p>
+                </li>
+              </ul>
+            </div>
             <label class="flex flex-col gap-2 mt-6 font-medium text-heading">
-              Choose a Location
+              Explore available locations
+              <!-- Loading State -->
+              <div v-if="isLoadingLocations" class="h-10 bg-gray-200 rounded animate-pulse"></div>
+
+              <!-- Error State -->
+              <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded p-3">
+                <p class="text-red-700 text-sm">⚠ Failed to load locations</p>
+              </div>
+
+              <!-- Loaded State -->
               <select
+                v-else
                 v-model="selectedLocation"
                 class="py-3 px-3 bg-card-bg2 rounded-md border border-text focus:ring-primary focus:border-primary"
               >
@@ -223,24 +242,80 @@ watch(
             </label>
           </div>
 
-          <!-- Pricing Box -->
           <div class="order-2 md:order-none bg-bg shadow rounded-xl p-6 w-full md:w-80 text-text">
-            <p class="font-bold">
-              {{ formattedPrice }}
-            </p>
-            <p class="mt-1">Available</p>
-            <button class="secondary w-full mt-4">Make Reservation</button>
-            <button class="primary w-full mt-4">Book Now</button>
+            <!-- Loading State -->
+            <div v-if="isLoadingLocations" class="space-y-4 animate-pulse">
+              <div class="h-8 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-6 bg-gray-200 rounded w-1/2"></div>
+              <div class="h-10 bg-gray-200 rounded w-full"></div>
+              <div class="h-10 bg-gray-200 rounded w-full"></div>
+            </div>
+
+            <!-- Error State -->
+            <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded p-4">
+              <p class="text-red-800 font-semibold mb-3 text-sm">⚠ Unable to Load Pricing</p>
+              <p class="text-red-700 text-xs mb-4">{{ loadError }}</p>
+              <button
+                type="button"
+                class="primary w-full text-sm"
+                @click="retryLoadLocations"
+                :disabled="isLoadingLocations"
+              >
+                {{ isLoadingLocations ? 'Retrying...' : 'Retry' }}
+              </button>
+            </div>
+
+            <!-- Loaded State -->
+            <div v-else>
+              <p class="font-bold">
+                {{ formatNaira(currentDbLocation?.max_booking_price || 0) }} per hour
+              </p>
+              <p class="mt-1">
+                <span v-if="currentDbLocation">
+                  {{ currentDbLocation.total_units }} spaces available
+                </span>
+              </p>
+              <button class="primary w-full mt-4" @click="openBooking(workspaceType)">
+                Book Now
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- carousel -->
+    <!-- CAROUSEL -->
     <section>
-      <!-- Swiper Carousel -->
-      <div class=" relative z-0 isolate">
+      <div class="relative z-0 isolate">
+        <!-- Loading State -->
+        <div v-if="isLoadingLocations" class="space-y-4 rounded-xl overflow-hidden p-4">
+          <div class="h-72 bg-gray-200 rounded-xl animate-pulse"></div>
+          <div class="flex gap-2 justify-center">
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+            <div class="h-2 w-2 bg-gray-200 rounded-full animate-pulse"></div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-else-if="hasLoadError" class="bg-red-50 border-2 border-red-300 rounded-xl p-6">
+          <p class="text-center text-red-800 font-semibold mb-3">⚠ Unable to Load Images</p>
+          <p class="text-center text-red-700 text-sm mb-4">{{ loadError }}</p>
+          <div class="text-center">
+            <button
+              type="button"
+              class="primary"
+              @click="retryLoadLocations"
+              :disabled="isLoadingLocations"
+            >
+              {{ isLoadingLocations ? 'Retrying...' : 'Retry' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Loaded State -->
         <Swiper
+          v-else
           :slides-per-view="1.1"
           :space-between="16"
           :centered-slides="true"
@@ -255,7 +330,11 @@ watch(
           pagination
           class="rounded-xl overflow-hidden"
         >
-          <SwiperSlide v-for="(img, index) in currentLocationData.images" :key="index" class="mb-8">
+          <SwiperSlide
+            v-for="(img, index) in currentLocationData?.images ?? []"
+            :key="index"
+            class="mb-8"
+          >
             <img
               :src="img"
               :alt="`${space.name} workspace image ${index + 1}`"
@@ -269,28 +348,21 @@ watch(
     <!-- FEATURES & ACCESSIBILITY -->
     <section class="">
       <div class="container">
-        <h2 class="mb-4">Workspace & Accessibility Features</h2>
-
-        <!-- Quick facts row -->
-        <p class="flex flex-wrap gap-x-4 gap-y-2 mb-8">
-          <span>Capacity: {{ space.highlights.capacity }}</span>
-          <span>Best for: Focused work</span>
-          <span>Noise level: Quiet</span>
-        </p>
+        <div class="mb-4"><h2 class="mb-4 text-center">Workspace Features</h2></div>
 
         <!-- Grid for features and accessibility -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
           <!-- Workspace Features -->
           <div>
-            <h3 class="mb-4 text-lg md:text-xl">Workspace Features</h3>
-            <ul class="space-y-3">
+            <h3 class="mb-4 text-lg md:text-xl">Regular Features</h3>
+            <ul class="space-y-0">
               <li
                 v-for="f in space.features"
                 :key="f"
                 class="flex items-start gap-x-3 text-sm sm:text-base"
               >
                 <span class="text-primary font-bold mt-0.5" aria-hidden="true"> ✓ </span>
-                <p>
+                <p class="">
                   {{ f }}
                 </p>
               </li>
@@ -300,9 +372,9 @@ watch(
           <!-- Accessibility Features -->
           <div>
             <h3 class="mb-4">Accessibility Features</h3>
-            <ul class="space-y-3">
+            <ul class="space-y-0">
               <li v-for="a in space.accessibility" :key="a" class="flex items-start gap-x-3">
-                <span class="text-primary font-bold mt-0.5" aria-hidden="true"> ♿ </span>
+                <span class="text-primary font-bold mt-0.5" aria-hidden="true"> ✓ </span>
                 <p>
                   <span>{{ a }}</span>
                 </p>
@@ -330,9 +402,9 @@ watch(
           <article
             v-for="r in currentReviews"
             :key="r.id"
-            class="border rounded-lg p-5 bg-bg shadow-sm"
+            class="border rounded-lg p-4 bg-bg shadow-sm"
           >
-            <div class="flex items-start justify-between gap-2">
+            <div class="flex items-start justify-between gap-1">
               <h3 class="font-semibold">
                 {{ r.name }}
               </h3>
@@ -342,7 +414,7 @@ watch(
               </div>
             </div>
 
-            <p class="mt-3 leading-relaxed">
+            <p class="mt-2 leading-relaxed tight">
               {{ r.comment }}
             </p>
           </article>
@@ -351,84 +423,42 @@ watch(
     </section>
 
     <!-- FAQS -->
-    <section class="">
-      <div class="container max-w-3xl">
-        <h2 class="mb-6">Frequently Asked Questions</h2>
+    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+      <div class="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+        <h2 class="mb-6 text-center">Frequently Asked Questions</h2>
         <div class="space-y-4">
-          <div v-for="faq in space.faqs" :key="faq.id" class="border rounded-lg overflow-hidden">
-            <h3
+          <div
+            v-for="faq in space.faqs"
+            :key="faq.id"
+            class="border-b rounded-lg overflow-hidden bg-card-bg2/80"
+          >
+            <div
               @click="faq.open = !faq.open"
-              class="has-accordion w-full flex justify-between items-center px-4 py-4 text-left font-medium focus:outline-none focus-visible:ring bg-card-bg2/60"
+              class="has-accordion w-full flex justify-between items-center p-2 text-left focus:outline-none focus-visible:ring"
               :aria-expanded="faq.open"
             >
-              <p>{{ faq.question }}</p>
+              <p class="tight">{{ faq.question }}</p>
               <button
                 @click.stop="faq.open = !faq.open"
                 class="transition-transform w-4 h-4 duration-200 accordion text-primary"
                 :class="{ 'rotate-180': faq.open }"
               ></button>
-            </h3>
-            <div v-show="faq.open" class="p-4 pb-4 text-text">
-              <p>{{ faq.answer }}</p>
+            </div>
+            <div v-show="faq.open" class="px-4 py-2 text-text">
+              <p class="tight">{{ faq.answer }}</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Form Section -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
-      <div class="max-w-4xl mx-auto text-center px-4">
-        <h2 class="mb-4">For More Inquiries</h2>
-        <p class="mb-6">
-          Have questions or need more information about this workspace? Our team is here to help.
-        </p>
-
-        <!-- contact form -->
-        <form class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-start">
-          <!-- Name -->
-          <div class="flex flex-col">
-            <label for="name" class="mb-1 font-semibold">Your Name</label>
-            <input
-              id="name"
-              type="text"
-              placeholder="Your Name"
-              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-          </div>
-
-          <!-- Email -->
-          <div class="flex flex-col">
-            <label for="email" class="mb-1 font-semibold text-sm">Your Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Your Email"
-              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
-              required
-            />
-          </div>
-
-          <!-- Message -->
-          <div class="flex flex-col md:col-span-2">
-            <label for="message" class="mb-1 font-semibold">Your Message</label>
-            <textarea
-              id="message"
-              placeholder="Your Message"
-              class="border rounded-md px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary"
-              rows="4"
-              required
-            ></textarea>
-          </div>
-
-          <!-- Submit -->
-          <button type="submit" class="primary px-6 py-3 w-full md:col-span-2 mt-2">
-            Send Inquiry
-          </button>
-        </form>
-      </div>
-    </section>
+    <dialog
+      @click.self="handleBackdropClick"
+      ref="bookingDialog"
+      class="rounded-xl backdrop:bg-black/40 mx-auto my-auto p-0"
+    >
+      <BookingFormModal ref="bookingFormRef" :workspaceType="workspaceType" @close="closeBooking" />
+    </dialog>
   </main>
 </template>
 

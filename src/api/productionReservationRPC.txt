@@ -1,0 +1,174 @@
+
+
+this is the production grade rpc. will need to replace the attempt_reservation rpc on supabase when project acqquires domain
+
+CREATE OR REPLACE FUNCTION public.attempt_reservation(p_workspace_type text, p_location_id bigint, p_booking_date date, p_start_time time without time zone, p_end_time time without time zone, p_full_name text DEFAULT NULL::text, p_email text DEFAULT NULL::text, p_guest_phone text DEFAULT NULL::text)
+ RETURNS TABLE(success boolean, reservation_id uuid, out_workspace_id text, out_hold_expires_at timestamp without time zone, expires_in_seconds integer, alternatives json)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+    v_workspace text;
+    v_start timestamp;
+    v_end timestamp;
+    v_office_start time := '08:00';
+    v_office_end time := '18:00';
+    v_alternatives json := '[]'::json;
+
+    v_user_id uuid;
+    v_name text;
+    v_email text;
+BEGIN
+    -- Resolve user identity
+    v_user_id := auth.uid();
+
+    IF v_user_id IS NOT NULL THEN
+        SELECT full_name, email
+        INTO v_name, v_email
+        FROM profiles
+        WHERE id = v_user_id;
+
+        IF v_name IS NULL OR v_email IS NULL THEN
+            RAISE EXCEPTION 'Authenticated user profile is incomplete';
+        END IF;
+    ELSE
+        -- Guest info is optional
+        v_name := p_full_name;
+        v_email := p_email;
+    END IF;
+
+    -- Validate office hours
+    IF p_start_time < v_office_start
+       OR p_end_time > v_office_end
+       OR p_start_time >= p_end_time THEN
+
+        v_alternatives := (
+            SELECT json_agg(json_build_object(
+                'start_time', to_char(ts, 'HH24:MI'),
+                'end_time', to_char(ts + interval '1 hour', 'HH24:MI')
+            ))
+           FROM generate_series(
+    (p_booking_date + v_office_start)::timestamp,
+    (p_booking_date + v_office_end - interval '1 hour')::timestamp,
+    interval '1 hour'
+) ts
+
+        );
+
+        RETURN QUERY SELECT
+            false,
+            NULL::uuid,
+            NULL::text,
+            NULL::timestamp,
+            NULL::integer,
+            v_alternatives;
+        RETURN;
+    END IF;
+
+    v_start := (p_booking_date + p_start_time)::timestamp;
+    v_end := (p_booking_date + p_end_time)::timestamp;
+
+    -- Find an active workspace
+    SELECT id INTO v_workspace
+    FROM workspaces
+    WHERE type = p_workspace_type
+      AND location_id = p_location_id
+      AND status = 'active'
+    LIMIT 1;
+
+    IF v_workspace IS NULL THEN
+        RETURN QUERY SELECT
+            false,
+            NULL::uuid,
+            NULL::text,
+            NULL::timestamp,
+            NULL::integer,
+            NULL::json;
+        RETURN;
+    END IF;
+
+    -- Check for overlaps
+    IF EXISTS (
+        SELECT 1 FROM reservations r
+        WHERE r.workspace_id = v_workspace
+          AND r.time_range && tsrange(v_start, v_end, '[)') 
+          AND r.status IN ('pending', 'payment_started')
+        UNION
+        SELECT 1 FROM workspace_bookings wb
+        WHERE wb.workspace_id = v_workspace
+          AND wb.time_range && tsrange(v_start, v_end, '[)') 
+          AND wb.status = 'confirmed'
+    ) THEN
+        -- Generate alternative 1-hour slots for this workspace
+        v_alternatives := (
+            SELECT json_agg(json_build_object(
+                'start_time', to_char(ts, 'HH24:MI'),
+                'end_time', to_char(ts + interval '1 hour', 'HH24:MI'))
+            )
+           FROM generate_series(
+    (p_booking_date + v_office_start)::timestamp,
+    (p_booking_date + v_office_end - interval '1 hour')::timestamp,
+    interval '1 hour'
+) ts
+
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM reservations r
+                WHERE r.workspace_id = v_workspace
+                  AND r.time_range && tsrange(ts, ts + interval '1 hour', '[)') 
+                  AND r.status IN ('pending','payment_started')
+                UNION
+                SELECT 1
+                FROM workspace_bookings wb
+                WHERE wb.workspace_id = v_workspace
+                  AND wb.time_range && tsrange(ts, ts + interval '1 hour', '[)') 
+                  AND wb.status = 'confirmed'
+            )
+        );
+
+        RETURN QUERY SELECT
+            false,
+            NULL::uuid,
+            NULL::text,
+            NULL::timestamp,
+            NULL::integer,
+            v_alternatives;
+        RETURN;
+    END IF;
+
+    -- Insert reservation
+    INSERT INTO reservations (
+        workspace_id,
+        booking_date,
+        start_time,
+        end_time,
+        status,
+        hold_expires_at,
+        full_name,
+        email,
+        guest_phone,
+        created_by
+    )
+    VALUES (
+        v_workspace,
+        p_booking_date,
+        p_start_time,
+        p_end_time,
+        'pending',
+        now() + interval '15 minutes',
+        v_name,
+        v_email,
+        p_guest_phone,
+        v_user_id
+    )
+    RETURNING id, workspace_id, hold_expires_at
+    INTO reservation_id, out_workspace_id, out_hold_expires_at;
+
+    success := true;
+    expires_in_seconds := 15 * 60;
+    alternatives := NULL;
+
+    RETURN NEXT;
+END;
+$function$
