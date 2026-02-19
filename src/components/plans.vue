@@ -56,7 +56,7 @@ const plans = ref([
         <div
           v-for="(plan, index) in plans"
           :key="index"
-          class="relative flex flex-col h-full box-border rounded-lg shadow-sm text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
+          class="relative flex flex-col h-full box-border rounded-lg shadow-sm shadow-text/10 text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
           :class="
             plan.featured
               ? 'bg-card-bg border-primary  hover:shadow-xl'
