@@ -119,6 +119,16 @@
   }
 } */
 
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    transition: none !important;
+  }
+  
+  *, *::before, *::after {
+    animation: none !important;
+  }
+}
+
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
