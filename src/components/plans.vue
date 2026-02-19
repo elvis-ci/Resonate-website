@@ -52,11 +52,11 @@ const plans = ref([
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start text-text">
         <div
           v-for="(plan, index) in plans"
           :key="index"
-          class="relative flex flex-col h-full box-border rounded-lg shadow-sm text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
+          class="relative flex flex-col h-full box-border rounded-lg shadow-sm shadow-text/10 text-center p-8 border transition-all duration-300 motion-safe:hover:-translate-y-1"
           :class="
             plan.featured
               ? 'bg-card-bg border-primary  hover:shadow-xl'
@@ -69,7 +69,7 @@ const plans = ref([
 
           <img
             :src="plan.icon"
-            class="mx-auto mb-4 h-12"
+            class="mx-auto mb-4 h-12 logo"
             loading="lazy"
             width="48"
             height="48"

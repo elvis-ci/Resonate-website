@@ -1,9 +1,8 @@
 @import 'tailwindcss';
 
-:root {
+:root[data-theme='light'] {
   --safe-bottom: env(safe-area-inset-bottom);
   @theme {
-
     --color-bg: #ffff;
     --color-alt-bg: #f9fafb;
 
@@ -36,9 +35,46 @@
     --color-danger: #dc2626;
 
     --color-link: var(--color-primary);
-    /* --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
-  --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06); */
+    --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
+    --logo-filter: none
   }
+}
+
+:root[data-theme='dark'] {
+  --color-bg: #0f172a;
+  --color-alt-bg: #111827;
+
+  --color-card-bg: #111827;
+  --color-card-bg2: #1f2933;
+
+  --color-primary: #a05a00;
+  --color-primary-hover: #e67e00;
+
+  --color-secondary: #e5e7eb;
+  --color-secondary-hover: #f9fafb;
+
+  --color-alternate: #020617;
+  --color-alternate-hover: #020617;
+
+  --color-border: #1e293b;
+  --color-card-border: #1e293b;
+
+  --color-ribbon-bg: #a05a00;
+  --color-ribbon-under: gray;
+
+  --color-text: #e5e7eb;
+  --color-heading: #f9fafb;
+  --color-body: #cbd5e1;
+  --color-muted: #94a3b8;
+  --color-primary-text: #e67e00;
+  --color-secondary-text: #e5e7eb;
+
+  --color-success: #10b981;
+  --color-warning: #f87171;
+  --color-danger: #ef4444;
+
+  --color-link: var(--color-primary);
+  --logo-filter: invert(1);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -83,6 +119,16 @@
   }
 } */
 
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    transition: none !important;
+  }
+  
+  *, *::before, *::after {
+    animation: none !important;
+  }
+}
+
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
@@ -107,8 +153,15 @@ body {
   background-color: var(--color-bg);
   min-height: 100dvh;
   padding-bottom: env(safe-area-inset-bottom);
+
+}
+*{
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
+.logo{
+  filter: var(--logo-filter)
+}
 main {
   @apply flex-1  pb-[env(safe-area-inset-bottom)];
 }
@@ -156,8 +209,8 @@ nav > ul > li:focus-within {
 }
 /* nav end */
 
-section.heading{
-  @apply py-10 sm:py-16 md:py-20
+section.heading {
+  @apply py-10 sm:py-16 md:py-20;
 }
 /* section */
 section.hero {
@@ -198,7 +251,7 @@ p:not(.error):not(.white):not(.tight) {
 p.tight {
   @apply text-base md:text-base lg:text-xl leading-relaxed text-body mb-0;
 }
-p.primary{
+p.primary {
   @apply text-base md:text-base lg:text-xl leading-relaxed text-primary mb-4;
 }
 p.error {
@@ -236,6 +289,10 @@ a.secondary {
 
 button.cancel {
   @apply px-4 sm:px-5 md:px-6 lg:px-8 py-2 text-base sm:text-base md:text-base lg:text-base font-bold bg-red-600 text-white rounded-lg hover:bg-red-700 focus:bg-red-700 transition-colors duration-200 active:scale-95;
+}
+input,
+textarea {
+  @apply px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-primary text-text;
 }
 /* Extras */
 /* Ribbon wrapper */
