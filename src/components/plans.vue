@@ -52,7 +52,7 @@ const plans = ref([
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-start text-text">
         <div
           v-for="(plan, index) in plans"
           :key="index"
@@ -69,7 +69,7 @@ const plans = ref([
 
           <img
             :src="plan.icon"
-            class="mx-auto mb-4 h-12"
+            class="mx-auto mb-4 h-12 logo"
             loading="lazy"
             width="48"
             height="48"
