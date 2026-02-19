@@ -193,19 +193,19 @@ h3.white {
 
 /* paragraphs */
 p:not(.error):not(.white):not(.tight) {
-  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-body mb-4;
+  @apply text-base md:text-base lg:text-xl leading-relaxed text-body mb-4;
 }
 p.tight {
-  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-body mb-0;
+  @apply text-base md:text-base lg:text-xl leading-relaxed text-body mb-0;
 }
 p.primary{
-  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-primary mb-4;
+  @apply text-base md:text-base lg:text-xl leading-relaxed text-primary mb-4;
 }
 p.error {
   @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed mb-4;
 }
 p.white {
-  @apply text-sm sm:text-base md:text-base lg:text-xl leading-relaxed text-white/90;
+  @apply text-base md:text-base lg:text-xl leading-relaxed text-white/90;
 }
 a.white {
   @apply bg-gradient-to-r from-primary-hover via-white to-primary-hover
