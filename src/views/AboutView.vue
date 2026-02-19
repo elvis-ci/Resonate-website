@@ -226,17 +226,15 @@ const features = [
           <p class="max-w-2xl mx-auto">Professionals dedicated to the best coworking experience.</p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="(member, index) in teamData" :key="index" class="text-center">
+        <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
+          <div v-for="(member, index) in teamData" :key="index" class="text-center justify-self-center">
             <div class="mb-4 overflow-hidden rounded-lg shadow-md">
               <img
                 :src="member.image"
                 :alt="member.name"
-                width="400"
-                height="400"
                 loading="lazy"
                 decoding="async"
-                class="w-full h-74 object-cover object-center transition-transform duration-300 hover:scale-105"
+                class=" w-96 h-96 object-cover object-center transition-transform duration-300 hover:scale-105"
               />
             </div>
             <h3 class="mb-1">{{ member.name }}</h3>
@@ -253,13 +251,24 @@ const features = [
         <p class="text-sm text-muted mb-6">Feel free to reach out — we’d love to hear from you.</p>
 
         <form class="grid grid-cols-1 md:grid-cols-2 gap-4 text-start">
-          <input required placeholder="Your Name" class="border rounded-md px-3 py-2" />
-          <input
-            required
-            type="email"
-            placeholder="Your Email"
-            class="border rounded-md px-3 py-2"
-          />
+          <div class="flex flex-col text-text">
+            <label for="fullName" class="font-semibold">Full Name</label>
+            <input
+              required
+              id="fullName"
+              placeholder="Your Name"
+              class="border rounded-md px-3 py-2"
+            />
+          </div>
+          <div class="flex flex-col text-text">
+            <label for="email" class="font-semibold">Email</label>
+            <input
+              required
+              type="email"
+              placeholder="Your Email"
+              class="border rounded-md px-3 py-2"
+            />
+          </div>
           <textarea
             required
             rows="4"
