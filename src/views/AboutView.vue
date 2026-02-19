@@ -203,7 +203,7 @@ const features = [
           <div
             v-for="(feature, index) in features"
             :key="index"
-            class="flex items-center gap-4 p-4 rounded-lg shadow-sm bg-card-bg transition-shadow duration-200 hover:shadow-lg"
+            class="flex items-center gap-4 p-4 rounded-lg shadow-sm shadow-text/10 bg-card-bg transition-shadow duration-200 hover:shadow-lg"
           >
             <div
               class="flex items-center justify-center w-14 h-14 rounded-full bg-primary/10 shrink-0"
