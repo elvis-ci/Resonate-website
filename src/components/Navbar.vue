@@ -193,15 +193,8 @@ onUnmounted(() => {
 </li>
       </ul>
       <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
- <button
-    type="button"
-    @click.prevent="toggleMode"
-    class="theme-toggle"
-  >
-    <span class="icon left">☀️</span>
-    <span class="slider" :class="theme"></span>
-    <span class="icon right">🌙</span>
-  </button>      <!-- Mobile Toggle -->
+      <button type="button" @click.prevent="toggleMode">mode</button>
+      <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
           type="button"
@@ -476,5 +469,4 @@ header {
 .slider.dark {
   transform: translateX(30px);
 }
-
 </style>
