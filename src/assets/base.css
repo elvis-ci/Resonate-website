@@ -119,6 +119,16 @@
   }
 } */
 
+@media (prefers-reduced-motion: reduce) {
+  html, body {
+    transition: none !important;
+  }
+  
+  *, *::before, *::after {
+    animation: none !important;
+  }
+}
+
 @font-face {
   font-family: 'Nunito';
   src: url('/fonts/Nunito-Regular.ttf') format('truetype');
@@ -143,6 +153,10 @@ body {
   background-color: var(--color-bg);
   min-height: 100dvh;
   padding-bottom: env(safe-area-inset-bottom);
+
+}
+*{
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
 .logo{

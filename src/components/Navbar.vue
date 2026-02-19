@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
 // -----------------------------
@@ -22,7 +22,6 @@ const navRoutes = [
       { path: '/workspaces/executive-conference-rooms', title: 'executive conference rooms' },
       { path: '/workspaces/event-seminar-halls', title: 'event seminar halls' },
     ],
-
   },
   {
     path: '/community',
@@ -116,10 +115,25 @@ const handleKeydown = (e) => {
   }
 }
 
+const theme = ref('light')
+
 onMounted(() => {
+  const savedTheme = localStorage.getItem('theme')
+  theme.value = savedTheme || 'light'
+  document.documentElement.setAttribute('data-theme', theme.value)
+
   window.addEventListener('scroll', handleScroll, { passive: true })
   document.addEventListener('keydown', handleKeydown)
 })
+
+watch(theme, (newTheme) => {
+  document.documentElement.setAttribute('data-theme', newTheme)
+  localStorage.setItem('theme', newTheme)
+})
+
+function toggleMode() {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
+}
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
@@ -145,56 +159,85 @@ onUnmounted(() => {
 
       <!-- Desktop Navigation -->
       <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-<li
-  v-for="route in navRoutes"
-  :key="route.path"
-  class="relative py-4"
-  :class="{ 'has-children': route.children.length }"
-  @mouseenter="activeDesktopMenu = route.path"
-  @mouseleave="activeDesktopMenu = null"
-  @focusin="activeDesktopMenu = route.path"
-  @focusout="onFocusOut(route.path, $event)"
->
-  <RouterLink
-    :to="route.path"
-    :aria-expanded="activeDesktopMenu === route.path"
-    aria-haspopup="true"
-  >
-    {{ route.title }}
-  </RouterLink>
-
-  <!-- Desktop dropdown -->
-  <ul
-    v-if="route.children.length"
-    class="submenu absolute left-0 mt-4 w-40 border rounded shadow-lg z-10"
-    v-show="activeDesktopMenu === route.path"
-  >
-    <li v-for="child in route.children" :key="child.path">
-      <RouterLink :to="child.path" class="block px-4 py-2 text-text">
-        {{ child.title }}
-      </RouterLink>
-    </li>
-  </ul>
-</li>
-      </ul>
-      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
-      <!-- Mobile Toggle -->
-      <div class="lg:hidden">
-        <button
-          type="button"
-          @click="toggleMobile"
-          class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+        <li
+          v-for="route in navRoutes"
+          :key="route.path"
+          class="relative py-4"
+          :class="{ 'has-children': route.children.length }"
+          @mouseenter="activeDesktopMenu = route.path"
+          @mouseleave="activeDesktopMenu = null"
+          @focusin="activeDesktopMenu = route.path"
+          @focusout="onFocusOut(route.path, $event)"
         >
-          <span class="sr-only">Open menu</span>
-          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+          <RouterLink
+            :to="route.path"
+            :aria-expanded="activeDesktopMenu === route.path"
+            aria-haspopup="true"
+          >
+            {{ route.title }}
+          </RouterLink>
+
+          <!-- Desktop dropdown -->
+          <transition name="desktop-slide-down">
+            <ul
+              v-if="route.children.length"
+              class="submenu absolute left-0 mt-4 w-40 border rounded shadow-lg z-10"
+              v-show="activeDesktopMenu === route.path"
+            >
+              <li v-for="child in route.children" :key="child.path">
+                <RouterLink :to="child.path" class="block px-4 py-2 text-text">
+                  {{ child.title }}
+                </RouterLink>
+              </li>
+            </ul>
+          </transition>
+        </li>
+      </ul>
+
+      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block">
+        Bookings</RouterLink
+      >
+      <div class="flex gap-6 items-center justify-end">
+        <li class="dark-toggle">
+          <button
+            type="button"
+            class="theme-toggle-btn"
+            :class="{ 'is-dark': theme === 'dark' }"
+            @click="toggleMode"
+            @keydown="onToggleKeydown"
+            role="switch"
+            :aria-checked="theme === 'dark'"
+            aria-label="Toggle dark mode"
+          >
+            <!-- Pill background -->
+            <span class="pill" aria-hidden="true">
+              <span class="slider" :class="{ 'slider-right': theme === 'dark' }"></span>
+            </span>
+
+            <!-- Icons -->
+            <i class="uil uil-sun option option-1" aria-hidden="true">☀️</i>
+            <i class="uil uil-moon option option-2" aria-hidden="true">🌙</i>
+          </button>
+        </li>
+
+        <!-- Mobile Toggle -->
+        <div class="lg:hidden">
+          <button
+            type="button"
+            @click="toggleMobile"
+            class="inline-flex items-center justify-center p-2 rounded-md hover:bg-gray-100 focus:outline-none"
+          >
+            <span class="sr-only">Open menu</span>
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </nav>
 
@@ -414,5 +457,153 @@ header {
 
 .nav-hidden {
   transform: translateY(-100%);
+}
+.theme-toggle {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 60px;
+  height: 30px;
+  padding: 0 5px;
+  border-radius: 15px;
+  border: 1px solid #ccc;
+  background-color: var(--toggle-bg, #f0f0f0);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.icon {
+  font-size: 16px;
+  z-index: 2;
+}
+
+.slider {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 26px;
+  border-radius: 50%;
+  background-color: #fff;
+  transition: transform 0.3s;
+  z-index: 1;
+}
+
+/* Move the slider based on theme */
+.slider.light {
+  transform: translateX(0);
+}
+.slider.dark {
+  transform: translateX(30px);
+}
+
+/* Desktop dropdown smooth slide */
+.desktop-slide-down-enter-active,
+.desktop-slide-down-leave-active {
+  transition: all 0.2s ease;
+}
+
+.desktop-slide-down-enter-from,
+.desktop-slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+}
+
+.desktop-slide-down-enter-to,
+.desktop-slide-down-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+
+.dark-toggle {
+  display: flex;
+  align-items: center;
+  z-index: 50;
+  padding-left: 20px;
+}
+
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 999px;
+  outline: none;
+  perspective: 600px; /* 3D depth */
+  position: relative;
+  user-select: none;
+}
+
+.pill {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #8d8d8d, #5e5e5e);
+  box-shadow:
+    inset 2px 2px 4px rgba(0, 0, 0, 0.35),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.25),
+    0 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+.slider {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  height: 20px;
+  width: 44%;
+  background: linear-gradient(145deg, #f08d0c, #c76c00);
+  border-radius: 999px;
+  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
+  box-shadow:
+    inset -1px -1px 3px rgba(255, 255, 255, 0.4),
+    inset 2px 2px 5px rgba(0, 0, 0, 0.3),
+    0 2px 3px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+.slider-right {
+  transform: translateY(-50%) translateX(calc(100% + 5px));
+}
+
+.option {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  font-size: 12px;
+  color: #f9f9f9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  z-index: 2;
+}
+
+.option-1 {
+  left: 2px;
+}
+.option-2 {
+  right: 2px;
+}
+
+.theme-toggle-btn.is-dark .option-1 {
+  opacity: 0.45;
+}
+.theme-toggle-btn:not(.is-dark) .option-2 {
+  opacity: 0.45;
+}
+
+.theme-toggle-btn:focus {
+  box-shadow: 0 0 0 3px rgba(47, 85, 212, 0.14);
+  border-radius: 999px;
 }
 </style>

@@ -148,7 +148,7 @@ onMounted(() => {
           <div
             v-for="(service, index) in services"
             :key="index"
-            class="text-center bg-card-bg rounded-lg py-6 shadow-lg shadow-elev hover:shadow-xl transition"
+            class="text-center bg-card-bg rounded-lg py-6 shadow-lg shadow-text/10 hover:shadow-xl transition"
           >
             <div class="flex justify-center">
               <component :is="service.icon" class="text-primary" :size="40" />
