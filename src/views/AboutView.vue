@@ -33,24 +33,24 @@ const showModal = ref(false)
 ---------------------------- */
 const teamData = [
   {
-    image: '/images/coworking/about.webp',
+    image: '/images/team/ceo.jpeg',
     name: 'Ronny Jofra',
     designation: 'C.E.O',
   },
   {
-    image: '/images/coworking/about.webp',
+    image: '/images/team/cto.png',
     name: 'Micheal Carlo',
-    designation: 'Director',
+    designation: 'C.T.O',
   },
   {
-    image: '/images/coworking/about.webp',
+    image: '/images/team/manager.jpeg',
     name: 'Aliana Rosy',
     designation: 'Manager',
   },
   {
-    image: '/images/coworking/about.webp',
+    image: '/images/team/accessibility director.jpeg',
     name: 'Sofia Razaq',
-    designation: 'Developer',
+    designation: 'Accessibility Director',
   },
 ]
 
@@ -236,7 +236,7 @@ const features = [
                 height="400"
                 loading="lazy"
                 decoding="async"
-                class="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
+                class="w-full h-74 object-cover object-center transition-transform duration-300 hover:scale-105"
               />
             </div>
             <h3 class="mb-1">{{ member.name }}</h3>
