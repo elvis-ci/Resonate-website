@@ -22,7 +22,6 @@ const navRoutes = [
       { path: '/workspaces/executive-conference-rooms', title: 'executive conference rooms' },
       { path: '/workspaces/event-seminar-halls', title: 'event seminar halls' },
     ],
-
   },
   {
     path: '/community',
@@ -132,7 +131,7 @@ watch(theme, (newTheme) => {
   localStorage.setItem('theme', newTheme)
 })
 
-function toggleMode(){
+function toggleMode() {
   theme.value = theme.value === 'dark' ? 'light' : 'dark'
 }
 
@@ -160,48 +159,49 @@ onUnmounted(() => {
 
       <!-- Desktop Navigation -->
       <ul class="hidden lg:flex space-x-8 flex-1 justify-center">
-<li
-  v-for="route in navRoutes"
-  :key="route.path"
-  class="relative py-4"
-  :class="{ 'has-children': route.children.length }"
-  @mouseenter="activeDesktopMenu = route.path"
-  @mouseleave="activeDesktopMenu = null"
-  @focusin="activeDesktopMenu = route.path"
-  @focusout="onFocusOut(route.path, $event)"
->
-  <RouterLink
-    :to="route.path"
-    :aria-expanded="activeDesktopMenu === route.path"
-    aria-haspopup="true"
-  >
-    {{ route.title }}
-  </RouterLink>
+        <li
+          v-for="route in navRoutes"
+          :key="route.path"
+          class="relative py-4"
+          :class="{ 'has-children': route.children.length }"
+          @mouseenter="activeDesktopMenu = route.path"
+          @mouseleave="activeDesktopMenu = null"
+          @focusin="activeDesktopMenu = route.path"
+          @focusout="onFocusOut(route.path, $event)"
+        >
+          <RouterLink
+            :to="route.path"
+            :aria-expanded="activeDesktopMenu === route.path"
+            aria-haspopup="true"
+          >
+            {{ route.title }}
+          </RouterLink>
 
-  <!-- Desktop dropdown -->
-  <ul
-    v-if="route.children.length"
-    class="submenu absolute left-0 mt-4 w-40 border rounded shadow-lg z-10"
-    v-show="activeDesktopMenu === route.path"
-  >
-    <li v-for="child in route.children" :key="child.path">
-      <RouterLink :to="child.path" class="block px-4 py-2 text-text">
-        {{ child.title }}
-      </RouterLink>
-    </li>
-  </ul>
-</li>
+          <!-- Desktop dropdown -->
+          <transition name="desktop-slide-down">
+            <ul
+              v-if="route.children.length"
+              class="submenu absolute left-0 mt-4 w-40 border rounded shadow-lg z-10"
+              v-show="activeDesktopMenu === route.path"
+            >
+              <li v-for="child in route.children" :key="child.path">
+                <RouterLink :to="child.path" class="block px-4 py-2 text-text">
+                  {{ child.title }}
+                </RouterLink>
+              </li>
+            </ul>
+          </transition>
+        </li>
       </ul>
-      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
- <button
-    type="button"
-    @click.prevent="toggleMode"
-    class="theme-toggle"
-  >
-    <span class="icon left">☀️</span>
-    <span class="slider" :class="theme"></span>
-    <span class="icon right">🌙</span>
-  </button>      <!-- Mobile Toggle -->
+      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block">
+        Bookings</RouterLink
+      >
+      <button type="button" @click.prevent="toggleMode" class="theme-toggle">
+        <span class="icon left">☀️</span>
+        <span class="slider" :class="theme"></span>
+        <span class="icon right">🌙</span>
+      </button>
+      <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button
           type="button"
@@ -477,4 +477,23 @@ header {
   transform: translateX(30px);
 }
 
+/* Desktop dropdown smooth slide */
+.desktop-slide-down-enter-active,
+.desktop-slide-down-leave-active {
+  transition: all 0.2s ease;
+}
+
+.desktop-slide-down-enter-from,
+.desktop-slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+  visibility: hidden;
+}
+
+.desktop-slide-down-enter-to,
+.desktop-slide-down-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
 </style>
