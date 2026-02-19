@@ -257,7 +257,7 @@ async function retryLoadLocations() {
   }
 }
 onMounted(async () => {
-  availableLocations.value = []
+  // availableLocations.value = []
   console.log('is hold expired?:', holdExpired)
 
   try {

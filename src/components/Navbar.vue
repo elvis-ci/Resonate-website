@@ -140,7 +140,7 @@ onUnmounted(() => {
 
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <RouterLink to="/" class="text-xl white font-bold">Resonate</RouterLink>
+        <RouterLink to="/" class="text-xl white font-bold">Reboot</RouterLink>
       </div>
 
       <!-- Desktop Navigation -->
@@ -177,7 +177,7 @@ onUnmounted(() => {
   </ul>
 </li>
       </ul>
-      <RouterLink to="/bookings" class="primary hidden lg:inline-block"> Bookings</RouterLink>
+      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block"> Bookings</RouterLink>
       <!-- Mobile Toggle -->
       <div class="lg:hidden">
         <button

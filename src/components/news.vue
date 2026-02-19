@@ -21,7 +21,8 @@
           {{ article.excerpt }}
         </p>
         <RouterLink
-          :to="article.link"
+
+          to="community/events"
           class="text-primary-text font-semibold hover:text-primary-hover transition-colors"
         >
           Read More →
@@ -38,7 +39,7 @@ import { RouterLink } from 'vue-router'
 const newsArticles = ref([
   {
     id: 1,
-    title: 'New Accessibility Features Launch at Resonate',
+    title: 'New Accessibility Features Launch at Reboot',
     excerpt:
       'We are excited to announce the launch of our enhanced accessibility features designed to make coworking more inclusive for everyone.',
     category: 'Announcements',
@@ -49,9 +50,9 @@ const newsArticles = ref([
     id: 2,
     title: 'Community Spotlight: Success Stories from Our Members',
     excerpt:
-      'Meet the inspiring entrepreneurs and professionals who have built thriving businesses from their workspace at Resonate.',
+      'Meet the inspiring entrepreneurs and professionals who have built thriving businesses from their workspace at Reboot.',
     category: 'Community',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/community.jpeg',
     link: '/',
   },
   {
@@ -60,7 +61,7 @@ const newsArticles = ref([
     excerpt:
       'Join us for our monthly networking mixer where you can connect with fellow coworkers and explore new collaboration opportunities.',
     category: 'Events',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/networking.jpeg',
     link: '/',
   },
 ])

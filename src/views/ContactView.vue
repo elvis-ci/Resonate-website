@@ -31,10 +31,10 @@ const submitForm = () => {
   <!-- PAGE HEADER -->
   <section class="heading bg-linear-to-b from-primary/20 to-primary/0 text-center">
     <div class="container">
-      <h1 class="main-heading text-heading mb-4">Contact Us</h1>
-      <p class="mb-8 max-w-4xl mx-auto">
-        Whether you’re looking to book a workspace, partner with us, or need support, our team is
-        ready to help.
+      <h1 class="main-heading text-heading mb-6">Let’s Build Something Great Together</h1>
+      <p class="mb-8 max-w-4xl mx-auto text-lg leading-relaxed">
+        Whether you’re ready to book a workspace, explore partnership opportunities, or simply have
+        a question, our team is here to support you every step of the way.
       </p>
       <RouterLink class="primary" :to="'/workspaces'">Go to Booking</RouterLink>
     </div>
@@ -171,7 +171,7 @@ const submitForm = () => {
 </template>
 
 <style scoped>
-  p.contact{
-    margin-bottom: 2px;
-  }
+p.contact {
+  margin-bottom: 2px;
+}
 </style>
