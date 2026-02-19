@@ -52,7 +52,7 @@ const newsArticles = ref([
     excerpt:
       'Meet the inspiring entrepreneurs and professionals who have built thriving businesses from their workspace at Reboot.',
     category: 'Community',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/community.jpeg',
     link: '/',
   },
   {
@@ -61,7 +61,7 @@ const newsArticles = ref([
     excerpt:
       'Join us for our monthly networking mixer where you can connect with fellow coworkers and explore new collaboration opportunities.',
     category: 'Events',
-    image: '/images/coworking/about.webp',
+    image: '/images/coworking/networking.jpeg',
     link: '/',
   },
 ])
