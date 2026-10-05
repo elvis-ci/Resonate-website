@@ -1,6 +1,8 @@
 <script setup>
 import { ref, defineAsyncComponent } from 'vue'
 
+defineOptions({ name: 'AppFooter' })
+
 // Async load icons to reduce bundle size and improve performance
 const FacebookIcon = defineAsyncComponent(() => import('vue-material-design-icons/Facebook.vue'))
 const InstagramIcon = defineAsyncComponent(() => import('vue-material-design-icons/Instagram.vue'))
@@ -18,21 +20,9 @@ const subscribe = (e) => {
 </script>
 
 <template>
-  <div class="hidden md:block relative w-full bg-red-900 -mt-12">
-    <svg
-      class="w-full absolute -top-11 h-12"
-      preserveAspectRatio="none"
-      viewBox="0 0 1440 100"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M0,0 C360,100 1080,100 1440,0 L1440,100 L0,100 Z" fill="#111827" />
-    </svg>
-  </div>
-
   <footer class="bg-gray-900 text-gray-200">
-    <div class="container mx-auto px-4 py-12">
-      <div class="grid lg:grid-cols-4 md:grid-cols-2 gap-8">
+    <div class="max-w-7xl container mx-auto px-4 py-12">
+      <div class="grid lg:grid-cols-3 md:grid-cols-2 gap-8">
         <!-- About / Social -->
         <div>
           <RouterLink to="/" class="text-xl white font-bold">Reboot</RouterLink>
@@ -73,62 +63,66 @@ const subscribe = (e) => {
           </div>
         </div>
 
-        <!-- Company Links -->
-        <div>
-          <h3 class="white mb-4">Company</h3>
-          <ul class="space-y-2">
-            <li>
-              <router-link to="/" class="text-gray-300 hover:text-primary transition"
-                >Home</router-link
-              >
-            </li>
-            <li>
-              <router-link to="/about" class="text-gray-300 hover:text-primary transition"
-                >About Us</router-link
-              >
-            </li>
-            <li>
-              <router-link to="/workspaces" class="text-gray-300 hover:text-primary transition"
-                >Workspaces</router-link
-              >
-            </li>
-            <li>
-              <router-link to="/community" class="text-gray-300 hover:text-primary transition"
-                >Community</router-link
-              >
-            </li>
-            <li>
-              <router-link to="/contact" class="text-gray-300 hover:text-primary transition"
-                >Contact</router-link
-              >
-            </li>
-          </ul>
-        </div>
+        <div class="grid grid-cols-2 gap-8">
+          <!-- Company Links -->
+          <div>
+            <h3 class="white mb-4">Company</h3>
+            <ul class="space-y-2">
+              <li>
+                <router-link to="/" class="text-muted hover:text-primary transition"
+                  >Home</router-link
+                >
+              </li>
+              <li>
+                <router-link to="/about" class="text-muted hover:text-primary transition"
+                  >About Us</router-link
+                >
+              </li>
+              <li>
+                <router-link to="/workspaces" class="text-muted hover:text-primary transition"
+                  >Workspaces</router-link
+                >
+              </li>
+              <li>
+                <router-link to="/community" class="text-muted hover:text-primary transition"
+                  >Community</router-link
+                >
+              </li>
+              <li>
+                <router-link to="/contact" class="text-muted hover:text-primary transition"
+                  >Contact</router-link
+                >
+              </li>
+            </ul>
+          </div>
 
-        <!-- Useful Links -->
-        <div>
-          <h3 class="white mb-4">Resources</h3>
-          <ul class="space-y-2">
-            <li>
-              <router-link to="/community/blog" class="text-gray-300 hover:text-primary transition"
-                >Blog</router-link
-              >
-            </li>
-            <li>
-              <router-link
-                to="/community/events"
-                class="text-gray-300 hover:text-primary transition"
-                >Events</router-link
-              >
-            </li>
-            <li>
-              <router-link
-                to="/community/workshops"
-                class="text-gray-300 hover:text-primary transition"
-                >Workshops</router-link
-              >
-            </li>
-          </ul>
+          <!-- Useful Links -->
+          <div>
+            <h3 class="white mb-4">Resources</h3>
+            <ul class="space-y-2">
+              <li>
+                <router-link
+                  to="/community/blog"
+                  class="text-muted hover:text-primary transition"
+                  >Blog</router-link
+                >
+              </li>
+              <li>
+                <router-link
+                  to="/community/events"
+                  class="text-muted hover:text-primary transition"
+                  >Events</router-link
+                >
+              </li>
+              <li>
+                <router-link
+                  to="/community/workshops"
+                  class="text-muted hover:text-primary transition"
+                  >Workshops</router-link
+                >
+              </li>
+            </ul>
+          </div>
         </div>
 
         <!-- Newsletter -->
