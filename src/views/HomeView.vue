@@ -64,31 +64,75 @@ onMounted(() => {
 <template>
   <main id="maincontent">
     <!-- Hero Start -->
-    <section class="hero">
-      <div
-        class="relative flex items-center justify-center h-full pt-20 lg:pt-0 pb-10 lg:pb-0"
-        :style="{
-          'background-image': 'url(/images/coworking/bg01.webp)',
-          'background-size': 'cover',
-          'background-position': 'contain',
-        }"
-      >
-        <div class="absolute inset-0 bg-[rgba(19,22,26,0.7)] h-full"></div>
-        <div class="relative container h-full text-center flex items-center justify-center">
-          <div class="text-white">
-            <h1 class="main-heading">Boost Productivity in Comfort & Privacy</h1>
-            <p class="white mt-4 max-w-2xl mx-auto">
-              Discover a coworking space designed to keep you focused, creative, and connected.
-              Enjoy flexible offices, accessible facilities, and a vibrant community all at an
-              affordable price.
-            </p>
-            <div class="mt-10">
-              <RouterLink
-                to="/workspaces/categories-workspace"
-                class="primary"
-                style="padding-block: 15px"
-                >Space Pricing</RouterLink
-              >
+    <section class="hero premium-hero">
+      <div class="hero-backdrop">
+        <div class="hero-overlay"></div>
+
+        <div class="container relative z-10 flex min-h-[680px] items-center py-20 lg:py-24">
+          <div class="grid w-full items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+            <div class="text-white text-left">
+              <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium tracking-[0.24em] uppercase text-white/80 backdrop-blur-sm">
+                <span class="h-2 w-2 rounded-full bg-secondary"></span>
+                Premium workspace
+              </div>
+
+              <h1 class="main-heading mt-6 max-w-xl leading-[0.95] tracking-[-0.04em] text-white">
+                Boost Productivity in Comfort & Privacy
+              </h1>
+
+              <p class="white mt-5 max-w-xl text-base md:text-lg text-white/80">
+                Discover a coworking space designed to keep you focused, creative, and connected.
+                Enjoy flexible offices, accessible facilities, and a vibrant community all at an
+                affordable price.
+              </p>
+
+              <div class="mt-8 flex flex-col sm:flex-row items-start gap-4">
+                <RouterLink to="/workspaces/categories-workspace" class="primary premium-btn">
+                  Space Pricing
+                </RouterLink>
+                <RouterLink to="/bookings" class="secondary premium-btn secondary-btn">
+                  Book a space
+                </RouterLink>
+              </div>
+
+              <div class="mt-10 flex flex-wrap items-center gap-6 text-sm text-white/80">
+                <div>
+                  <span class="block text-2xl font-bold text-white">24/7</span>
+                  <span>Access</span>
+                </div>
+                <div>
+                  <span class="block text-2xl font-bold text-white">5k+</span>
+                  <span>Members</span>
+                </div>
+                <div>
+                  <span class="block text-2xl font-bold text-white">4.9/5</span>
+                  <span>Rating</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="relative flex justify-center lg:justify-end">
+              <div class="hero-card">
+                <div class="hero-card-header">
+                  <span class="hero-card-badge">Available now</span>
+                  <span class="hero-card-price">From ₦3,000/hr</span>
+                </div>
+
+                <div class="hero-card-image-wrap">
+                  <img src="/images/coworking/community.jpeg" alt="Reboot workspace" />
+                </div>
+
+                <div class="hero-card-meta">
+                  <div>
+                    <p class="meta-label">Workspace</p>
+                    <p class="meta-value">Private Office</p>
+                  </div>
+                  <div>
+                    <p class="meta-label">Capacity</p>
+                    <p class="meta-value">1–12 people</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -280,6 +324,125 @@ p {
   padding-inline: 0px;
 }
 
+.premium-hero {
+  position: relative;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.hero-backdrop {
+  position: relative;
+  min-height: 680px;
+  background-image: linear-gradient(135deg, rgba(11, 16, 24, 0.82), rgba(11, 16, 24, 0.42)),
+    url('/images/coworking/bg01.webp');
+  background-size: cover;
+  background-position: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at top left, rgba(99, 102, 241, 0.27), transparent 34%),
+    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.15), transparent 30%);
+}
+
+.premium-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  padding: 0.95rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.premium-btn:hover {
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.hero-card {
+  position: relative;
+  width: min(100%, 420px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(14, 21, 34, 0.72);
+  backdrop-filter: blur(12px);
+  border-radius: 28px;
+  box-shadow: 0 25px 70px rgba(15, 23, 42, 0.45);
+  padding: 1rem;
+}
+
+.hero-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hero-card-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.8rem;
+  border-radius: 9999px;
+  background: rgba(45, 212, 191, 0.12);
+  border: 1px solid rgba(45, 212, 191, 0.3);
+  color: #b7ffef;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-card-price {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+}
+
+.hero-card-image-wrap {
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111827;
+}
+
+.hero-card-image-wrap img {
+  display: block;
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+}
+
+.hero-card-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding-top: 1rem;
+}
+
+.meta-label {
+  margin: 0 0 0.25rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.meta-value {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
 @keyframes scroll {
   0% {
     transform: translateX(0);
@@ -293,4 +456,17 @@ p {
   animation: scroll 15s linear infinite;
 }
 
+@media (max-width: 767px) {
+  .hero-backdrop {
+    min-height: 620px;
+  }
+
+  .hero-card {
+    margin-top: 1.5rem;
+  }
+
+  .premium-btn {
+    width: 100%;
+  }
+}
 </style>
