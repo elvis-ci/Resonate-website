@@ -53,11 +53,11 @@ const services = [
 ]
 
 onMounted(() => {
-  function closeModalOnEscape(event) {
-    if (event.key === 'Escape' && showModal.value) {
-      showModal.value = false
-    }
-  }
+  // function closeModalOnEscape(event) {
+  //   if (event.key === 'Escape' && showModal.value) {
+  //     showModal.value = false
+  //   }
+  // }
 })
 </script>
 
@@ -95,42 +95,6 @@ onMounted(() => {
       </div>
     </section>
     <!-- Hero End -->
-
-    <!-- about -->
-    <section>
-      <div class="container mx-auto">
-        <div class="flex flex-wrap items-center justify-between">
-          <!-- Image column -->
-          <div class="w-full md:w-6/12 lg:w-6/12">
-            <img
-              src="/images/coworking/community.jpeg"
-              class="w-[90%] rounded"
-              alt=""
-              loading="lazy"
-              width="500"
-              height="500"
-            />
-          </div>
-
-          <!-- Text column -->
-          <div class="w-full md:w-6/12 lg:w-6/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
-            <div class="lg:ml-4">
-              <h2 class="">The Reboot Community</h2>
-
-              <p class="">
-                Start working with
-                <span class="text-primary-text font-bold">Reboot</span>, a coworking community
-                designed to help ideas grow and people thrive. Whether you need a quiet space to
-                focus or a collaborative environment to connect, Reboot offers flexible, accessible
-                workspaces that support productivity—without the premium price tag.
-              </p>
-
-              <!-- <RouterLink to="/workspaces" class="primary"> Join Now </RouterLink> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- services -->
     <section class="bg-alt-bg">
@@ -173,6 +137,55 @@ onMounted(() => {
       </template>
     </Suspense>
 
+    <!-- about -->
+    <section>
+      <div class="container mx-auto">
+        <div class="flex flex-wrap items-center justify-between">
+          <!-- Image column -->
+          <div class="w-full md:w-6/12 lg:w-6/12">
+            <img
+              src="/images/coworking/community.jpeg"
+              class="w-[90%] rounded"
+              alt=""
+              loading="lazy"
+              width="500"
+              height="500"
+            />
+          </div>
+
+          <!-- Text column -->
+          <div class="w-full md:w-6/12 lg:w-6/12 mt-4 sm:mt-0 pt-2 sm:pt-0">
+            <div class="lg:ml-4">
+              <h2 class="">The Reboot Community</h2>
+
+              <p class="">
+                Start working with
+                <span class="text-primary-text font-bold">Reboot</span>, a coworking community
+                designed to help ideas grow and people thrive. Whether you need a quiet space to
+                focus or a collaborative environment to connect, Reboot offers flexible, accessible
+                workspaces that support productivity—without the premium price tag.
+              </p>
+
+              <!-- <RouterLink to="/workspaces" class="primary"> Join Now </RouterLink> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Testimonials -->
+    <section class="bg-alt-bg">
+      <div class="container">
+        <div class="text-center mb-12">
+          <h2 class="">What Our Coworkers have to say</h2>
+          <p class="">
+            Start working with
+            <span class="text-primary-text font-bold">Reboot</span>
+          </p>
+        </div>
+        <Testimonial />
+      </div>
+    </section>
+
     <!-- Blog -->
     <section class="">
       <div class="container">
@@ -190,20 +203,6 @@ onMounted(() => {
             <div class="h-96"></div>
           </template>
         </Suspense>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="bg-alt-bg">
-      <div class="container">
-        <div class="text-center mb-12">
-          <h2 class="">What Our Coworkers have to say</h2>
-          <p class="">
-            Start working with
-            <span class="text-primary-text font-bold">Reboot</span>
-          </p>
-        </div>
-        <Testimonial />
       </div>
     </section>
 
@@ -293,4 +292,5 @@ p {
 .animate-scroll {
   animation: scroll 15s linear infinite;
 }
+
 </style>
