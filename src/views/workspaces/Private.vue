@@ -357,7 +357,7 @@ onMounted(async () => {
     </section>
 
     <!-- FAQS -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+    <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
       <div class="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
         <h2 class="mb-6 text-center">Frequently Asked Questions</h2>
         <div class="space-y-4">

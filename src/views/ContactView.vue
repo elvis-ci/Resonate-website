@@ -29,7 +29,7 @@ const submitForm = () => {
 
 <template>
   <!-- PAGE HEADER -->
-  <section class="heading bg-linear-to-b from-primary/20 to-primary/0 text-center">
+  <section class="heading bg-alt-bg text-center">
     <div class="container">
       <h1 class="main-heading text-heading mb-6">Let’s Build Something Great Together</h1>
       <p class="mb-8 max-w-4xl mx-auto text-lg leading-relaxed">

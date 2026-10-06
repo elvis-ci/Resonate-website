@@ -162,7 +162,7 @@ onMounted(() => {
 
 <template>
   <!-- Hero Section -->
-  <section class="heading bg-linear-to-b from-primary/20 to-primary/0 text-center">
+  <section class="heading bg-alt-bg text-center">
     <div class="container">
       <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
       <p class="mb-8 max-w-4xl mx-auto">
@@ -177,18 +177,14 @@ onMounted(() => {
   <section
     v-for="(workspace, index) in workspaces"
     :key="workspace.title"
-    :class="index % 2 === 0 ? 'bg-alt-bg' : ''"
+    :class="index % 2 === 0 ? 'bg-alt-bg' : 'bg-alt-bbg'"
   >
     <div class="container px-4">
       <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center lg:py-12">
         <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
           <h2 class="mb-4 text-center lg:text-start">{{ workspace.title }}</h2>
           <div class="md:hidden mb-4">
-            <img
-              :src="workspace.image"
-              :alt="workspace.alt"
-              class="w-full rounded-lg shadow-lg"
-            />
+            <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
           </div>
 
           <p>
@@ -217,14 +213,18 @@ onMounted(() => {
         </div>
 
         <div class="hidden md:block">
-          <img :src="workspace.image" :alt="workspace.alt" class="w-full max-h-[70vh] rounded-lg shadow-lg" />
+          <img
+            :src="workspace.image"
+            :alt="workspace.alt"
+            class="w-full max-h-[70vh] rounded-lg shadow-lg"
+          />
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0">
+  <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
       <p class="text-lg mb-8 opacity-90">

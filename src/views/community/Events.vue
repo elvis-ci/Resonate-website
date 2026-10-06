@@ -322,15 +322,13 @@ onUnmounted(() => {
     </section>
 
     <!-- CTA SECTION -->
-    <section class="py-12 sm:py-16 md:py-28 bg-linear-to-b from-alt-bg to-primary/30">
+    <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
       <div class="container mx-auto max-w-7xl px-4 text-center">
         <h2 class="text-3xl font-bold mb-4">Don't Miss Out!</h2>
         <p class="text-lg mb-8 text-gray-100">
           Register for our events and connect with industry leaders and professionals.
         </p>
-        <button
-          class="primary rounded-lg font-semibold hover:bg-gray-100 transition"
-        >
+        <button class="primary rounded-lg font-semibold hover:bg-gray-100 transition">
           View All Events
         </button>
       </div>

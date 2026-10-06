@@ -1,7 +1,7 @@
 <template>
   <div class="overflow-x-hidden">
     <!-- COMING SOON BANNER -->
-    <section class="py-24 bg-gradient-to-r from-[#a05a00] to-[#1a1f2e] text-white">
+    <section class="py-24 bg-[#1a1f2e] text-white">
       <div class="container mx-auto max-w-7xl px-4 text-center">
         <div class="mb-6">
           <svg

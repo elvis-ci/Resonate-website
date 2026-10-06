@@ -71,7 +71,9 @@ onMounted(() => {
         <div class="container relative z-10 flex min-h-[680px] items-center py-20 lg:py-24">
           <div class="grid w-full items-center gap-10 lg:grid-cols-[1.2fr_0.8fr]">
             <div class="text-white text-left">
-              <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium tracking-[0.24em] uppercase text-white/80 backdrop-blur-sm">
+              <div
+                class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-medium tracking-[0.24em] uppercase text-white/80 backdrop-blur-sm"
+              >
                 <span class="h-2 w-2 rounded-full bg-secondary"></span>
                 Premium workspace
               </div>
@@ -217,7 +219,7 @@ onMounted(() => {
       </div>
     </section>
     <!-- Testimonials -->
-    <section class="bg-alt-bg">
+    <section class="bg-alt-bbg">
       <div class="container">
         <div class="text-center mb-12">
           <h2 class="">What Our Coworkers have to say</h2>
@@ -251,7 +253,7 @@ onMounted(() => {
     </section>
 
     <!-- Partners -->
-    <!-- <section class="py-12 sm:py-16 md:py-28 bg-linear-to-t from-primary/20 to-primary/0 text-text">
+    <!-- <section class="py-12 sm:py-16 md:py-28 bg-alt-bg text-text">
       <div>
         <h2 class="text-center mb-6 text-2xl sm:text-3xl font-bold">
           Trusted by over 100+ companies NationWide
@@ -333,8 +335,8 @@ p {
 .hero-backdrop {
   position: relative;
   min-height: 680px;
-  background-image: linear-gradient(135deg, rgba(11, 16, 24, 0.82), rgba(11, 16, 24, 0.42)),
-    url('/images/coworking/bg01.webp');
+  background-color: rgba(17, 24, 39, 0.9);
+  background-image: url('/images/coworking/bg01.webp');
   background-size: cover;
   background-position: center;
 }
@@ -342,9 +344,7 @@ p {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at top left, rgba(99, 102, 241, 0.27), transparent 34%),
-    radial-gradient(circle at bottom right, rgba(16, 185, 129, 0.15), transparent 30%);
+  background: rgba(17, 24, 39, 0.6);
 }
 
 .premium-btn {
@@ -355,7 +355,10 @@ p {
   padding: 0.95rem 1.5rem;
   border-radius: 9999px;
   font-weight: 700;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 .premium-btn:hover {

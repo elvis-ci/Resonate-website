@@ -93,9 +93,7 @@ const features = [
 <template>
   <main id="maincontent">
     <!-- Hero -->
-    <section
-      class="relative py-10 sm:py-16  bg-linear-to-b from-primary/20 to-primary/0 text-center"
-    >
+    <section class="relative py-10 sm:py-16 bg-alt-bg text-center">
       <div class="container text-center">
         <h1 class="main-heading text-heading mb-6">Where Focus Meets Freedom</h1>
         <p class="max-w-2xl mx-auto text-lg leading-relaxed">
@@ -227,14 +225,18 @@ const features = [
         </div>
 
         <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-8">
-          <div v-for="(member, index) in teamData" :key="index" class="text-center justify-self-center">
+          <div
+            v-for="(member, index) in teamData"
+            :key="index"
+            class="text-center justify-self-center"
+          >
             <div class="mb-4 overflow-hidden rounded-lg shadow-md">
               <img
                 :src="member.image"
                 :alt="member.name"
                 loading="lazy"
                 decoding="async"
-                class=" w-96 h-96 object-cover object-center transition-transform duration-300 hover:scale-105"
+                class="w-96 h-96 object-cover object-center transition-transform duration-300 hover:scale-105"
               />
             </div>
             <h3 class="mb-1">{{ member.name }}</h3>
@@ -245,7 +247,7 @@ const features = [
     </section>
 
     <!-- Contact -->
-    <section class="py-12 md:py-20 bg-linear-to-t from-primary/20 to-primary/0">
+    <section class="py-12 md:py-20 bg-alt-bg">
       <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="mb-4">For Partnership and Inquiries</h2>
         <p class="text-sm text-muted mb-6">Feel free to reach out — we’d love to hear from you.</p>

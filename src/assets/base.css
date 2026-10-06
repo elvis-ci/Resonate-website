@@ -3,8 +3,9 @@
 :root[data-theme='light'] {
   --safe-bottom: env(safe-area-inset-bottom);
   @theme {
-    --color-bg: #ffff;
-    --color-alt-bg: #f9fafb;
+    --color-bg: #ffffff;
+    --color-alt-bg: #f4f7fb;
+    --color-alt-bbg: #edf2f7;
 
     --color-primary: #a05a00;
     --color-primary-hover: #e67e00;
@@ -16,8 +17,8 @@
     --color-alternate-hover: #1a1f2e;
 
     --color-card-bg: #ffffff;
-    --color-card-bg2: #f9fafb;
-    --color-card-border: #e6eef4;
+    --color-card-bg2: #f8fafc;
+    --color-card-border: #dfe7f1;
 
     --color-border: #e6eef4;
     --color-ribbon-bg: #1a1f2e;
@@ -36,16 +37,17 @@
 
     --color-link: var(--color-primary);
     --shadow-elev: 0 6px 18px rgba(15, 23, 42, 0.06);
-    --logo-filter: none
+    --logo-filter: none;
   }
 }
 
 :root[data-theme='dark'] {
-  --color-bg: #0f172a;
-  --color-alt-bg: #111827;
+  --color-bg: #0b1220;
+  --color-alt-bg: #121d2b;
+  --color-alt-bbg: #182536;
 
-  --color-card-bg: #111827;
-  --color-card-bg2: #1f2933;
+  --color-card-bg: #121d2b;
+  --color-card-bg2: #1b2a3a;
 
   --color-primary: #a05a00;
   --color-primary-hover: #e67e00;
@@ -56,8 +58,8 @@
   --color-alternate: #020617;
   --color-alternate-hover: #020617;
 
-  --color-border: #1e293b;
-  --color-card-border: #1e293b;
+  --color-border: #253548;
+  --color-card-border: #253548;
 
   --color-ribbon-bg: #a05a00;
   --color-ribbon-under: gray;
@@ -120,11 +122,14 @@
 } */
 
 @media (prefers-reduced-motion: reduce) {
-  html, body {
+  html,
+  body {
     transition: none !important;
   }
-  
-  *, *::before, *::after {
+
+  *,
+  *::before,
+  *::after {
     animation: none !important;
   }
 }
@@ -153,14 +158,16 @@ body {
   background-color: var(--color-bg);
   min-height: 100dvh;
   padding-bottom: env(safe-area-inset-bottom);
-
 }
-*{
-  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 
-.logo{
-  filter: var(--logo-filter)
+.logo {
+  filter: var(--logo-filter);
 }
 main {
   @apply flex-1  pb-[env(safe-area-inset-bottom)];
@@ -264,10 +271,7 @@ p.white {
   @apply text-base md:text-base lg:text-xl leading-relaxed text-white/90;
 }
 a.white {
-  @apply bg-gradient-to-r from-primary-hover via-white to-primary-hover
-
-         bg-clip-text text-transparent 
-         text-xl leading-relaxed;
+  @apply text-white text-xl leading-relaxed;
 }
 
 /* paragraphs end */
