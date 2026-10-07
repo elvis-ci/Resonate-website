@@ -93,7 +93,7 @@ const features = [
 <template>
   <main id="maincontent">
     <!-- Hero -->
-    <section class="relative py-10 sm:py-16 bg-alt-bg text-center">
+    <section class="relative bg-alt-bg text-center">
       <div class="container text-center">
         <h1 class="main-heading text-heading mb-6">Where Focus Meets Freedom</h1>
         <p class="max-w-2xl mx-auto text-lg leading-relaxed">
@@ -247,7 +247,7 @@ const features = [
     </section>
 
     <!-- Contact -->
-    <section class="py-12 md:py-20 bg-alt-bg">
+    <section class="bg-alt-bg">
       <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="mb-4">For Partnership and Inquiries</h2>
         <p class="text-sm text-muted mb-6">Feel free to reach out — we’d love to hear from you.</p>

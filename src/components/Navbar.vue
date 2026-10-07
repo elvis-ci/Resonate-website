@@ -144,7 +144,7 @@ onUnmounted(() => {
 <template>
   <header
     id="topnav"
-    class="fixed top-0 z-1000 w-full backdrop-blur-xs transition-nav bg-gray-900/90"
+    class=" z-1000 w-full backdrop-blur-xs transition-nav bg-gray-900/90"
     :class="{ 'nav-hidden': !isNavVisible }"
   >
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">

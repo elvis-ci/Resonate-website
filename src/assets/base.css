@@ -146,6 +146,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  line-height: 1.6;
   font-family:
     'Nunito',
     system-ui,
@@ -164,6 +165,22 @@ body {
     background-color 0.3s ease,
     color 0.3s ease,
     border-color 0.3s ease;
+}
+
+:root {
+  --section-space: clamp(3.25rem, 5vw, 6rem);
+  --section-space-sm: clamp(2.25rem, 4vw, 4rem);
+  --content-space: clamp(1.25rem, 2vw, 2rem);
+  --card-space: clamp(1rem, 1.5vw, 1.5rem);
+}
+
+section {
+  position: relative;
+  padding-block: var(--section-space);
+}
+
+section > * + * {
+  margin-top: 0;
 }
 
 .logo {
@@ -217,18 +234,307 @@ nav > ul > li:focus-within {
 /* nav end */
 
 section.heading {
-  @apply py-10 sm:py-16 md:py-20;
+  padding-block: var(--section-space-sm);
 }
 /* section */
 section.hero {
   @apply relative my-0 py-0 w-full h-[70dvh] lg:h-full xl:h-[100dvh] text-white;
 }
 
+section.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+
+section.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  section.reveal,
+  section.reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 /* fixes max width on section content */
 section div.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20;
+  width: min(100%, 80rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 2vw, 2rem);
 }
 /* section end */
+
+.workspace-detail .workspace-hero {
+  background: var(--color-alt-bg);
+}
+
+.workspace-detail .workspace-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 23rem);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+}
+
+.workspace-detail .workspace-intro {
+  max-width: 48rem;
+}
+
+.workspace-detail .workspace-intro h1 {
+  max-width: 16ch;
+  margin-bottom: 1.5rem;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.12;
+}
+
+.workspace-detail .workspace-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-bottom: 1.5rem;
+}
+
+.workspace-detail .workspace-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 8rem;
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-card-bg);
+  color: var(--color-body);
+  font-size: 0.9rem;
+}
+
+.workspace-detail .workspace-fact strong {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.workspace-detail .workspace-locations {
+  margin-top: 1.5rem;
+}
+
+.workspace-detail .workspace-locations-label {
+  margin-bottom: 0.65rem;
+  color: var(--color-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.workspace-detail .workspace-location-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workspace-detail .workspace-location-chip {
+  padding: 0.4rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-card-bg2);
+  color: var(--color-body);
+  font-size: 0.85rem;
+}
+
+.workspace-detail .workspace-location-select {
+  margin-top: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.workspace-detail .workspace-location-select select {
+  width: 100%;
+  border-color: var(--color-border);
+  background: var(--color-card-bg);
+}
+
+.workspace-detail .workspace-booking-card {
+  width: 100%;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-elev);
+}
+
+.workspace-detail .workspace-price-value {
+  margin: 0;
+  color: var(--color-primary-text);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.workspace-detail .workspace-availability {
+  margin: 0.4rem 0 1.25rem;
+  color: var(--color-muted);
+  font-size: 0.9rem;
+}
+
+.workspace-detail .workspace-gallery > .swiper,
+.workspace-detail .workspace-gallery-track {
+  width: min(100%, 80rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+.workspace-detail .workspace-gallery .swiper-slide img {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-elev);
+}
+
+.workspace-detail .workspace-features-section {
+  background: var(--color-card-bg);
+}
+
+.workspace-detail .workspace-section-title {
+  margin: 0 0 2rem;
+  text-align: center;
+}
+
+.workspace-detail .workspace-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.workspace-detail .workspace-feature-card {
+  min-width: 0;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-card-bg2);
+}
+
+.workspace-detail .workspace-feature-card h3 {
+  margin-bottom: 1rem;
+}
+
+.workspace-detail .workspace-check-list {
+  display: grid;
+  gap: 0.8rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workspace-detail .workspace-check-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+}
+
+.workspace-detail .workspace-check-list li > span {
+  flex: 0 0 auto;
+  color: var(--color-primary-text);
+}
+
+.workspace-detail .workspace-check-list p {
+  margin: 0;
+  color: var(--color-body);
+  font-size: 0.95rem;
+}
+
+.workspace-detail .workspace-reviews-section {
+  background: var(--color-alt-bg);
+}
+
+.workspace-detail .workspace-review-summary {
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-card-bg);
+}
+
+.workspace-detail .workspace-review-summary p {
+  margin: 0;
+}
+
+.workspace-detail .workspace-review-card {
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-elev);
+}
+
+.workspace-detail .workspace-review-card h3 {
+  margin: 0;
+}
+
+.workspace-detail .workspace-review-card p {
+  margin: 0.75rem 0 0;
+}
+
+.workspace-detail .workspace-faq-section {
+  background: var(--color-alt-bg);
+}
+
+.workspace-detail .workspace-faq-content {
+  width: min(100%, 56rem);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 2vw, 2rem);
+}
+
+.workspace-detail .workspace-faq-item {
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-card-bg);
+}
+
+.workspace-detail .workspace-faq-question {
+  min-height: 3.5rem;
+  padding: 0.85rem 1rem;
+}
+
+.workspace-detail .workspace-faq-question > p {
+  margin: 0;
+  color: var(--color-heading);
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .workspace-detail .workspace-hero-layout,
+  .workspace-detail .workspace-feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-detail .workspace-hero-layout {
+    gap: 1.75rem;
+  }
+
+  .workspace-detail .workspace-fact {
+    flex: 1 1 calc(50% - 0.65rem);
+  }
+
+  .workspace-detail .workspace-section-title {
+    margin-bottom: 1.5rem;
+  }
+}
+
+main section:first-of-type {
+  margin-top: 0;
+}
+
+main > section,
+main > div > section {
+  scroll-margin-top: 5rem;
+}
 
 /* headings */
 .main-heading {

@@ -165,11 +165,11 @@ onMounted(() => {
   <section class="heading bg-alt-bg text-center">
     <div class="container">
       <h1 class="main-heading text-heading mb-4">Our Workspaces</h1>
-      <p class="mb-8 max-w-4xl mx-auto">
+      <p class="mb-6 max-w-4xl mx-auto">
         Explore our flexible workspace solutions designed for every professional. From solo work to
         large team gatherings, we have the perfect space for you.
       </p>
-      <p>Find the perfect workspace in your location.</p>
+      <p class="mb-0">Find the perfect workspace in your location.</p>
     </div>
   </section>
 
@@ -179,29 +179,37 @@ onMounted(() => {
     :key="workspace.title"
     :class="index % 2 === 0 ? 'bg-alt-bg' : 'bg-alt-bbg'"
   >
-    <div class="container px-4">
-      <div class="grid md:grid-cols-2 gap-8 lg:gap-12 items-center lg:py-12">
-        <div class="order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
-          <h2 class="mb-4 text-center lg:text-start">{{ workspace.title }}</h2>
-          <div class="md:hidden mb-4">
-            <img :src="workspace.image" :alt="workspace.alt" class="w-full rounded-lg shadow-lg" />
+    <div class="container">
+      <div class="grid md:grid-cols-2 gap-6 lg:gap-10 items-center">
+        <div class="workspace-info order-1" :class="index % 2 === 0 ? 'md:order-2' : 'md:order-1'">
+          <div class="workspace-heading">
+            <span class="workspace-kicker">Workspace {{ String(index + 1).padStart(2, '0') }}</span>
+            <h2>{{ workspace.title }}</h2>
           </div>
 
-          <p>
-            <span class="font-bold text-primary">Pricing</span>: from
-            {{ formatNaira(workspace.pricing) }} per hour
-          </p>
+          <div class="md:hidden workspace-image workspace-image-mobile">
+            <img :src="workspace.image" :alt="workspace.alt" />
+          </div>
 
-          <p class="mb-4">{{ workspace.description }}</p>
+          <div class="workspace-price" aria-label="Starting hourly price">
+            <span class="price-label">Starting at</span>
+            <span class="price-value">{{ formatNaira(workspace.pricing) }}</span>
+            <span class="price-unit">per hour</span>
+          </div>
 
-          <ul class="space-y-3 mb-8 text-body">
-            <li v-for="feature in workspace.features" :key="feature" class="flex items-start">
-              <span class="text-primary-text font-bold mr-3">✓</span>
-              <span>{{ feature }}</span>
-            </li>
-          </ul>
+          <p class="workspace-description">{{ workspace.description }}</p>
 
-          <div class="flex flex-col sm:flex-row gap-4">
+          <div class="workspace-features">
+            <h3>Included with this space</h3>
+            <ul>
+              <li v-for="feature in workspace.features" :key="feature">
+                <span class="feature-check" aria-hidden="true">✓</span>
+                <span>{{ feature }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="workspace-actions">
             <RouterLink :to="workspace.route" class="secondary w-full sm:w-auto text-center">
               View Details
             </RouterLink>
@@ -212,22 +220,19 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="hidden md:block">
-          <img
-            :src="workspace.image"
-            :alt="workspace.alt"
-            class="w-full max-h-[70vh] rounded-lg shadow-lg"
-          />
+        <div class="workspace-image workspace-image-desktop hidden md:block">
+          <img :src="workspace.image" :alt="workspace.alt" />
+          <span class="image-caption">{{ workspace.title }}</span>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA -->
-  <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
+  <section class="bg-alt-bg">
     <div class="max-w-4xl mx-auto px-4 text-center">
       <h2 class="text-4xl sm:text-5xl font-bold mb-4">Ready to Find Your Perfect Space?</h2>
-      <p class="text-lg mb-8 opacity-90">
+      <p class="text-lg mb-7 opacity-90">
         Book a tour today and discover why Reboot is the best coworking solution for your needs.
       </p>
       <RouterLink to="/workspaces" class="inline-block primary"> Book a Tour </RouterLink>
@@ -270,5 +275,169 @@ onMounted(() => {
 <style scoped>
 dialog {
   overscroll-behavior: contain;
+}
+
+.workspace-info {
+  min-width: 0;
+  padding: clamp(1.25rem, 2.2vw, 2rem);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-elev);
+}
+
+.workspace-heading {
+  margin-bottom: 1.25rem;
+}
+
+.workspace-kicker,
+.price-label,
+.price-unit {
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.workspace-kicker {
+  display: block;
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+}
+
+.workspace-heading h2 {
+  margin: 0;
+  text-align: left;
+}
+
+.workspace-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.55rem;
+  margin-bottom: 1.15rem;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 0.6rem 0.6rem 0;
+  background: var(--color-card-bg2);
+}
+
+.price-label {
+  flex-basis: 100%;
+}
+
+.price-value {
+  color: var(--color-primary-text);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.workspace-description {
+  margin: 0 0 1.35rem;
+  color: var(--color-body);
+  line-height: 1.7;
+}
+
+.workspace-features {
+  margin-bottom: 1.5rem;
+}
+
+.workspace-features h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.workspace-features ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workspace-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+  padding: 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.65rem;
+  color: var(--color-body);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.feature-check {
+  display: inline-grid;
+  flex: 0 0 1.2rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary-text);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.workspace-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.workspace-image {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  background: var(--color-card-bg2);
+  box-shadow: var(--shadow-elev);
+}
+
+.workspace-image img {
+  display: block;
+  width: 100%;
+  height: clamp(20rem, 35vw, 32rem);
+  object-fit: cover;
+}
+
+.image-caption {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  left: 1rem;
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  padding: 0.55rem 0.8rem;
+  border-radius: 0.5rem;
+  background: var(--color-card-bg);
+  color: var(--color-heading);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .workspace-heading h2 {
+    text-align: center;
+  }
+
+  .workspace-image-mobile {
+    margin-bottom: 1.25rem;
+  }
+
+  .workspace-image-mobile img {
+    height: clamp(13rem, 60vw, 20rem);
+  }
+
+  .workspace-features ul {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-actions {
+    flex-direction: column;
+  }
 }
 </style>

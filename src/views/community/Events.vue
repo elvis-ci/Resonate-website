@@ -231,10 +231,10 @@ onUnmounted(() => {
         <div
           v-for="event in events"
           :key="event.id"
-          class="mb-16 rounded-lg shadow-lg overflow-hidden"
+          class="mb-10 md:mb-12 rounded-lg border border-border bg-card-bg shadow-elev overflow-hidden"
         >
           <!-- EVENT HEADER WITH IMAGE -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 py-8 px-4">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 p-5 sm:p-6">
             <!-- IMAGE -->
             <div class="flex items-start justify-center">
               <img
@@ -266,7 +266,9 @@ onUnmounted(() => {
           </div>
 
           <!-- SPONSORS & SPEAKERS SECTION -->
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 py-8 border-t">
+          <div
+            class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 p-5 sm:p-6 border-t border-border"
+          >
             <!-- SPONSORS -->
             <div>
               <h3 class="mb-4">Sponsors</h3>
@@ -322,7 +324,7 @@ onUnmounted(() => {
     </section>
 
     <!-- CTA SECTION -->
-    <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
+    <section class="bg-alt-bg">
       <div class="container mx-auto max-w-7xl px-4 text-center">
         <h2 class="text-3xl font-bold mb-4">Don't Miss Out!</h2>
         <p class="text-lg mb-8 text-gray-100">

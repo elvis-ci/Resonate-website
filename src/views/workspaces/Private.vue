@@ -152,39 +152,33 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main id="maincontent">
+  <main id="maincontent" class="workspace-detail">
     <!-- HERO & LOCATION + PRICING -->
-    <section class="heading">
+    <section class="heading workspace-hero">
       <div class="container">
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-8">
-          <div class="max-w-2xl">
+        <div class="workspace-hero-layout">
+          <div class="workspace-intro">
             <h1 class="main-heading text-heading mb-4">
               {{ space.name }}
             </h1>
 
-            <div class="mb-4">
-              <p class="flex flex-wrap gap-x-4 tight">
-                <span>Capacity: {{ space.highlights.capacity }}</span>
+            <div class="workspace-facts">
+              <p class="workspace-fact tight">
+                <strong>Capacity</strong><span>{{ space.highlights.capacity }}</span>
               </p>
-              <p class="flex flex-wrap gap-x-4 tight">
-                <span>Best for: Focused work</span>
-              </p>
-              <p class="flex flex-wrap gap-x-4 tight">
-                <span>Noise level: Moderate</span>
-              </p>
+              <p class="workspace-fact tight"><strong>Best for</strong><span>Focused work</span></p>
+              <p class="workspace-fact tight"><strong>Noise level</strong><span>Moderate</span></p>
             </div>
 
-            <div>
-              <p class="tight">Available in Lagos at:</p>
-              <ul class="flex flex-wrap">
-                <li v-for="(loc, i) in availableAt" :key="loc" class="inline">
-                  <p class="tight">
-                    {{ loc }}<span v-if="i < availableAt.length - 1">,&nbsp;</span>
-                  </p>
+            <div class="workspace-locations">
+              <p class="workspace-locations-label">Available in Lagos at:</p>
+              <ul class="workspace-location-list">
+                <li v-for="loc in availableAt" :key="loc" class="workspace-location-chip">
+                  {{ loc }}
                 </li>
               </ul>
             </div>
-            <label class="flex flex-col gap-2 mt-6 font-medium text-heading">
+            <label class="workspace-location-select flex flex-col gap-2 font-medium text-heading">
               Explore available locations
               <!-- Loading State -->
               <div v-if="isLoadingLocations" class="h-10 bg-gray-200 rounded animate-pulse"></div>
@@ -209,7 +203,7 @@ onMounted(async () => {
             </label>
           </div>
 
-          <div class="order-2 md:order-none bg-bg shadow rounded-xl p-6 w-full md:w-80 text-text">
+          <div class="workspace-booking-card">
             <!-- Loading State -->
             <div v-if="isLoadingLocations" class="space-y-4 animate-pulse">
               <div class="h-8 bg-gray-200 rounded w-3/4"></div>
@@ -234,10 +228,10 @@ onMounted(async () => {
 
             <!-- Loaded State -->
             <div v-else>
-              <p class="font-bold">
+              <p class="workspace-price-value tight">
                 {{ formatNaira(currentDbLocation?.max_booking_price || 0) }} per hour
               </p>
-              <p class="mt-1">
+              <p class="workspace-availability tight">
                 <span v-if="currentDbLocation">
                   {{ currentDbLocation.total_units }} spaces available
                 </span>
@@ -252,7 +246,7 @@ onMounted(async () => {
     </section>
 
     <!-- IMAGE CAROUSEL -->
-    <section class="mt-12 md:mt-16 relative z-0 isolate">
+    <section class="workspace-gallery relative z-0 isolate">
       <Swiper
         v-if="currentLocationData"
         :slides-per-view="1.1"
@@ -280,23 +274,23 @@ onMounted(async () => {
     </section>
 
     <!-- FEATURES & ACCESSIBILITY -->
-    <section class="">
+    <section class="workspace-features-section">
       <div class="container">
-        <div class="mb-4"><h2 class="mb-4 text-center">Workspace Features</h2></div>
+        <div><h2 class="workspace-section-title">Workspace Features</h2></div>
 
         <!-- Grid for features and accessibility -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-12">
+        <div class="workspace-feature-grid">
           <!-- Workspace Features -->
-          <div>
+          <div class="workspace-feature-card">
             <h3 class="mb-4 text-lg md:text-xl">Regular Features</h3>
-            <ul class="space-y-0">
+            <ul class="workspace-check-list">
               <li
                 v-for="f in space.features"
                 :key="f"
                 class="flex items-start gap-x-3 text-sm sm:text-base"
               >
                 <span class="text-primary font-bold mt-0.5" aria-hidden="true"> ✓ </span>
-                <p class="">
+                <p class="tight">
                   {{ f }}
                 </p>
               </li>
@@ -304,12 +298,12 @@ onMounted(async () => {
           </div>
 
           <!-- Accessibility Features -->
-          <div>
+          <div class="workspace-feature-card">
             <h3 class="mb-4">Accessibility Features</h3>
-            <ul class="space-y-0">
+            <ul class="workspace-check-list">
               <li v-for="a in space.accessibility" :key="a" class="flex items-start gap-x-3">
                 <span class="text-primary font-bold mt-0.5" aria-hidden="true"> ✓ </span>
-                <p>
+                <p class="tight">
                   <span>{{ a }}</span>
                 </p>
               </li>
@@ -320,24 +314,20 @@ onMounted(async () => {
     </section>
 
     <!-- REVIEWS -->
-    <section class="">
+    <section class="workspace-reviews-section">
       <div class="container">
-        <h2 class="mb-4">User Reviews</h2>
+        <h2>User Reviews</h2>
 
-        <div class="mb-6">
-          <p>
+        <div class="workspace-review-summary">
+          <p class="tight">
             ⭐ {{ averageRating }} from {{ currentReviews.length }} reviews
             <span class="hidden sm:inline"> · Most users mention quietness & fast Wi-Fi </span>
           </p>
         </div>
 
         <!-- Reviews Grid -->
-        <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
-          <article
-            v-for="r in currentReviews"
-            :key="r.id"
-            class="border rounded-lg p-4 bg-bg shadow-sm"
-          >
+        <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+          <article v-for="r in currentReviews" :key="r.id" class="workspace-review-card">
             <div class="flex items-start justify-between gap-1">
               <h3 class="font-semibold">
                 {{ r.name }}
@@ -357,18 +347,14 @@ onMounted(async () => {
     </section>
 
     <!-- FAQS -->
-    <section class="py-12 sm:py-16 md:py-28 bg-alt-bg">
-      <div class="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-        <h2 class="mb-6 text-center">Frequently Asked Questions</h2>
+    <section class="workspace-faq-section">
+      <div class="workspace-faq-content">
+        <h2 class="workspace-section-title">Frequently Asked Questions</h2>
         <div class="space-y-4">
-          <div
-            v-for="faq in space.faqs"
-            :key="faq.id"
-            class="border-b rounded-lg overflow-hidden bg-card-bg2/80"
-          >
+          <div v-for="faq in space.faqs" :key="faq.id" class="workspace-faq-item">
             <div
               @click="faq.open = !faq.open"
-              class="has-accordion w-full flex justify-between items-center p-2 text-left focus:outline-none focus-visible:ring"
+              class="workspace-faq-question has-accordion w-full flex justify-between items-center text-left focus:outline-none focus-visible:ring"
               :aria-expanded="faq.open"
             >
               <p class="tight">{{ faq.question }}</p>

@@ -41,11 +41,11 @@ const submitForm = () => {
   </section>
 
   <!-- MAIN CONTENT -->
-  <section class="pb-16">
+  <section>
     <div class="container max-w-6xl mx-auto px-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-14">
         <!-- CONTACT FORM -->
-        <div class="bg-card-bg rounded-2xl shadow-soft">
+        <div class="bg-card-bg border border-border rounded-xl p-5 sm:p-6 shadow-soft">
           <h2 class="mb-6">Send Us a Message</h2>
 
           <form @submit.prevent="submitForm" class="grid grid-cols-1 gap-5">
@@ -107,7 +107,7 @@ const submitForm = () => {
             <p class="mt-2 text-muted">You can also reach us directly via the channels below.</p>
           </div>
 
-          <div class="bg-card-bg rounded-2xl shadow-soft space-y-4">
+          <div class="bg-card-bg border border-border rounded-xl p-5 sm:p-6 shadow-soft space-y-4">
             <div>
               <p class="contact font-semibold text-heading">Support Email</p>
               <a href="mailto:support@yourworkspace.com" class="text-primary">
@@ -129,7 +129,9 @@ const submitForm = () => {
           </div>
 
           <!-- SOCIAL LINKS -->
-          <div class="bg-card-bg rounded-2xl shadow-soft py-6 text-center md:text-start">
+          <div
+            class="bg-card-bg border border-border rounded-xl px-5 py-6 sm:px-6 shadow-soft text-center md:text-start"
+          >
             <h3 class="mb-4">Connect With Us</h3>
             <ul class="flex gap-6 justify-center md:justify-start">
               <li>
