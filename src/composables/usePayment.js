@@ -23,6 +23,7 @@ export function usePayment() {
         paying.value = false
       } else {
         errorMessage.value = 'Something went wrong. Please try again.'
+        paying.value = false
       }
     }
   }
