@@ -125,15 +125,15 @@ const routes = [
     meta: { title: 'Contact' },
   },
   {
+    path: '/payment/return',
+    name: 'payment-return',
+    component: () => import('@/views/PaymentReturn.vue'),
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'PageError',
     component: NotFoundView,
     meta: { title: 'Page not found' },
-  },
-  {
-    path: '/payment/return',
-    name: 'payment-return',
-    component: () => import('@/views/PaymentReturn.vue'),
   },
 ]
 
