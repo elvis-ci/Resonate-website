@@ -543,7 +543,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
             <div aria-live="polite" aria-atomic="true" class="text-center mt-2">
               <p
                 v-if="validationError"
-                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
+                class="custom font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
                 ⚠ Please fill in all required fields
@@ -551,7 +551,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 
               <p
                 v-else-if="timeRangeError"
-                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
+                class="custom font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
                 Enter a valid time range between 08:00 and 18:00.
@@ -559,7 +559,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 
               <p
                 v-else-if="officeHoursError"
-                class="font-semibold text-green-600 bg-red-100 p-3 rounded"
+                class="custom font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="alert"
               >
                 ⚠ {{ officeHoursError }}
@@ -567,14 +567,14 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 
               <p
                 v-else-if="availabilityState === 'available'"
-                class="font-semibold text-green-600 bg-green-50 p-3 rounded"
+                class="custom font-semibold text-green-600 bg-green-50 p-3 rounded"
                 role="status"
               >
                 ✓ {{ availabilityMessage }}
               </p>
               <p
                 v-else-if="availabilityState === 'unavailable'"
-                class="font-semibold text-green-600 bg-red-100 p-3 rounded"
+                class="custom font-semibold text-red-600 bg-red-100 p-3 rounded"
                 role="status"
               >
                 ✓ {{ availabilityMessage }}
@@ -582,7 +582,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 
               <p
                 v-else-if="reservationError"
-                class="booking-error-message rounded p-3 font-semibold"
+                class="custom booking-error-message text-red-600 bg-red-100 rounded p-3 font-semibold"
                 role="alert"
               >
                 ✗ {{ reservationError }}
