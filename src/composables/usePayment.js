@@ -20,6 +20,7 @@ export function usePayment() {
       if (e instanceof PaymentError) {
         errorMessage.value = e.message
         errorCode.value = e.code
+        paying.value = false
       } else {
         errorMessage.value = 'Something went wrong. Please try again.'
       }
