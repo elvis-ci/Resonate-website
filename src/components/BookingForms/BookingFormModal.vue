@@ -4,16 +4,26 @@ import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
 import { useReservationHold } from '@/composables/useReservationHold'
 import { useBookingForm } from '@/composables/useBookingForm'
 import { useGuestOtp } from '@/composables/useGuestOtp'
-
+import { usePayment } from '@/composables/usePayment'
 const props = defineProps({
   workspaceType: { type: String, required: true },
 })
+const PAYMENT_PROVIDER = import.meta.env.VITE_PAYMENT_PROVIDER || 'paystack'
 
 const { otpLoading, otpSent, otpError, otpCoolDown, requestOtp } = useGuestOtp()
 
 // Initialize workspace locations composable first
 const { availableLocations, isLoadingLocations, error, fetchLocations } = useWorkspaceLocations()
+const { pay, paying, errorMessage: paymentError, errorCode: paymentErrorCode } = usePayment()
 
+const hasDeadReservation = computed(() =>
+  [
+    'reservation_expired',
+    'reservation_cancelled',
+    'reservation_consumed',
+    'reservation_not_found',
+  ].includes(paymentErrorCode.value),
+)
 // Initialize booking form composable with office hours
 const {
   selectedDate,
@@ -44,14 +54,12 @@ const {
   reserveSlot,
   cancelHold,
   restartHold,
-  handlePaymentStart: composableHandlePaymentStart,
   // cleanup,
   restoreFromStorage,
   reservationData,
   timeRemaining,
   holdExpired,
   reservationCancelled,
-  isPaymentStarted,
   isReserving,
   isCancelling,
   reservationError,
@@ -146,8 +154,10 @@ function restartBooking() {
   showCloseConfirmation.value = false
 }
 
-function handlePaymentStart() {
-  composableHandlePaymentStart()
+async function handlePaymentStart() {
+  const reservationId = reservationData.value?.reservationId
+  if (!reservationId || paying.value) return
+  await pay({ reservation_id: reservationId, provider: PAYMENT_PROVIDER })
 }
 
 // --- Computed Properties ---
@@ -226,7 +236,7 @@ async function attemptReservationSlot() {
   })
 
   if (reservationError.value) return
-  
+
   console.log('availability state:', availabilityState.value)
 
   if (availabilityState.value === 'unavailable') return
@@ -256,26 +266,33 @@ async function retryLoadLocations() {
     loadError.value = err?.message || 'Failed to load locations. Please try again.'
   }
 }
+function handleEsc(e) {
+  if (e.key !== 'Escape') return
+  e.preventDefault()
+  e.stopPropagation()
+  if (reservationData.value?.reservationId) {
+    showCloseConfirmation.value = !showCloseConfirmation.value
+  } else {
+    attemptToCloseForm()
+  }
+}
 onMounted(async () => {
-  // availableLocations.value = []
-  console.log('is hold expired?:', holdExpired)
-
+  console.log(reservationData.value)
   try {
     await restoreFromStorage(selectedWorkspaceType.value)
 
     if (reservationData.value) {
-      // 👇 THIS is what you're missing
       fullName.value = reservationData.value.fullName
       email.value = reservationData.value.email
       phone.value = reservationData.value.phone
       selectedDate.value = reservationData.value.bookingDate
       selectedStartTime.value = reservationData.value.startTime
       selectedEndTime.value = reservationData.value.endTime
-
+      selectedLocation.value = reservationData.value.locationId // new
+      await fetchLocations(selectedWorkspaceType.value) // new: needed to resolve the name and price
       currentStep.value = 2
       return
     }
-
     await fetchLocations(selectedWorkspaceType.value)
 
     if (error.value) {
@@ -284,22 +301,9 @@ onMounted(async () => {
   } catch (err) {
     loadError.value = err?.message || 'Failed to initialize booking. Please try again.'
   }
-
-  const handleEsc = (e) => {
-    if (e.key !== 'Escape') return
-
-    e.preventDefault()
-    e.stopPropagation()
-
-    if (reservationData.value?.reservationId) {
-      showCloseConfirmation.value = !showCloseConfirmation.value
-    } else {
-      attemptToCloseForm()
-    }
-  }
-
   document.addEventListener('keydown', handleEsc)
 })
+onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 </script>
 
 <template>
@@ -610,7 +614,7 @@ onMounted(async () => {
               >
                 <span v-if="isReserving" class="spinner" aria-hidden="true"></span>
                 <span>
-                  {{ isReserving ? 'Reserving…' : 'Reserve Slot & Continue' }}
+                  {{ isReserving ? 'Reserving…' : 'Check Availability' }}
                 </span>
               </button>
             </div>
@@ -686,8 +690,9 @@ onMounted(async () => {
           <!-- Booking Summary (Hidden when expired or cancelled) -->
           <div v-if="reservationData" class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6">
             <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <p>Total to pay</p>
+              <p class="font-semibold">{{ getSelectedLocationPrice() }}</p>
               <div>
                 <p class="">Name</p>
                 <p class="text-text font-semibold">{{ fullName }}</p>
@@ -725,38 +730,40 @@ onMounted(async () => {
             </div>
           </div>
 
-          <!-- Action Buttons (Hidden when expired or cancelled) -->
+          <!-- Error from starting payment -->
           <div
-            v-if="!holdExpired && !reservationCancelled"
+            v-if="paymentError"
+            class="bg-red-100 border-2 border-red-300 rounded-lg p-4"
+            role="alert"
+          >
+            <p class="text-center text-red-800 text-sm">{{ paymentError }}</p>
+            <div v-if="hasDeadReservation" class="text-center mt-3">
+              <button type="button" class="primary" @click="restartBooking">
+                Start New Reservation
+              </button>
+            </div>
+          </div>
+          <div
+            v-if="!holdExpired && !reservationCancelled && !hasDeadReservation"
             class="flex flex-col md:flex-row gap-3 md:gap-4 mt-6"
           >
-            <!-- Cancel Reservation Button -->
-            <button
-              v-if="!isPaymentStarted"
-              type="button"
-              class="cancel"
-              @click="cancelReservation"
-              :disabled="isPaymentStarted"
-            >
+            <button v-if="!paying" type="button" class="cancel" @click="cancelReservation">
               Cancel Reservation
             </button>
             <button
               type="button"
               class="primary flex-1"
-              :disabled="isPaymentStarted"
+              :disabled="paying"
               @click="handlePaymentStart"
             >
-              <span v-if="isPaymentStarted" class="spinner" aria-hidden="true"></span>
-              <span>
-                {{ isPaymentStarted ? 'Processing Payment...' : 'Proceed to Payment' }}
-              </span>
+              <span v-if="paying" class="spinner" aria-hidden="true"></span>
+              <span>{{ paying ? 'Redirecting to payment...' : 'Proceed to Payment' }}</span>
             </button>
           </div>
 
-          <!-- Payment Started Warning -->
-          <div v-if="isPaymentStarted" class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+          <div v-if="paying" class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
             <p class="text-center text-blue-800 text-sm">
-              💳 Payment processing... Please do not close this window.
+              💳 Taking you to the payment page. Please do not close this window.
             </p>
           </div>
         </div>

@@ -3,4 +3,4 @@ export const formatNaira = (amount) =>
     style: 'currency',
     currency: 'NGN',
     minimumFractionDigits: 0,
-  }).format(Number(amount))
+  }).format((amount))

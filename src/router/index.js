@@ -130,6 +130,11 @@ const routes = [
     component: NotFoundView,
     meta: { title: 'Page not found' },
   },
+  {
+    path: '/payment/return',
+    name: 'payment-return',
+    component: () => import('@/views/PaymentReturn.vue'),
+  },
 ]
 
 const router = createRouter({
