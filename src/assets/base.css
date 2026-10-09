@@ -187,7 +187,7 @@ section > * + * {
   filter: var(--logo-filter);
 }
 main {
-  @apply flex-1  pb-[env(safe-area-inset-bottom)];
+ @apply flex-1;
 }
 
 /* nav */

@@ -126,13 +126,15 @@ export function useReservationHold(workspaceType) {
       })
 
       if (!result.success) {
+        const alternatives = formatAlternatives(result.alternatives)
         availabilityState.value = 'unavailable'
-        availabilityMessage.value =
-          'Selected Time is taken, select from available alternative below'
-        alternativeSlots.value = formatAlternatives(result.alternatives)
+        availabilityMessage.value = alternatives.length
+          ? 'Selected time is taken, select from the available alternatives below'
+          : 'No availability on this date. Please choose another date.'
+        alternativeSlots.value = alternatives
         return
       }
-
+      const details = await restoreReservation(result.reservationId)
       // Success: store reservation info and start countdown
       availabilityState.value = 'available'
       availabilityMessage.value = 'space is available, proceeding to confirmation'
@@ -140,6 +142,8 @@ export function useReservationHold(workspaceType) {
         reservationId: result.reservationId,
         workspaceId: result.workspaceId,
         holdExpiresAt: result.holdExpiresAt,
+        locationId: result.location_id,
+        amount: details?.amount ?? null 
       }
 
       // Persist minimal restore data
