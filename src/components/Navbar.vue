@@ -194,9 +194,9 @@ onUnmounted(() => {
         </li>
       </ul>
 
-      <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block">
-        Bookings</RouterLink
-      >
+      <!-- <RouterLink to="workspaces/categories-workspace" class="primary hidden lg:inline-block">
+        Sign In</RouterLink
+      > -->
       <div class="flex gap-6 items-center justify-end">
         <li class="dark-toggle">
           <button
@@ -204,19 +204,39 @@ onUnmounted(() => {
             class="theme-toggle-btn"
             :class="{ 'is-dark': theme === 'dark' }"
             @click="toggleMode"
-            @keydown="onToggleKeydown"
             role="switch"
             :aria-checked="theme === 'dark'"
-            aria-label="Toggle dark mode"
+            :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
           >
-            <!-- Pill background -->
             <span class="pill" aria-hidden="true">
               <span class="slider" :class="{ 'slider-right': theme === 'dark' }"></span>
+              <svg
+                class="option option-1"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="4" />
+                <path
+                  d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+                />
+              </svg>
+              <svg
+                class="option option-2"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M20.9 13A9 9 0 0 1 11 3.1 9 9 0 1 0 20.9 13Z" />
+              </svg>
             </span>
-
-            <!-- Icons -->
-            <i class="uil uil-sun option option-1" aria-hidden="true">☀️</i>
-            <i class="uil uil-moon option option-2" aria-hidden="true">🌙</i>
           </button>
         </li>
 
@@ -458,45 +478,6 @@ header {
 .nav-hidden {
   transform: translateY(-100%);
 }
-.theme-toggle {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 60px;
-  height: 30px;
-  padding: 0 5px;
-  border-radius: 15px;
-  border: 1px solid #ccc;
-  background-color: var(--toggle-bg, #f0f0f0);
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.icon {
-  font-size: 16px;
-  z-index: 2;
-}
-
-.slider {
-  position: absolute;
-  top: 2px;
-  bottom: 2px;
-  width: 26px;
-  border-radius: 50%;
-  background-color: #fff;
-  transition: transform 0.3s;
-  z-index: 1;
-}
-
-/* Move the slider based on theme */
-.slider.light {
-  transform: translateX(0);
-}
-.slider.dark {
-  transform: translateX(30px);
-}
-
 /* Desktop dropdown smooth slide */
 .desktop-slide-down-enter-active,
 .desktop-slide-down-leave-active {
@@ -521,89 +502,82 @@ header {
   display: flex;
   align-items: center;
   z-index: 50;
-  padding-left: 20px;
+  padding-left: 12px;
 }
 
 .theme-toggle-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 50px;
-  height: 20px;
+  width: 56px;
+  height: 32px;
+  padding: 0;
   border: none;
   background: transparent;
   cursor: pointer;
   border-radius: 999px;
-  outline: none;
-  perspective: 600px; /* 3D depth */
   position: relative;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .pill {
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
-  background: linear-gradient(145deg, #8d8d8d, #5e5e5e);
-  box-shadow:
-    inset 2px 2px 4px rgba(0, 0, 0, 0.35),
-    inset -2px -2px 4px rgba(255, 255, 255, 0.25),
-    0 2px 3px rgba(0, 0, 0, 0.4);
+  background: #e2e8f0;
+  transition: background-color 0.25s ease;
 }
 
 .slider {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
-  height: 20px;
-  width: 44%;
+  top: 3px;
+  left: 3px;
+  width: 26px;
+  height: 26px;
   background: linear-gradient(145deg, #f08d0c, #c76c00);
   border-radius: 999px;
-  transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1);
-  box-shadow:
-    inset -1px -1px 3px rgba(255, 255, 255, 0.4),
-    inset 2px 2px 5px rgba(0, 0, 0, 0.3),
-    0 2px 3px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.24);
   z-index: 1;
 }
 
 .slider-right {
-  transform: translateY(-50%) translateX(calc(100% + 5px));
+  transform: translateX(24px);
 }
 
 .option {
   position: absolute;
-  width: 18px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  top: 9px;
+  width: 14px;
+  height: 14px;
   pointer-events: none;
-  font-size: 12px;
-  color: #f9f9f9;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  color: #64748b;
   z-index: 2;
 }
 
 .option-1 {
-  left: 2px;
+  left: 9px;
 }
 .option-2 {
-  right: 2px;
+  right: 9px;
 }
 
-.theme-toggle-btn.is-dark .option-1 {
-  opacity: 0.45;
-}
-.theme-toggle-btn:not(.is-dark) .option-2 {
-  opacity: 0.45;
+.theme-toggle-btn:not(.is-dark) .option-1,
+.theme-toggle-btn.is-dark .option-2 {
+  color: #fff;
 }
 
-.theme-toggle-btn:focus {
-  box-shadow: 0 0 0 3px rgba(47, 85, 212, 0.14);
-  border-radius: 999px;
+.theme-toggle-btn.is-dark .pill {
+  background: #334155;
+}
+
+.theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--color-primary-hover);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .slider {
+    transition: none;
+  }
 }
 </style>

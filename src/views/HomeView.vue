@@ -141,10 +141,10 @@ onMounted(loadAvailableSpaces)
 
               <div class="mt-8 flex flex-col sm:flex-row items-start gap-4">
                 <RouterLink to="/workspaces/categories-workspace" class="primary premium-btn">
-                  Space Pricing
-                </RouterLink>
-                <RouterLink to="/bookings" class="secondary premium-btn secondary-btn">
                   Book a space
+                </RouterLink>
+                <RouterLink to="/contact" class="secondary premium-btn secondary-btn">
+                  Contact Us
                 </RouterLink>
               </div>
 
@@ -276,7 +276,7 @@ onMounted(loadAvailableSpaces)
     </section>
 
     <!-- pricing -->
-    <Suspense>
+    <!-- <Suspense>
       <template #default>
         <Plans class="home-pricing bg-alt-bg" />
       </template>
@@ -287,7 +287,7 @@ onMounted(loadAvailableSpaces)
           </div>
         </div>
       </template>
-    </Suspense>
+    </Suspense> -->
 
     <!-- about -->
     <section class="home-community">
