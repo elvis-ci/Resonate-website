@@ -582,8 +582,8 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
 
               <p
                 v-else-if="reservationError"
-                class="font-semibold text-red-600 bg-red-100 p-3 rounded"
-                role="status"
+                class="booking-error-message rounded p-3 font-semibold"
+                role="alert"
               >
                 ✗ {{ reservationError }}
               </p>
@@ -623,7 +623,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
       </div>
 
       <!-- STEP 2: Confirmation Screen -->
-      <div v-else-if="currentStep === 2" key="step2" v-show="reservationData">
+      <div v-else-if="currentStep === 2" key="step2" v-show="reservationData" >
         <h2 class="mb-8 text-center">Confirm Your Booking</h2>
 
         <div class="text-text space-y-6 pt-4">
@@ -664,7 +664,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
             </div>
           </div>
 
-          <div v-else class="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-6">
+          <div v-else class=" border-2 border-yellow-300 rounded-lg p-6">
             <p class="text-center text-yellow-900 font-semibold mb-2">
               ⏱ Your Time is Temporarily Reserved
             </p>
@@ -688,7 +688,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
           </div>
 
           <!-- Booking Summary (Hidden when expired or cancelled) -->
-          <div v-if="reservationData" class="space-y-4 bg-gray-50 rounded-lg px-2 md:p-6">
+          <div v-if="reservationData" class="space-y-4 bg-alt-bg rounded-lg px-2 md:p-6">
             <h3 class="font-semibold text-lg mb-4">Booking Summary</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <p>Total to pay</p>
@@ -736,7 +736,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
             class="bg-red-100 border-2 border-red-300 rounded-lg p-4"
             role="alert"
           >
-            <p class="text-center text-red-800 text-sm">{{ paymentError }}</p>
+            <p class="text-center error text-red-800 text-sm">{{ paymentError }}</p>
             <div v-if="hasDeadReservation" class="text-center mt-3">
               <button type="button" class="primary" @click="restartBooking">
                 Start New Reservation
@@ -762,7 +762,7 @@ onBeforeUnmount(() => document.removeEventListener('keydown', handleEsc))
           </div>
 
           <div v-if="paying" class="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
-            <p class="text-center text-blue-800 text-sm">
+            <p class="text-center custom text-blue-800 text-sm">
               💳 Taking you to the payment page. Please do not close this window.
             </p>
           </div>
@@ -816,6 +816,16 @@ input,
 select,
 textarea {
   background-color: var(--color-card-bg2);
+}
+
+.booking-error-message {
+  color: #7f1d1d;
+  background-color: #fef2f2;
+}
+
+:global(:root[data-theme='dark']) .booking-error-message {
+  color: #fecaca;
+  background-color: #450a0a;
 }
 
 .spinner {

@@ -561,7 +561,7 @@ h3.white {
 /* headings end */
 
 /* paragraphs */
-p:not(.error):not(.white):not(.tight) {
+p:not(.error):not(.white):not(.tight):not(.custom) {
   @apply text-base md:text-base lg:text-lg leading-relaxed text-body mb-4;
 }
 p.tight {
@@ -578,6 +578,9 @@ p.white {
 }
 a.white {
   @apply text-white text-xl leading-relaxed;
+}
+p.custom {
+  @apply text-base sm:text-base md:text-base lg:text-xl leading-relaxed mb-4;
 }
 
 /* paragraphs end */
