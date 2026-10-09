@@ -9,6 +9,7 @@ import SwiperCore from 'swiper'
 import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules'
 import { useWorkspaceLocations } from '@/composables/useWorkspaceLocations'
 import BookingFormModal from '@/components/BookingForms/BookingFormModal.vue'
+import WorkspaceAssistance from '@/components/WorkspaceAssistance.vue'
 import { formatNaira } from '@/utils/currency'
 
 SwiperCore.use([Navigation, Pagination, Autoplay, EffectCoverflow])
@@ -437,6 +438,8 @@ onMounted(async () => {
         </div>
       </div>
     </section>
+
+    <WorkspaceAssistance />
 
     <dialog
       @click.self="handleBackdropClick"
